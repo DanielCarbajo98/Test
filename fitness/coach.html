@@ -1,0 +1,627 @@
+<title>Coach Recomposición</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: cuaderno de entrenamiento — cabecera fija con semana/fase, pestañas, tarjetas solo para lo accionable */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#121a2b; --muted:#5b6577; --line:#dde2ea;
+  --accent:#2747d6; --accent-soft:#e6ebff; --heat:#e0582a; --heat-soft:#fde9e1;
+  --ok:#1d8a55; --ok-soft:#e2f4ea; --warn:#b7791f;
+  --display:"Archivo",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d121c; --surface:#151c2b; --ink:#e8ecf4; --muted:#97a1b4; --line:#273147;
+  --accent:#7d94ff; --accent-soft:#1d2747; --heat:#ff8a5c; --heat-soft:#3a2219;
+  --ok:#4cc98a; --ok-soft:#163326; --warn:#e3a94a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d121c; --surface:#151c2b; --ink:#e8ecf4; --muted:#97a1b4; --line:#273147;
+  --accent:#7d94ff; --accent-soft:#1d2747; --heat:#ff8a5c; --heat-soft:#3a2219;
+  --ok:#4cc98a; --ok-soft:#163326; --warn:#e3a94a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:920px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px 8px;flex-wrap:wrap}
+.brand h1{font-family:var(--display);font-stretch:85%;font-weight:900;font-size:1.5rem;letter-spacing:-.01em;margin:0;text-transform:uppercase}
+.brand h1 span{color:var(--heat)}
+.phasebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.8rem}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:.78rem;white-space:nowrap}
+.pill.heat{background:var(--heat-soft);color:var(--heat)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs button{font:600 .88rem var(--body);background:none;border:0;color:var(--muted);padding:10px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--heat)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:20px 60px}
+section.view{display:flex;flex-direction:column;gap:18px}
+h2{font-family:var(--display);font-stretch:90%;font-weight:800;font-size:1.35rem;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0 0 6px;text-wrap:balance}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.eyebrow{font:700 .72rem var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.big{font-family:var(--mono);font-weight:700;font-size:1.7rem;line-height:1.1}
+.stat .eyebrow{display:block;margin-bottom:4px}
+/* sesión */
+.session-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.ex{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.ex:first-of-type{border-top:0}
+.ex input[type=checkbox]{width:22px;height:22px;margin-top:2px;accent-color:var(--ok)}
+.ex .name{font-weight:600}
+.ex .rx{font-family:var(--mono);font-size:.82rem;color:var(--accent);white-space:nowrap}
+.ex .tip{font-size:.83rem;color:var(--muted)}
+.ex .logrow{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.ex.done .name{text-decoration:line-through;color:var(--muted)}
+input.f,select.f{font:500 .9rem var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:92px}
+label.lbl{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--muted);font-weight:600}
+.habits{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.habit{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--surface)}
+.habit input{width:20px;height:20px;accent-color:var(--ok)}
+.habit.on{border-color:var(--ok);background:var(--ok-soft)}
+.heat-row{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;margin-top:8px}
+.heat-row div{aspect-ratio:1;border-radius:4px;background:var(--line);max-width:100%}
+.heat-row div[data-l="1"]{background:color-mix(in srgb,var(--ok) 35%,var(--line))}
+.heat-row div[data-l="2"]{background:color-mix(in srgb,var(--ok) 65%,var(--line))}
+.heat-row div[data-l="3"]{background:var(--ok)}
+.heat-row div.today{outline:2px solid var(--ink);outline-offset:1px}
+/* semana */
+.week{display:grid;grid-template-columns:repeat(7,minmax(110px,1fr));gap:8px;overflow-x:auto;padding-bottom:4px}
+.day{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--surface);font-size:.82rem;min-width:0}
+.day b{display:block;font-family:var(--display);font-size:.95rem}
+.day.is-today{border-color:var(--heat);box-shadow:inset 0 3px 0 var(--heat)}
+.tag{display:inline-block;font:700 .66rem var(--body);letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:4px;margin-top:4px}
+.tag.f{background:var(--accent-soft);color:var(--accent)} .tag.c{background:var(--heat-soft);color:var(--heat)} .tag.r{background:var(--ok-soft);color:var(--ok)}
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.phase{border-left:4px solid var(--line);padding:6px 12px}
+.phase.cur{border-left-color:var(--heat)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.macro-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:10px 0 6px}
+.macro-bar span:nth-child(1){background:var(--accent)} .macro-bar span:nth-child(2){background:var(--heat)} .macro-bar span:nth-child(3){background:var(--warn)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.myth{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.myth:first-child{border-top:0}
+.verdict{font:700 .68rem var(--body);letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;height:fit-content;white-space:nowrap}
+.verdict.no{background:var(--heat-soft);color:var(--heat)} .verdict.si{background:var(--ok-soft);color:var(--ok)} .verdict.mm{background:var(--accent-soft);color:var(--accent)}
+.alert{border:1px solid var(--heat);background:var(--heat-soft);border-radius:10px;padding:14px 16px}
+.btn{font:600 .88rem var(--body);background:var(--accent);color:#fff;border:0;border-radius:7px;padding:8px 14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+svg text{fill:var(--muted);font:11px var(--mono)}
+.savestate{font-size:.75rem;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.habit,.ex{transition:background .15s,border-color .15s}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1>Coach <span>Recomp</span></h1>
+      <div class="phasebar"><span class="pill heat" id="pWeek">Semana 1</span><span class="pill" id="pPhase">Fase 1</span><span class="savestate" id="saveState">Cargando datos…</span></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Secciones">
+      <button role="tab" data-v="hoy" aria-selected="true">Hoy</button>
+      <button role="tab" data-v="plan" aria-selected="false">Plan 13 semanas</button>
+      <button role="tab" data-v="comida" aria-selected="false">Nutrición</button>
+      <button role="tab" data-v="progreso" aria-selected="false">Progreso</button>
+      <button role="tab" data-v="guia" aria-selected="false">Espalda, sueño y trucos</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- HOY -->
+<section class="view" id="v-hoy">
+  <div class="card">
+    <div class="session-head">
+      <div><span class="eyebrow" id="todayDate">Hoy</span><h2 id="sessTitle">Sesión</h2><p class="muted small" id="sessSub"></p></div>
+      <label class="lbl" for="dayPick">Ver otro día<select class="f" id="dayPick" style="width:auto"></select></label>
+    </div>
+    <div id="warmup" class="small" style="margin-top:12px"></div>
+    <div id="exList" style="margin-top:6px"></div>
+    <div id="cardioBox" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <div class="session-head"><div><span class="eyebrow">Hábitos de hoy</span><h3>Los 6 no negociables</h3></div><span class="pill ok" id="habitScore">0/6</span></div>
+    <div class="habits" id="habits"></div>
+    <p class="small muted" style="margin-top:10px">Regla de constancia: <b>nunca falles dos días seguidos</b>. Si el día va mal, haz la versión mínima: 20 minutos de caminata inclinada + el core de espalda. Eso cuenta como entreno.</p>
+    <div class="row" style="margin-top:12px">
+      <label class="lbl" for="wIn">Peso en ayunas (kg)<input class="f" id="wIn" type="number" step="0.1" inputmode="decimal" placeholder="82.0"></label>
+      <label class="lbl" for="cIn">Cintura al ombligo (cm)<input class="f" id="cIn" type="number" step="0.5" inputmode="decimal" placeholder="—"></label>
+      <span class="small muted">Pésate 3–7 días por semana, mismo momento. La cintura, una vez por semana.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="eyebrow">Últimos 14 días</span>
+    <div class="heat-row" id="heat14" aria-label="Cumplimiento de hábitos de los últimos 14 días"></div>
+    <p class="small muted" style="margin-top:8px" id="streakTxt"></p>
+  </div>
+</section>
+
+<!-- PLAN -->
+<section class="view" id="v-plan" hidden>
+  <div>
+    <h2>Tu ciclo de 13 semanas</h2>
+    <p class="muted" style="max-width:65ch;margin-top:6px">Prioridad 1 estética (perder grasa conservando y ganando músculo), 2 capacidad aeróbica y 3 fuerza. Son 5 días de gimnasio, 1 de cardio largo y 1 de descanso activo. Ya tienes experiencia con pesas, así que el cuerpo recupera rápido la "memoria muscular". Lo que hay que construir es la constancia y la espalda.</p>
+  </div>
+  <div class="phases" id="phases"></div>
+  <div class="card">
+    <span class="eyebrow">Semana tipo</span>
+    <div class="week" id="weekGrid" style="margin-top:8px"></div>
+  </div>
+  <div class="grid2" id="sessionsAll"></div>
+  <div class="card">
+    <h3>Cómo progresar las cargas (doble progresión)</h3>
+    <ul class="clean small">
+      <li>Cada ejercicio tiene un rango, por ejemplo 8–10. Empieza con un peso que te permita hacer 8 reps con buena técnica dejando las reps en reserva (RIR) que marca la fase.</li>
+      <li>Cuando hagas el tope del rango (10) en <b>todas</b> las series, sube el peso lo mínimo posible (2–2,5 kg en mancuernas, 5 kg en máquinas de pierna) y vuelve a 8.</li>
+      <li>Apunta los kilos en la pestaña Hoy: la semana siguiente intenta ganar a tu yo anterior por una repetición o por un poco de peso.</li>
+      <li>Al terminar la semana 13 empiezas otro ciclo con más carga. Si en la semana 4–5 ya vas sobrado, pasa antes de fase.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- NUTRICIÓN -->
+<section class="view" id="v-comida" hidden>
+  <div class="card">
+    <div class="session-head"><div><span class="eyebrow">Calculadora</span><h3>Tus calorías y macros</h3></div></div>
+    <div class="row">
+      <label class="lbl" for="nH">Altura (cm)<input class="f" id="nH" type="number" value="175"></label>
+      <label class="lbl" for="nW">Peso (kg)<input class="f" id="nW" type="number" step="0.1" value="82"></label>
+      <label class="lbl" for="nA">Edad<input class="f" id="nA" type="number" value="28"></label>
+      <label class="lbl" for="nAct">Actividad<select class="f" id="nAct" style="width:auto"><option value="1.45">Trabajo sentado + entreno</option><option value="1.55" selected>Entreno 6 días + 8k pasos</option><option value="1.7">Trabajo activo + entreno</option></select></label>
+      <label class="lbl" for="nDef">Déficit<select class="f" id="nDef" style="width:auto"><option value="0.15">Suave (−15%)</option><option value="0.2" selected>Estándar (−20%)</option><option value="0.25">Agresivo (−25%)</option></select></label>
+    </div>
+    <p class="small muted" style="margin-top:8px">No me diste tu altura: pon la real y todo se recalcula. Si en 3 semanas la media de peso no baja entre 0,4 y 0,8 kg por semana, resta 150 kcal.</p>
+    <div class="grid3" style="margin-top:14px" id="macroStats"></div>
+    <div class="macro-bar" id="macroBar"><span></span><span></span><span></span></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Proteína</span><span><i style="background:var(--heat)"></i>Grasa</span><span><i style="background:var(--warn)"></i>Carbohidratos</span></div>
+  </div>
+
+  <div class="card">
+    <h3>El método: plato y reglas, sin contar todo</h3>
+    <ul class="clean small">
+      <li><b>Proteína en cada comida</b>, 35–45 g (una palma y media de carne o pescado, 200 g de skyr o 3–4 huevos). Es lo que más sacia y lo que protege el músculo en déficit.</li>
+      <li><b>Medio plato de verdura o fruta</b>: llena mucho con muy pocas calorías.</li>
+      <li><b>Un puño de carbohidrato</b> (arroz, patata, pasta, pan, avena). Ponlo sobre todo en la comida antes y después del entreno.</li>
+      <li><b>Un pulgar de grasa</b> (aceite de oliva, aguacate, frutos secos). Mide el aceite con cuchara: es la caloría escondida número 1.</li>
+      <li><b>Regla 90/10:</b> si haces 4 comidas al día son 28 a la semana, y 2–3 pueden ser lo que te apetezca, planificadas. Nunca hay "día trampa": un atracón de un día borra el déficit de tres.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Menú tipo (~2.200 kcal · ~170 g de proteína)</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Comida</th><th>Opción A</th><th>Opción B</th><th class="num">kcal / prot</th></tr></thead>
+      <tbody>
+        <tr><td>Desayuno</td><td>Skyr o yogur proteico 250 g + 40 g de avena + 1 plátano + canela</td><td>Tortilla de 2 huevos y 150 g de claras + 2 tostadas de pan integral + tomate</td><td class="num">~450 / 40</td></tr>
+        <tr><td>Comida</td><td>180 g de pollo + 80 g de arroz (en crudo) + verduras salteadas con 1 cucharada de aceite</td><td>Lentejas (70 g en crudo) con 150 g de ternera magra + ensalada</td><td class="num">~700 / 50</td></tr>
+        <tr><td>Merienda o pre-entreno</td><td>2 tortitas de arroz + 60 g de pavo + 1 manzana</td><td>Batido de proteína + 1 pieza de fruta + 15 g de nueces</td><td class="num">~300 / 30</td></tr>
+        <tr><td>Cena</td><td>200 g de salmón o merluza + 300 g de patata asada + espárragos</td><td>Hamburguesa casera (150 g de ternera 5% grasa) en pan + ensalada grande</td><td class="num">~650 / 45</td></tr>
+        <tr><td>Antiansiedad (noche)</td><td colspan="2">Gelatina sin azúcar, 150 g de queso batido 0% con cacao puro, infusión, o una pieza de fruta</td><td class="num">~100 / 10</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small muted" style="margin-top:8px">Batch cooking el domingo: 1 kg de pollo o carne picada, 500 g de arroz, una bandeja de verduras al horno y huevos cocidos. Con eso tienes 4 días resueltos y no dependes de la comida rápida.</p>
+  </div>
+
+  <div class="card">
+    <h3>Si vas a comer comida rápida, elige esto</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Sitio</th><th>Mejor opción</th><th>Evita</th></tr></thead>
+      <tbody>
+        <tr><td>Hamburguesería</td><td>Hamburguesa simple o doble de carne sin salsas, ensalada o fruta, bebida zero</td><td>Menú grande con patatas, salsas y refresco (puede pasar de 1.300 kcal)</td></tr>
+        <tr><td>Pollo frito</td><td>Pollo a la parrilla, tiras sin rebozar, mazorca</td><td>Cubos de rebozado, salsas, patatas</td></tr>
+        <tr><td>Pizza</td><td>2 porciones de masa fina con jamón, pollo o verduras + ensalada</td><td>Masa gruesa o rellena, 4 quesos, barbacoa</td></tr>
+        <tr><td>Kebab</td><td>Plato o durum de pollo con mucha ensalada y salsa de yogur aparte</td><td>Kebab con patatas dentro y doble salsa</td></tr>
+        <tr><td>Sushi o poke</td><td>Poke con doble proteína, sashimi, nigiri</td><td>Rolls fritos (tempura), salsa mayo picante, extra de arroz</td></tr>
+        <tr><td>Supermercado</td><td>Pollo asado, ensalada de bolsa, yogur proteico, fruta</td><td>Bollería, platos precocinados fritos</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Plan contra la ansiedad por comer</h3>
+      <ul class="clean small">
+        <li>No guardes en casa comida que te descontrola. Ante la ansiedad la fuerza de voluntad pierde; el entorno gana.</li>
+        <li>Regla de los 10 minutos: bebe un vaso de agua, sal a caminar o lávate los dientes. Si después sigues queriendo, cómelo servido en un plato y sentado.</li>
+        <li>Casi todo el picoteo nocturno viene de dormir poco y de comer poca proteína durante el día. Arreglar esas dos cosas es la mitad del trabajo.</li>
+        <li>Ten siempre a mano un "snack de emergencia" de pocas calorías y mucho volumen (ver menú).</li>
+        <li>Si los atracones son frecuentes y sientes que pierdes el control, habla con un psicólogo o nutricionista. Es habitual y tiene tratamiento.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Suplementos que sí funcionan</h3>
+      <ul class="clean small">
+        <li><b>Creatina monohidrato</b>: 3–5 g al día, todos los días, a cualquier hora. Es el suplemento con más evidencia que existe.</li>
+        <li><b>Proteína en polvo (whey)</b>: solo si no llegas a la proteína con comida. Es comida, no magia.</li>
+        <li><b>Cafeína</b>: 100–200 mg (1–2 cafés) 30–45 min antes de entrenar. Nunca después de las 15:00, porque tu sueño ya es el punto débil.</li>
+        <li><b>Vitamina D</b>: si tus análisis salen bajos o te da poco el sol.</li>
+        <li>No compres quemagrasas, detox ni BCAA: no aportan nada si comes suficiente proteína.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRESO -->
+<section class="view" id="v-progreso" hidden>
+  <div class="grid3" id="progStats"></div>
+  <div class="card">
+    <div class="session-head"><div><span class="eyebrow">Peso</span><h3>Diario y media de 7 días</h3></div></div>
+    <div id="chart" style="margin-top:6px"></div>
+    <p class="small muted" style="margin-top:6px">Fíjate en la línea de la media, no en el punto de cada día. El peso diario sube y baja 1–2 kg por agua, sal y digestión. Ritmo objetivo: −0,5 a −1% del peso por semana.</p>
+  </div>
+  <div class="card">
+    <h3>Registro de cargas</h3>
+    <div class="tablewrap" id="liftLog"></div>
+  </div>
+  <div class="card">
+    <h3>Test cada 4 semanas</h3>
+    <ul class="clean small">
+      <li>Foto frontal, lateral y de espalda: misma luz, misma hora, en ayunas.</li>
+      <li>Cintura al ombligo. Es el mejor indicador de pérdida de grasa abdominal.</li>
+      <li>Test aeróbico: lo que recorres en 12 minutos en cinta o bici, o tus pulsaciones en reposo al despertar. Si baja la FC en reposo, mejora tu corazón.</li>
+      <li>Máximo de flexiones seguidas y de dominadas (asistidas al principio).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GUÍA -->
+<section class="view" id="v-guia" hidden>
+  <div class="alert small">
+    <b>Antes de nada, sobre tu espalda:</b> el dolor de espalda frecuente sin causa clara (lumbalgia inespecífica) suele mejorar con ejercicio bien dosificado, así que entrenar es parte del tratamiento. Pero ve al médico o a un fisioterapeuta si el dolor baja por la pierna, sientes hormigueo o pérdida de fuerza, te despierta por la noche o no mejora en 6 semanas. Lo mismo si notas cualquier síntoma raro al hacer cardio intenso (dolor en el pecho, mareo). Este plan no sustituye a un profesional sanitario.
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>Protocolo de espalda (todos los días, 8 min)</h3>
+      <p class="small muted">Es el "Big 3" de Stuart McGill: entrena el core para que resista el movimiento en lugar de flexionarlo.</p>
+      <ul class="clean small" style="margin-top:8px">
+        <li><b>Curl-up de McGill</b>: tumbado, una pierna doblada, manos bajo la zona lumbar. Despega solo cabeza y hombros. Aguanta 8–10 s, con 5, 3 y 1 repeticiones.</li>
+        <li><b>Plancha lateral</b>: de rodillas al principio. Aguanta 8–10 s por lado, con 5, 3 y 1 repeticiones.</li>
+        <li><b>Bird dog</b>: en cuadrupedia, estira brazo y pierna contrarios sin arquear la espalda. Aguanta 8–10 s, con 5, 3 y 1 por lado.</li>
+        <li>Después de entrenar camina 5–10 minutos. Caminar es de lo mejor que existe para la lumbar.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Reglas de técnica para no hacerte daño</h3>
+      <ul class="clean small">
+        <li>Espalda neutra: el movimiento sale de la cadera, no de doblar la columna.</li>
+        <li>Prioriza máquinas y apoyos (remo con pecho apoyado, press con respaldo) en las semanas 1–4.</li>
+        <li>Sin peso muerto convencional pesado ni buenos días por ahora. El rumano con mancuernas, ligero y técnico, sí.</li>
+        <li>Si un ejercicio te molesta (dolor por encima de 3 sobre 10 o que dura más de 24 h), cámbialo por la alternativa indicada. No aprietes los dientes.</li>
+        <li>Nada de abdominales tipo crunch con tirones ni giros rusos con peso.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Sueño: tu palanca más infravalorada</h3>
+      <ul class="clean small">
+        <li>Dormir menos de 6 h en déficit hace que una parte mayor de lo que pierdes sea músculo en lugar de grasa, y dispara el hambre (sube la grelina y baja la leptina).</li>
+        <li>Objetivo: 7–8 h. Primer paso: misma hora de levantarte todos los días, también el fin de semana.</li>
+        <li>Pantallas fuera 30–45 min antes de dormir, habitación fresca (unos 18–19 °C) y oscura.</li>
+        <li>La última comida, 2–3 h antes de acostarte. Nada de cafeína después de las 15:00.</li>
+        <li>Si un día duermes menos de 5 h, haz solo cardio Z2 en lugar de pesas pesadas.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Cardio por zonas (FC máx. estimada: 188 lpm)</h3>
+      <ul class="clean small">
+        <li><b>Zona 2 (113–132 lpm)</b>: puedes hablar en frases, pero cuesta cantar. Construye la base aeróbica y quema grasa sin castigar la recuperación.</li>
+        <li><b>Intervalos (160–178 lpm)</b>: muy duro, solo dices palabras sueltas. Sube el VO2máx, que es el mayor marcador de salud y rendimiento aeróbico.</li>
+        <li>Mientras pesas más de 80 kg y tienes la espalda sensible, mejor <b>bici, elíptica, remo o cinta inclinada</b> que correr en asfalto.</li>
+        <li>Pasos: ve sumando hasta 8.000–10.000 al día. Es el cardio que más grasa quema a lo largo de la semana.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Trucos: qué funciona y qué es mito</h3>
+    <div id="myths"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const el=(t,a={},...kids)=>{const e=document.createElement(t);for(const k in a){if(k==="class")e.className=a[k];else if(k==="text")e.textContent=a[k];else e.setAttribute(k,a[k]);}kids.forEach(c=>e.append(c));return e;};
+const pad=n=>String(n).padStart(2,"0");
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const DAYN=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+/* ---------- PROGRAMA ---------- */
+const S={
+ torsoA:{title:"Torso A",tag:"f",ex:[
+  ["tA1","Press banca con mancuernas","8-10","Escápulas juntas y pies firmes. Alternativa: press en máquina."],
+  ["tA2","Remo con pecho apoyado (banco inclinado o máquina)","8-10","El apoyo descarga la lumbar. Tira con los codos hacia la cadera."],
+  ["tA3","Press militar sentado con respaldo","8-12","Con mancuernas, sin arquear la espalda. Glúteos apretados."],
+  ["tA4","Jalón al pecho, agarre neutro","10-12","Lleva la barra a la clavícula con el pecho alto, sin balancearte."],
+  ["tA5","Elevaciones laterales","12-15","Son las que ensanchan los hombros. Sube controlado, sin impulso."],
+  ["tA6","Curl con barra Z + extensión de tríceps en polea (superserie)","12-15","Alterna uno y otro sin descanso entre ellos."]]},
+ piernaA:{title:"Pierna A",tag:"f",ex:[
+  ["pA1","Sentadilla goblet o hack en máquina","8-10","Baja hasta donde mantengas la espalda neutra. La hack apoya la espalda."],
+  ["pA2","Prensa de piernas","10-12","No despegues la zona lumbar del respaldo abajo: corta el recorrido antes."],
+  ["pA3","Curl femoral tumbado","10-12","Controla la bajada en 2–3 segundos."],
+  ["pA4","Hip thrust con barra o máquina","8-12","Barbilla metida y costillas abajo. Empuja con el glúteo, no con la lumbar."],
+  ["pA5","Gemelos de pie","12-15","Pausa de 1 segundo arriba y estiramiento completo abajo."],
+  ["pA6","Pallof press en polea","10/lado","Antirrotación: el mejor core para tu espalda."]]},
+ torsoB:{title:"Torso B",tag:"f",ex:[
+  ["tB1","Press inclinado en máquina o con mancuernas","8-12","Banco a 30°. El pecho superior da mucha estética."],
+  ["tB2","Remo en polea baja, agarre neutro","10-12","Tronco quieto. Si te balanceas, quita peso."],
+  ["tB3","Dominadas asistidas (máquina o goma)","6-10","Objetivo del ciclo: quitar asistencia cada 2 semanas."],
+  ["tB4","Aperturas en contractora (pec deck) o polea","12-15","Estira bien y aprieta 1 segundo."],
+  ["tB5","Face pull","15","Salud de hombros y postura. Tira hacia la frente y abre los codos."],
+  ["tB6","Curl martillo + press francés con mancuerna (superserie)","10-12",""]]},
+ piernaB:{title:"Pierna B",tag:"f",ex:[
+  ["pB1","Peso muerto rumano con mancuernas","8-10","Ligero y técnico: cadera atrás, espalda neutra, baja hasta media tibia. Si molesta, cámbialo por curl femoral sentado."],
+  ["pB2","Zancada búlgara","8-10/pierna","Torso un poco inclinado. Agárrate a algo si pierdes el equilibrio."],
+  ["pB3","Extensión de cuádriceps","12-15",""],
+  ["pB4","Curl femoral sentado","12",""],
+  ["pB5","Hiperextensión a 45° enfocada en glúteo","12-15","Espalda redondeada ligeramente arriba y empuje desde la cadera. Sin hiperextender la lumbar."],
+  ["pB6","Dead bug","8/lado","Lumbar pegada al suelo durante todo el movimiento."]]}
+};
+// cardio: tipo "z2" (post-entreno), "hiit", "long", "rest"
+const WEEK=[
+ {d:0,label:"Descanso activo",tag:"r",sess:null,cardio:"rest"},
+ {d:1,label:"Torso A + Z2",tag:"f",sess:"torsoA",cardio:"z2"},
+ {d:2,label:"Pierna A",tag:"f",sess:"piernaA",cardio:null},
+ {d:3,label:"Intervalos + core",tag:"c",sess:null,cardio:"hiit"},
+ {d:4,label:"Torso B",tag:"f",sess:"torsoB",cardio:null},
+ {d:5,label:"Pierna B + Z2",tag:"f",sess:"piernaB",cardio:"z2"},
+ {d:6,label:"Cardio largo Z2",tag:"c",sess:null,cardio:"long"}
+];
+const PHASES=[
+ {n:1,name:"Reentrada",w:[1,4],rir:3,sets:w=>w<=2?2:3,rest:"90 s",desc:"Recuperas técnica y tendones. Terminas cada serie con 3 reps en reserva. Si después tienes agujetas fuertes, es normal las 2 primeras semanas."},
+ {n:2,name:"Construcción",w:[5,8],rir:2,sets:()=>3,rest:"90–120 s",desc:"Más volumen. Doble progresión cada semana: más reps y luego más peso."},
+ {n:3,name:"Intensificación",w:[9,12],rir:1,sets:(w,i)=>i<2?4:3,rest:"2 min en los dos primeros",desc:"Los dos primeros ejercicios suben a 4 series y te quedas a 1 rep del fallo."},
+ {n:4,name:"Descarga",w:[13,13],rir:4,sets:()=>2,rest:"90 s",desc:"La mitad del volumen, mismo peso. Asimilas el trabajo y empiezas otro ciclo más fuerte."}
+];
+function phaseOf(week){return PHASES.find(p=>week>=p.w[0]&&week<=p.w[1])||PHASES[0];}
+function cardioRx(type,week){
+ const ph=phaseOf(week);
+ if(type==="z2"){const m=Math.min(40,20+2*(week-1));return{t:"Cardio Z2 tras las pesas",rx:m+" min",tip:"Bici, elíptica o cinta inclinada (8–12%, 5–5,5 km/h) a 113–132 lpm: puedes hablar en frases."};}
+ if(type==="long"){const m=Math.min(60,35+3*(week-1));return{t:"Cardio largo Z2",rx:m+" min",tip:"Al aire libre si puedes: bici, caminata rápida en cuesta, natación o remo. Ritmo cómodo y constante, 113–132 lpm."};}
+ if(type==="hiit"){
+  let rx,tip;
+  if(ph.n===1){rx="6 × 1 min fuerte / 2 min suave";tip="En bici o remo. 10 min de calentamiento suave antes y 5 de vuelta a la calma después.";}
+  else if(ph.n===2){rx="5 × 3 min fuerte / 2 min suave";tip="En la parte fuerte, 160–175 lpm. Si no puedes mantener el ritmo en la última, la fuerte era demasiado fuerte.";}
+  else if(ph.n===3){rx="4 × 4 min fuerte / 3 min suave (protocolo noruego)";tip="El protocolo con mejor evidencia para subir el VO2máx: 85–95% de la FC máx. (160–178 lpm).";}
+  else{rx="30 min Z2 (descarga)";tip="Esta semana nada de intensidad.";}
+  return{t:"Intervalos",rx,tip,extra:"Después: protocolo de espalda + 10 min de movilidad de cadera y dorsal."};
+ }
+ if(type==="rest")return{t:"Descanso activo",rx:"8.000–10.000 pasos",tip:"Paseo largo, movilidad suave y protocolo de espalda. Prepara la comida de la semana (batch cooking)."};
+ return null;
+}
+const HABITS=[
+ ["train","Entreno del día hecho (o versión mínima)"],
+ ["prot","Proteína ≥ 160 g"],
+ ["steps","8.000+ pasos"],
+ ["sleep","Dormí 7 h o más"],
+ ["food","Sin comida basura no planificada"],
+ ["back","Protocolo de espalda (8 min)"]
+];
+
+/* ---------- ALMACENAMIENTO ---------- */
+let profile={}, days={}; let col=null; const LS="coach-recomp-v1";
+const queues={};
+function lsLoad(){try{const o=JSON.parse(localStorage.getItem(LS)||"{}");profile=o.profile||{};days=o.days||{};}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify({profile,days}));}catch(e){}}
+function setSave(t){$("#saveState").textContent=t;}
+function persist(key,obj){
+ lsSave();
+ if(!col){setSave("Guardado en este navegador");return;}
+ const q=queues[key]||(queues[key]={busy:false,next:null});
+ q.next=JSON.parse(JSON.stringify(obj));
+ if(q.busy)return;
+ const run=async()=>{q.busy=true;while(q.next){const d=q.next;q.next=null;setSave("Guardando…");try{await col.doc(key).set(d);setSave("Guardado");}catch(e){setSave("No se pudo guardar en la nube; queda en este navegador");}}q.busy=false;};
+ run();
+}
+function dayKey(date){return "d-"+date;}
+function getDay(date){return days[date]||(days[date]={h:{},ex:{}});}
+function saveDay(date){persist(dayKey(date),days[date]);}
+
+function startDate(){if(!profile.start){const t=new Date();const m=new Date(t);m.setDate(t.getDate()-((t.getDay()+6)%7));profile.start=iso(m);persist("profile",profile);}return profile.start;}
+function weekNum(dateStr){const s=new Date(startDate()+"T00:00:00");const d=new Date(dateStr+"T00:00:00");const w=Math.floor((d-s)/(7*864e5))+1;return w<1?1:((w-1)%13)+1;}
+function cycleNum(dateStr){const s=new Date(startDate()+"T00:00:00");const d=new Date(dateStr+"T00:00:00");return Math.floor(Math.max(0,(d-s)/(7*864e5))/13)+1;}
+
+/* ---------- HOY ---------- */
+const today=iso(new Date());
+let viewDate=today;
+function buildDayPicker(){
+ const sel=$("#dayPick");sel.textContent="";
+ for(let i=-6;i<=6;i++){const d=new Date();d.setDate(d.getDate()+i);const v=iso(d);const o=el("option",{value:v,text:(i===0?"Hoy · ":"")+DAYN[d.getDay()]+" "+d.getDate()});if(v===viewDate)o.selected=true;sel.append(o);}
+}
+function renderToday(){
+ const d=new Date(viewDate+"T00:00:00");const plan=WEEK[d.getDay()];const wk=weekNum(viewDate);const ph=phaseOf(wk);
+ $("#pWeek").textContent="Semana "+wk+" de 13"+(cycleNum(viewDate)>1?" · ciclo "+cycleNum(viewDate):"");
+ $("#pPhase").textContent="Fase "+ph.n+": "+ph.name;
+ $("#todayDate").textContent=DAYN[d.getDay()]+" "+d.getDate()+"/"+(d.getMonth()+1);
+ const sess=plan.sess?S[plan.sess]:null;
+ $("#sessTitle").textContent=plan.label;
+ $("#sessSub").textContent=sess?(ph.name+" · deja "+ph.rir+" reps en reserva · descanso "+ph.rest):"";
+ const day=getDay(viewDate);
+ const wu=$("#warmup");wu.textContent="";
+ if(sess){wu.append(el("span",{class:"eyebrow",text:"Calentamiento (10 min)"}),el("p",{class:"muted",text:"5 min de bici suave, el protocolo de espalda (curl-up, plancha lateral y bird dog) y 2 series de aproximación ligeras en el primer ejercicio."}));}
+ const list=$("#exList");list.textContent="";
+ if(sess){
+  sess.ex.forEach(([id,name,reps,tip],i)=>{
+   const st=day.ex[id]||{};const sets=ph.sets(wk,i);
+   const cb=el("input",{type:"checkbox",id:"cb-"+id,"aria-label":"Hecho: "+name});cb.checked=!!st.done;
+   const kg=el("input",{class:"f",type:"number",step:"0.5",inputmode:"decimal",id:"kg-"+id,placeholder:"kg","aria-label":"Kilos "+name});if(st.kg!=null)kg.value=st.kg;
+   const rp=el("input",{class:"f",type:"text",id:"rp-"+id,placeholder:"reps ej. 10,9,8","aria-label":"Repeticiones "+name});rp.style.width="130px";if(st.reps)rp.value=st.reps;
+   const last=lastLift(id,viewDate);
+   const row=el("div",{class:"ex"+(st.done?" done":"")},cb,
+     el("div",{style:"min-width:0"},el("div",{class:"name",text:name}),tip?el("div",{class:"tip",text:tip}):"",
+       el("div",{class:"logrow"},kg,rp,last?el("span",{class:"small muted",text:"Última vez: "+last}):"")),
+     el("div",{class:"rx",text:sets+" × "+reps}));
+   cb.addEventListener("change",()=>{const s=day.ex[id]||(day.ex[id]={});s.done=cb.checked;row.classList.toggle("done",cb.checked);autoTrain(day);saveDay(viewDate);renderHabits();});
+   kg.addEventListener("change",()=>{const s=day.ex[id]||(day.ex[id]={});s.kg=kg.value===""?null:Number(kg.value);saveDay(viewDate);});
+   rp.addEventListener("change",()=>{const s=day.ex[id]||(day.ex[id]={});s.reps=rp.value.trim();saveDay(viewDate);});
+   list.append(row);
+  });
+ }
+ const cb=$("#cardioBox");cb.textContent="";
+ const c=plan.cardio?cardioRx(plan.cardio,wk):null;
+ if(c){cb.append(el("div",{class:"ex",style:"border-top:1px solid var(--line)"},el("span",{class:"tag c",text:"cardio"}),
+   el("div",{style:"min-width:0"},el("div",{class:"name",text:c.t}),el("div",{class:"tip",text:c.tip}),c.extra?el("div",{class:"tip",text:c.extra}):""),
+   el("div",{class:"rx",text:c.rx})));}
+ const w=$("#wIn"),ci=$("#cIn");w.value=day.w??"";ci.value=day.waist??"";
+ renderHabits();
+}
+function autoTrain(day){const d=new Date(viewDate+"T00:00:00");const plan=WEEK[d.getDay()];if(!plan.sess)return;const ids=S[plan.sess].ex.map(e=>e[0]);if(ids.every(i=>day.ex[i]&&day.ex[i].done))day.h.train=true;}
+function lastLift(id,before){const ks=Object.keys(days).filter(k=>k<before&&days[k].ex&&days[k].ex[id]&&days[k].ex[id].kg!=null).sort();if(!ks.length)return"";const s=days[ks[ks.length-1]].ex[id];return s.kg+" kg"+(s.reps?" × "+s.reps:"");}
+function renderHabits(){
+ const day=getDay(viewDate);const box=$("#habits");box.textContent="";let n=0;
+ HABITS.forEach(([k,label])=>{const on=!!day.h[k];if(on)n++;const inp=el("input",{type:"checkbox",id:"h-"+k});inp.checked=on;
+  const lab=el("label",{class:"habit"+(on?" on":""),for:"h-"+k},inp,el("span",{text:label}));
+  inp.addEventListener("change",()=>{day.h[k]=inp.checked;saveDay(viewDate);renderHabits();});box.append(lab);});
+ $("#habitScore").textContent=n+"/6";
+ renderHeat();
+}
+function score(dstr){const d=days[dstr];if(!d||!d.h)return 0;return HABITS.filter(([k])=>d.h[k]).length;}
+function renderHeat(){
+ const box=$("#heat14");box.textContent="";
+ for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=iso(d);const s=score(k);const l=s===0?0:s<=2?1:s<=4?2:3;
+  const c=el("div",{"data-l":String(l),title:DAYN[d.getDay()]+" "+d.getDate()+": "+s+"/6"});if(i===0)c.classList.add("today");box.append(c);}
+ let streak=0;const d=new Date();if(score(iso(d))<4)d.setDate(d.getDate()-1);
+ while(score(iso(d))>=4){streak++;d.setDate(d.getDate()-1);}
+ $("#streakTxt").textContent=streak>0?("Racha: "+streak+" día"+(streak>1?"s":"")+" seguidos con 4 o más hábitos cumplidos."):"Un día cuenta como cumplido cuando marcas 4 hábitos o más. Empieza la racha hoy.";
+}
+$("#wIn").addEventListener("change",e=>{const day=getDay(viewDate);day.w=e.target.value===""?null:Number(e.target.value);saveDay(viewDate);});
+$("#cIn").addEventListener("change",e=>{const day=getDay(viewDate);day.waist=e.target.value===""?null:Number(e.target.value);saveDay(viewDate);});
+$("#dayPick").addEventListener("change",e=>{viewDate=e.target.value;renderToday();});
+
+/* ---------- PLAN ---------- */
+function renderPlan(){
+ const wk=weekNum(today);const ph=phaseOf(wk);
+ const pb=$("#phases");pb.textContent="";
+ PHASES.forEach(p=>pb.append(el("div",{class:"phase"+(p===ph?" cur":"")},el("span",{class:"eyebrow",text:"Semanas "+p.w[0]+(p.w[1]!==p.w[0]?"–"+p.w[1]:"")}),el("h3",{text:p.name}),el("p",{class:"small muted",text:p.desc}))));
+ const wg=$("#weekGrid");wg.textContent="";
+ [1,2,3,4,5,6,0].forEach(i=>{const p=WEEK[i];const c=p.cardio?cardioRx(p.cardio,wk):null;
+  wg.append(el("div",{class:"day"+(new Date().getDay()===i?" is-today":"")},el("b",{text:DAYN[i]}),el("span",{text:p.label}),el("br"),el("span",{class:"tag "+p.tag,text:p.tag==="f"?"fuerza":p.tag==="c"?"cardio":"recupera"}),c?el("div",{class:"muted",style:"margin-top:4px",text:c.rx}):""));});
+ const sa=$("#sessionsAll");sa.textContent="";
+ Object.values(S).forEach(s=>{const tb=el("tbody");s.ex.forEach(([id,n,r],i)=>tb.append(el("tr",{},el("td",{text:n}),el("td",{class:"num",text:ph.sets(wk,i)+"×"+r}))));
+  sa.append(el("div",{class:"card"},el("h3",{text:s.title}),el("div",{class:"tablewrap"},el("table",{},tb))));});
+}
+
+/* ---------- NUTRICIÓN ---------- */
+function renderMacros(){
+ const h=+$("#nH").value||175,w=+$("#nW").value||82,a=+$("#nA").value||28,act=+$("#nAct").value,def=+$("#nDef").value;
+ const bmr=10*w+6.25*h-5*a+5;const tdee=bmr*act;const kcal=Math.round(tdee*(1-def)/10)*10;
+ const p=Math.round(w*2.0),f=Math.round(w*0.8);const c=Math.max(0,Math.round((kcal-p*4-f*9)/4));
+ const box=$("#macroStats");box.textContent="";
+ [["Mantenimiento",Math.round(tdee/10)*10+" kcal"],["Objetivo diario",kcal+" kcal"],["Proteína",p+" g"],["Grasa",f+" g"],["Carbohidratos",c+" g"],["Pérdida esperada",(w*0.005).toFixed(1)+"–"+(w*0.009).toFixed(1)+" kg/sem"]]
+  .forEach(([l,v])=>box.append(el("div",{class:"stat"},el("span",{class:"eyebrow",text:l}),el("span",{class:"big",text:v}))));
+ const tot=p*4+f*9+c*4;const sp=$("#macroBar").children;sp[0].style.width=(p*4/tot*100)+"%";sp[1].style.width=(f*9/tot*100)+"%";sp[2].style.width=(c*4/tot*100)+"%";
+ profile.nut={h,w,a,act,def};
+}
+["#nH","#nW","#nA","#nAct","#nDef"].forEach(s=>$(s).addEventListener("change",()=>{renderMacros();persist("profile",profile);}));
+function loadNut(){const n=profile.nut;if(!n)return;$("#nH").value=n.h;$("#nW").value=n.w;$("#nA").value=n.a;$("#nAct").value=String(n.act);$("#nDef").value=String(n.def);}
+
+/* ---------- PROGRESO ---------- */
+function renderProgress(){
+ const ks=Object.keys(days).filter(k=>days[k].w!=null&&days[k].w!=="").sort();
+ const pts=ks.map(k=>({d:k,w:+days[k].w}));
+ const st=$("#progStats");st.textContent="";
+ const avg=(arr)=>arr.reduce((s,x)=>s+x,0)/arr.length;
+ const last7=pts.filter(p=>(new Date(today)-new Date(p.d))/864e5<7).map(p=>p.w);
+ const prev7=pts.filter(p=>{const g=(new Date(today)-new Date(p.d))/864e5;return g>=7&&g<14;}).map(p=>p.w);
+ let adh=0;for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);adh+=score(iso(d));}
+ const waists=Object.keys(days).filter(k=>days[k].waist).sort();
+ [["Peso inicial",pts.length?pts[0].w.toFixed(1)+" kg":"—"],
+  ["Media últimos 7 días",last7.length?avg(last7).toFixed(1)+" kg":"—"],
+  ["Cambio semanal",last7.length&&prev7.length?((avg(last7)-avg(prev7))>0?"+":"")+(avg(last7)-avg(prev7)).toFixed(2)+" kg":"—"],
+  ["Cintura",waists.length?days[waists[waists.length-1]].waist+" cm"+(waists.length>1?" ("+(days[waists[waists.length-1]].waist-days[waists[0]].waist).toFixed(1)+")":""):"—"],
+  ["Cumplimiento 7 días",Math.round(adh/42*100)+"%"]]
+  .forEach(([l,v])=>st.append(el("div",{class:"card stat"},el("span",{class:"eyebrow",text:l}),el("span",{class:"big",text:v}))));
+ const ch=$("#chart");ch.textContent="";
+ if(pts.length<2){ch.append(el("p",{class:"muted small",text:"El gráfico aparece cuando registres tu peso al menos dos días. Pésate en ayunas en la pestaña Hoy."}));}
+ else{
+  const W=640,H=220,L=40,R=12,T=12,B=26;const P=pts.slice(-90);
+  const t0=new Date(P[0].d)-0,t1=new Date(P[P.length-1].d)-0||t0+1;
+  let lo=Math.min(...P.map(p=>p.w)),hi=Math.max(...P.map(p=>p.w));lo=Math.floor(lo-0.5);hi=Math.ceil(hi+0.5);
+  const x=d=>L+(new Date(d)-t0)/((t1-t0)||1)*(W-L-R),y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Evolución del peso">`;
+  const step=Math.max(1,Math.round((hi-lo)/4));
+  for(let v=lo;v<=hi;v+=step){s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;}
+  s+=`<text x="${L}" y="${H-6}">${P[0].d.slice(5)}</text><text x="${W-R}" y="${H-6}" text-anchor="end">${P[P.length-1].d.slice(5)}</text>`;
+  P.forEach(p=>s+=`<circle cx="${x(p.d)}" cy="${y(p.w)}" r="2.5" fill="var(--muted)" opacity=".55"/>`);
+  const ma=P.map((p,i)=>{const sl=P.slice(Math.max(0,i-6),i+1);return{d:p.d,w:avg(sl.map(q=>q.w))};});
+  s+=`<polyline fill="none" stroke="var(--heat)" stroke-width="2.5" points="${ma.map(p=>x(p.d)+","+y(p.w)).join(" ")}"/>`;
+  const e=ma[ma.length-1];s+=`<circle cx="${x(e.d)}" cy="${y(e.w)}" r="4.5" fill="var(--heat)"/>`;
+  s+="</svg>";ch.innerHTML=s;
+ }
+ const ll=$("#liftLog");ll.textContent="";
+ const rows=[];Object.values(S).forEach(sess=>sess.ex.forEach(([id,n])=>{const ks=Object.keys(days).filter(k=>days[k].ex&&days[k].ex[id]&&days[k].ex[id].kg!=null).sort();if(ks.length){const f=days[ks[0]].ex[id].kg,l=days[ks[ks.length-1]].ex[id].kg;rows.push([n,f,l,ks.length]);}}));
+ if(!rows.length){ll.append(el("p",{class:"muted small",text:"Cuando apuntes kilos en tus sesiones verás aquí cuánto has subido en cada ejercicio."}));}
+ else{const tb=el("tbody");rows.forEach(r=>tb.append(el("tr",{},el("td",{text:r[0]}),el("td",{class:"num",text:r[1]+" kg"}),el("td",{class:"num",text:r[2]+" kg"}),el("td",{class:"num",text:(r[2]-r[1]>0?"+":"")+(r[2]-r[1]).toFixed(1)+" kg"}),el("td",{class:"num",text:String(r[3])}))));
+  ll.append(el("table",{},el("thead",{},el("tr",{},el("th",{text:"Ejercicio"}),el("th",{text:"Inicio"}),el("th",{text:"Actual"}),el("th",{text:"Cambio"}),el("th",{text:"Sesiones"}))),tb));}
+}
+
+/* ---------- MITOS ---------- */
+const MYTHS=[
+ ["si","Comer proteína alta (unos 2 g/kg) en déficit","Conserva el músculo y es el macronutriente que más sacia."],
+ ["si","Entrenar fuerza mientras pierdes grasa","Sin pesas, hasta un tercio del peso perdido puede ser músculo. Con pesas, casi todo es grasa."],
+ ["si","Sumar pasos (NEAT)","Pasar de 4.000 a 10.000 pasos son unas 250–350 kcal al día sin fatiga."],
+ ["si","Creatina 3–5 g al día","Más fuerza y algo más de masa muscular. Segura en personas sanas."],
+ ["si","Pesarse a diario y mirar la media semanal","Da información sin dramas: el número de un solo día no significa nada."],
+ ["mm","Ayuno intermitente","Funciona si te ayuda a comer menos en total. No quema más grasa por sí mismo. Úsalo solo si te encaja."],
+ ["mm","Cardio en ayunas","La grasa perdida a final del día o de la semana es la misma. Hazlo si te viene bien de horario."],
+ ["no","Abdominales para quemar la grasa de la tripa","La grasa no se pierde por zonas. El abdomen se marca con déficit, y el core se entrena para la espalda."],
+ ["no","Carbohidratos por la noche engordan","Lo que cuenta es el total del día. Cenar carbohidratos incluso puede ayudarte a dormir."],
+ ["no","Quemagrasas, detox, té adelgazante","Sin efecto relevante, y algunos tienen riesgos. Es dinero tirado."],
+ ["no","Día trampa (cheat day)","Suele acabar en atracón y anular 3–4 días de déficit. Mejor 2–3 comidas libres repartidas en la semana."],
+ ["no","Sudar más = quemar más grasa","Sudando solo pierdes agua."]
+];
+function renderMyths(){const b=$("#myths");MYTHS.forEach(([v,t,d])=>b.append(el("div",{class:"myth"},el("span",{class:"verdict "+v,text:v==="si"?"Funciona":v==="no"?"Mito":"Depende"}),el("div",{},el("b",{text:t}),el("p",{class:"small muted",text:d})))));}
+
+/* ---------- TABS ---------- */
+const tabs=[...document.querySelectorAll("nav.tabs button")];
+function show(v){tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset.v===v)));document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);if(v==="progreso")renderProgress();if(v==="plan")renderPlan();try{localStorage.setItem(LS+"-tab",v);}catch(e){}}
+tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
+
+function renderAll(){buildDayPicker();renderToday();renderPlan();loadNut();renderMacros();renderProgress();}
+
+/* ---------- ARRANQUE ---------- */
+lsLoad();renderMyths();renderAll();
+try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t))show(t);}catch(e){}
+
+(async function(){
+ const timer=setTimeout(()=>setSave("Guardado en este navegador"),10000);
+ try{
+  const db=await window.claude?.use?.("db");const user=await window.claude?.use?.("user");
+  const uid=user?await user.id():null;
+  if(!db||!uid){clearTimeout(timer);setSave("Guardado en este navegador");return;}
+  col=db.collection("data/users/"+uid);
+  let first=true;
+  col.onSnapshot(snap=>{
+   clearTimeout(timer);
+   const remote={};let rp=null;
+   snap.docs.forEach(d=>{const v=d.data();if(!v)return;if(d.id==="profile")rp=v;else if(d.id.startsWith("d-"))remote[d.id.slice(2)]=JSON.parse(JSON.stringify(v));});
+   if(first){
+    first=false;
+    // sube lo que solo existía en este navegador
+    Object.keys(days).forEach(k=>{if(!remote[k])persist(dayKey(k),days[k]);});
+    if(!rp&&Object.keys(profile).length)persist("profile",profile);
+   }
+   Object.assign(days,remote);if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
+   lsSave();
+   const active=document.activeElement;if(!(active&&active.tagName==="INPUT"))renderAll();
+   setSave("Sincronizado");
+  },()=>{clearTimeout(timer);setSave("Sin conexión con la nube; guardado en este navegador");col=null;});
+ }catch(e){clearTimeout(timer);setSave("Guardado en este navegador");}
+})();
+})();
+</script>
