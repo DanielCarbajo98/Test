@@ -19,6 +19,7 @@
   --accent:#7d94ff; --accent-soft:#1d2747; --heat:#ff8a5c; --heat-soft:#3a2219;
   --ok:#4cc98a; --ok-soft:#163326; --warn:#e3a94a; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
 .wrap{max-width:920px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -98,6 +99,22 @@ ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
 svg text{fill:var(--muted);font:11px var(--mono)}
+.chat{display:flex;flex-direction:column;gap:10px;margin:14px 0;max-height:52vh;overflow-y:auto;padding-right:4px}
+.msg{max-width:85%;padding:10px 13px;border-radius:12px;font-size:.92rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.u{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:3px}
+.msg.a{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:3px}
+.msg.a .chg{display:block;margin-top:6px;font-size:.78rem;color:var(--ok);font-weight:600}
+.composer{display:flex;gap:8px;align-items:flex-end}
+.composer textarea{flex:1;min-width:0;font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical}
+.mic{flex:none;width:48px;height:48px;border-radius:50%;border:0;background:var(--heat);color:#fff;cursor:pointer;display:grid;place-items:center}
+.mic.on{box-shadow:0 0 0 6px var(--heat-soft)}
+@media (prefers-reduced-motion:no-preference){.mic.on{animation:pulse 1.2s infinite}@keyframes pulse{50%{box-shadow:0 0 0 11px var(--heat-soft)}}}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chips button{font:500 .8rem var(--body);background:var(--accent-soft);color:var(--accent);border:0;border-radius:99px;padding:6px 11px;cursor:pointer}
+.note{margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--accent-soft);font-size:.86rem}
+.adj{margin-top:12px;border:1px solid var(--ok);border-radius:10px;padding:12px 14px;background:var(--ok-soft)}
+a.vid{font-size:.8rem;font-weight:600;color:var(--heat);text-decoration:none;white-space:nowrap}
+a.vid:hover{text-decoration:underline}
 .savestate{font-size:.75rem;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.habit,.ex{transition:background .15s,border-color .15s}}
 </style>
@@ -110,6 +127,7 @@ svg text{fill:var(--muted);font:11px var(--mono)}
     </div>
     <nav class="tabs" role="tablist" aria-label="Secciones">
       <button role="tab" data-v="hoy" aria-selected="true">Hoy</button>
+      <button role="tab" data-v="coach" aria-selected="false">Coach</button>
       <button role="tab" data-v="plan" aria-selected="false">Plan 13 semanas</button>
       <button role="tab" data-v="comida" aria-selected="false">Nutrición</button>
       <button role="tab" data-v="progreso" aria-selected="false">Progreso</button>
@@ -125,8 +143,11 @@ svg text{fill:var(--muted);font:11px var(--mono)}
   <div class="card">
     <div class="session-head">
       <div><span class="eyebrow" id="todayDate">Hoy</span><h2 id="sessTitle">Sesión</h2><p class="muted small" id="sessSub"></p></div>
+      <button class="btn ghost" id="goCoach" type="button">Hablar con el coach</button>
       <label class="lbl" for="dayPick">Ver otro día<select class="f" id="dayPick" style="width:auto"></select></label>
     </div>
+    <div id="weekNoteHoy" class="note" hidden></div>
+    <div id="adjBox" hidden></div>
     <div id="warmup" class="small" style="margin-top:12px"></div>
     <div id="exList" style="margin-top:6px"></div>
     <div id="cardioBox" style="margin-top:10px"></div>
@@ -150,12 +171,33 @@ svg text{fill:var(--muted);font:11px var(--mono)}
   </div>
 </section>
 
+<!-- COACH -->
+<section class="view" id="v-coach" hidden>
+  <div class="card">
+    <span class="eyebrow">Cuéntale cómo estás</span>
+    <h2>Tu coach</h2>
+    <p class="muted small" style="margin-top:4px;max-width:65ch">Pulsa el micro y háblale: cómo has dormido, cómo va la espalda, cuánto tiempo tienes, qué has comido o si no puedes ir algún día. Ajusta el entreno de hoy, el de los próximos días o la semana, y los cambios aparecen en la pestaña Hoy.</p>
+    <div class="chips" id="chips"></div>
+    <div class="chat" id="chatLog" aria-live="polite"></div>
+    <div class="composer">
+      <button class="mic" id="micBtn" type="button" aria-label="Hablar" hidden><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.92V21a1 1 0 1 1-2 0v-2.08A7 7 0 0 1 5 12a1 1 0 1 1 2 0 5 5 0 0 0 10 0Z"/></svg></button>
+      <textarea id="chatIn" rows="2" placeholder="Ej.: He dormido 5 horas, me molesta la lumbar y hoy solo tengo 40 minutos"></textarea>
+      <button class="btn" id="sendBtn" type="button">Enviar</button>
+    </div>
+    <div class="row" style="margin-top:8px;justify-content:space-between">
+      <label class="small" for="ttsOn" id="ttsWrap" hidden><input type="checkbox" id="ttsOn" checked> Leer las respuestas en voz alta</label>
+      <span class="small muted" id="coachStatus">Conectando con el coach…</span>
+    </div>
+  </div>
+</section>
+
 <!-- PLAN -->
 <section class="view" id="v-plan" hidden>
   <div>
     <h2>Tu ciclo de 13 semanas</h2>
     <p class="muted" style="max-width:65ch;margin-top:6px">Prioridad 1 estética (perder grasa conservando y ganando músculo), 2 capacidad aeróbica y 3 fuerza. Son 5 días de gimnasio, 1 de cardio largo y 1 de descanso activo. Ya tienes experiencia con pesas, así que el cuerpo recupera rápido la "memoria muscular". Lo que hay que construir es la constancia y la espalda.</p>
   </div>
+  <div id="weekNotePlan" class="note" hidden></div>
   <div class="phases" id="phases"></div>
   <div class="card">
     <span class="eyebrow">Semana tipo</span>
@@ -178,13 +220,13 @@ svg text{fill:var(--muted);font:11px var(--mono)}
   <div class="card">
     <div class="session-head"><div><span class="eyebrow">Calculadora</span><h3>Tus calorías y macros</h3></div></div>
     <div class="row">
-      <label class="lbl" for="nH">Altura (cm)<input class="f" id="nH" type="number" value="175"></label>
+      <label class="lbl" for="nH">Altura (cm)<input class="f" id="nH" type="number" value="180"></label>
       <label class="lbl" for="nW">Peso (kg)<input class="f" id="nW" type="number" step="0.1" value="82"></label>
       <label class="lbl" for="nA">Edad<input class="f" id="nA" type="number" value="28"></label>
       <label class="lbl" for="nAct">Actividad<select class="f" id="nAct" style="width:auto"><option value="1.45">Trabajo sentado + entreno</option><option value="1.55" selected>Entreno 6 días + 8k pasos</option><option value="1.7">Trabajo activo + entreno</option></select></label>
       <label class="lbl" for="nDef">Déficit<select class="f" id="nDef" style="width:auto"><option value="0.15">Suave (−15%)</option><option value="0.2" selected>Estándar (−20%)</option><option value="0.25">Agresivo (−25%)</option></select></label>
     </div>
-    <p class="small muted" style="margin-top:8px">No me diste tu altura: pon la real y todo se recalcula. Si en 3 semanas la media de peso no baja entre 0,4 y 0,8 kg por semana, resta 150 kcal.</p>
+    <p class="small muted" style="margin-top:8px">Calculado con tus 180 cm. Actualiza el peso cada pocas semanas. Si en 3 semanas la media de peso no baja entre 0,4 y 0,8 kg por semana, resta 150 kcal.</p>
     <div class="grid3" style="margin-top:14px" id="macroStats"></div>
     <div class="macro-bar" id="macroBar"><span></span><span></span><span></span></div>
     <div class="legend"><span><i style="background:var(--accent)"></i>Proteína</span><span><i style="background:var(--heat)"></i>Grasa</span><span><i style="background:var(--warn)"></i>Carbohidratos</span></div>
@@ -193,7 +235,7 @@ svg text{fill:var(--muted);font:11px var(--mono)}
   <div class="card">
     <h3>El método: plato y reglas, sin contar todo</h3>
     <ul class="clean small">
-      <li><b>Proteína en cada comida</b>, 35–45 g (una palma y media de carne o pescado, 200 g de skyr o 3–4 huevos). Es lo que más sacia y lo que protege el músculo en déficit.</li>
+      <li><b>Proteína en cada comida</b>, 35–45 g (una palma y media de carne o pescado, 200 g de skyr, o 3 huevos enteros + algo de pavo o jamón). Es lo que más sacia y lo que protege el músculo en déficit.</li>
       <li><b>Medio plato de verdura o fruta</b>: llena mucho con muy pocas calorías.</li>
       <li><b>Un puño de carbohidrato</b> (arroz, patata, pasta, pan, avena). Ponlo sobre todo en la comida antes y después del entreno.</li>
       <li><b>Un pulgar de grasa</b> (aceite de oliva, aguacate, frutos secos). Mide el aceite con cuchara: es la caloría escondida número 1.</li>
@@ -202,18 +244,18 @@ svg text{fill:var(--muted);font:11px var(--mono)}
   </div>
 
   <div class="card">
-    <h3>Menú tipo (~2.200 kcal · ~170 g de proteína)</h3>
+    <h3>Menú tipo (~2.250 kcal · ~165 g de proteína)</h3>
     <div class="tablewrap"><table>
       <thead><tr><th>Comida</th><th>Opción A</th><th>Opción B</th><th class="num">kcal / prot</th></tr></thead>
       <tbody>
-        <tr><td>Desayuno</td><td>Skyr o yogur proteico 250 g + 40 g de avena + 1 plátano + canela</td><td>Tortilla de 2 huevos y 150 g de claras + 2 tostadas de pan integral + tomate</td><td class="num">~450 / 40</td></tr>
-        <tr><td>Comida</td><td>180 g de pollo + 80 g de arroz (en crudo) + verduras salteadas con 1 cucharada de aceite</td><td>Lentejas (70 g en crudo) con 150 g de ternera magra + ensalada</td><td class="num">~700 / 50</td></tr>
+        <tr><td>Desayuno</td><td>Skyr o yogur proteico 250 g + 40 g de avena + 1 plátano + canela</td><td>Tortilla o revuelto de 3 huevos + 60 g de pavo o jamón + 2 tostadas de pan integral + tomate</td><td class="num">~450 / 40</td></tr>
+        <tr><td>Comida</td><td>180 g de pollo + 1 bolsita de arroz congelado de Mercadona + verduras salteadas con 1 cucharada de aceite</td><td>Salteado: 1 bolsita de arroz congelado + 150 g de ternera magra o 2 huevos + verduras congeladas</td><td class="num">~700 / 50</td></tr>
         <tr><td>Merienda o pre-entreno</td><td>2 tortitas de arroz + 60 g de pavo + 1 manzana</td><td>Batido de proteína + 1 pieza de fruta + 15 g de nueces</td><td class="num">~300 / 30</td></tr>
         <tr><td>Cena</td><td>200 g de salmón o merluza + 300 g de patata asada + espárragos</td><td>Hamburguesa casera (150 g de ternera 5% grasa) en pan + ensalada grande</td><td class="num">~650 / 45</td></tr>
         <tr><td>Antiansiedad (noche)</td><td colspan="2">Gelatina sin azúcar, 150 g de queso batido 0% con cacao puro, infusión, o una pieza de fruta</td><td class="num">~100 / 10</td></tr>
       </tbody>
     </table></div>
-    <p class="small muted" style="margin-top:8px">Batch cooking el domingo: 1 kg de pollo o carne picada, 500 g de arroz, una bandeja de verduras al horno y huevos cocidos. Con eso tienes 4 días resueltos y no dependes de la comida rápida.</p>
+    <p class="small muted" style="margin-top:8px"><b>Tu arroz congelado:</b> mira en el envase cuántos gramos trae cada bolsita. La ración objetivo es de 200–250 g de arroz ya cocido (unas 260–330 kcal). Si la bolsita trae menos, añade patata o pan; si trae más, deja un poco. Viene sin aceite, así que la grasa la pones tú: 1 cucharada como mucho.</p><p class="small muted" style="margin-top:6px">Batch cooking el domingo: 1 kg de pollo o carne picada, una bandeja de verduras al horno y una docena de huevos cocidos. Con el arroz en bolsitas ya tienes 4 días resueltos sin depender de la comida rápida.</p>
   </div>
 
   <div class="card">
@@ -339,6 +381,7 @@ const $=s=>document.querySelector(s);
 const el=(t,a={},...kids)=>{const e=document.createElement(t);for(const k in a){if(k==="class")e.className=a[k];else if(k==="text")e.textContent=a[k];else e.setAttribute(k,a[k]);}kids.forEach(c=>e.append(c));return e;};
 const pad=n=>String(n).padStart(2,"0");
 const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const vid=n=>el("a",{class:"vid",href:"https://www.youtube.com/results?search_query="+encodeURIComponent(n.replace(/\(.*?\)/g,"").split("+")[0].trim()+" técnica correcta"),target:"_blank",rel:"noopener",text:"Ver vídeo de técnica ↗"});
 const DAYN=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 
 /* ---------- PROGRAMA ---------- */
@@ -414,10 +457,10 @@ const HABITS=[
 ];
 
 /* ---------- ALMACENAMIENTO ---------- */
-let profile={}, days={}; let col=null; const LS="coach-recomp-v1";
+let profile={}, days={}, chats={}; let col=null; const LS="coach-recomp-v1";
 const queues={};
-function lsLoad(){try{const o=JSON.parse(localStorage.getItem(LS)||"{}");profile=o.profile||{};days=o.days||{};}catch(e){}}
-function lsSave(){try{localStorage.setItem(LS,JSON.stringify({profile,days}));}catch(e){}}
+function lsLoad(){try{const o=JSON.parse(localStorage.getItem(LS)||"{}");profile=o.profile||{};days=o.days||{};chats=o.chats||{};}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify({profile,days,chats}));}catch(e){}}
 function setSave(t){$("#saveState").textContent=t;}
 function persist(key,obj){
  lsSave();
@@ -452,6 +495,20 @@ function renderToday(){
  $("#sessTitle").textContent=plan.label;
  $("#sessSub").textContent=sess?(ph.name+" · deja "+ph.rir+" reps en reserva · descanso "+ph.rest):"";
  const day=getDay(viewDate);
+ const wn=$("#weekNoteHoy");const note=profile.weekNote;wn.hidden=!(note&&note.text);if(note&&note.text){wn.textContent="";wn.append(el("b",{text:"Nota del coach para la semana: "}),document.createTextNode(note.text));}
+ const ab=$("#adjBox");ab.textContent="";const adj=day.adj;ab.hidden=!adj;
+ ["#warmup","#exList","#cardioBox"].forEach(q=>$(q).hidden=!!adj);
+ if(adj){
+  $("#sessTitle").textContent=adj.titulo||"Sesión ajustada";$("#sessSub").textContent="Ajustado por tu coach";
+  const box=el("div",{class:"adj"},el("span",{class:"eyebrow",text:"Ajuste del coach"}),el("p",{class:"small",text:adj.motivo||""}));
+  (adj.bloques||[]).forEach((b,i)=>{const done=!!(day.adjDone&&day.adjDone[i]);const c=el("input",{type:"checkbox",id:"adj-"+i,"aria-label":"Hecho: "+b.nombre});c.checked=done;
+   const row=el("div",{class:"ex"+(done?" done":"")},c,el("div",{style:"min-width:0"},el("div",{class:"name",text:b.nombre||""}),b.nota?el("div",{class:"tip",text:b.nota}):"",b.video!==false?vid(b.nombre||""):""),el("div",{class:"rx",text:b.pauta||""}));
+   c.addEventListener("change",()=>{day.adjDone=day.adjDone||{};day.adjDone[i]=c.checked;row.classList.toggle("done",c.checked);if(adj.bloques.every((_,j)=>day.adjDone[j]))day.h.train=true;saveDay(viewDate);renderHabits();});
+   box.append(row);});
+  const back=el("button",{class:"btn ghost",type:"button",text:"Volver al plan original"});back.style.marginTop="10px";
+  back.addEventListener("click",()=>{delete day.adj;delete day.adjDone;saveDay(viewDate);renderToday();});
+  box.append(back);ab.append(box);
+ }
  const wu=$("#warmup");wu.textContent="";
  if(sess){wu.append(el("span",{class:"eyebrow",text:"Calentamiento (10 min)"}),el("p",{class:"muted",text:"5 min de bici suave, el protocolo de espalda (curl-up, plancha lateral y bird dog) y 2 series de aproximación ligeras en el primer ejercicio."}));}
  const list=$("#exList");list.textContent="";
@@ -463,7 +520,7 @@ function renderToday(){
    const rp=el("input",{class:"f",type:"text",id:"rp-"+id,placeholder:"reps ej. 10,9,8","aria-label":"Repeticiones "+name});rp.style.width="130px";if(st.reps)rp.value=st.reps;
    const last=lastLift(id,viewDate);
    const row=el("div",{class:"ex"+(st.done?" done":"")},cb,
-     el("div",{style:"min-width:0"},el("div",{class:"name",text:name}),tip?el("div",{class:"tip",text:tip}):"",
+     el("div",{style:"min-width:0"},el("div",{class:"name",text:name}),tip?el("div",{class:"tip",text:tip}):"",vid(name),
        el("div",{class:"logrow"},kg,rp,last?el("span",{class:"small muted",text:"Última vez: "+last}):"")),
      el("div",{class:"rx",text:sets+" × "+reps}));
    cb.addEventListener("change",()=>{const s=day.ex[id]||(day.ex[id]={});s.done=cb.checked;row.classList.toggle("done",cb.checked);autoTrain(day);saveDay(viewDate);renderHabits();});
@@ -506,13 +563,14 @@ $("#dayPick").addEventListener("change",e=>{viewDate=e.target.value;renderToday(
 /* ---------- PLAN ---------- */
 function renderPlan(){
  const wk=weekNum(today);const ph=phaseOf(wk);
+ const wp=$("#weekNotePlan");const note=profile.weekNote;wp.hidden=!(note&&note.text);if(note&&note.text){wp.textContent="";wp.append(el("b",{text:"Nota del coach para la semana: "}),document.createTextNode(note.text));}
  const pb=$("#phases");pb.textContent="";
  PHASES.forEach(p=>pb.append(el("div",{class:"phase"+(p===ph?" cur":"")},el("span",{class:"eyebrow",text:"Semanas "+p.w[0]+(p.w[1]!==p.w[0]?"–"+p.w[1]:"")}),el("h3",{text:p.name}),el("p",{class:"small muted",text:p.desc}))));
  const wg=$("#weekGrid");wg.textContent="";
  [1,2,3,4,5,6,0].forEach(i=>{const p=WEEK[i];const c=p.cardio?cardioRx(p.cardio,wk):null;
   wg.append(el("div",{class:"day"+(new Date().getDay()===i?" is-today":"")},el("b",{text:DAYN[i]}),el("span",{text:p.label}),el("br"),el("span",{class:"tag "+p.tag,text:p.tag==="f"?"fuerza":p.tag==="c"?"cardio":"recupera"}),c?el("div",{class:"muted",style:"margin-top:4px",text:c.rx}):""));});
  const sa=$("#sessionsAll");sa.textContent="";
- Object.values(S).forEach(s=>{const tb=el("tbody");s.ex.forEach(([id,n,r],i)=>tb.append(el("tr",{},el("td",{text:n}),el("td",{class:"num",text:ph.sets(wk,i)+"×"+r}))));
+ Object.values(S).forEach(s=>{const tb=el("tbody");s.ex.forEach(([id,n,r],i)=>tb.append(el("tr",{},el("td",{},el("div",{text:n}),vid(n)),el("td",{class:"num",text:ph.sets(wk,i)+"×"+r}))));
   sa.append(el("div",{class:"card"},el("h3",{text:s.title}),el("div",{class:"tablewrap"},el("table",{},tb))));});
 }
 
@@ -528,7 +586,7 @@ function renderMacros(){
  profile.nut={h,w,a,act,def};
 }
 ["#nH","#nW","#nA","#nAct","#nDef"].forEach(s=>$(s).addEventListener("change",()=>{renderMacros();persist("profile",profile);}));
-function loadNut(){const n=profile.nut;if(!n)return;$("#nH").value=n.h;$("#nW").value=n.w;$("#nA").value=n.a;$("#nAct").value=String(n.act);$("#nDef").value=String(n.def);}
+function loadNut(){const n=profile.nut;if(!n)return;if(n.h===175)n.h=180;$("#nH").value=n.h;$("#nW").value=n.w;$("#nA").value=n.a;$("#nAct").value=String(n.act);$("#nDef").value=String(n.def);}
 
 /* ---------- PROGRESO ---------- */
 function renderProgress(){
@@ -570,6 +628,116 @@ function renderProgress(){
   ll.append(el("table",{},el("thead",{},el("tr",{},el("th",{text:"Ejercicio"}),el("th",{text:"Inicio"}),el("th",{text:"Actual"}),el("th",{text:"Cambio"}),el("th",{text:"Sesiones"}))),tb));}
 }
 
+
+/* ---------- COACH ---------- */
+let sampleFn=null,dict=null,tts=null,busy=false;
+const CHIPS=["He dormido mal y estoy cansado","Me molesta la espalda","Hoy solo tengo 30 minutos","No puedo ir al gimnasio mañana","Ayer me pasé con la comida","¿Qué ceno hoy?"];
+function chatOf(d){return chats[d]||(chats[d]={m:[]});}
+function renderChat(){
+ const log=$("#chatLog");log.textContent="";
+ const yd=new Date();yd.setDate(yd.getDate()-1);const ys=iso(yd);
+ const msgs=[...(chats[ys]?chats[ys].m.slice(-4):[]),...chatOf(today).m];
+ if(!msgs.length)log.append(el("div",{class:"msg a",text:"Hola. Cuéntame cómo te encuentras hoy: qué tal has dormido, cómo va la espalda, cuánto tiempo tienes y si hay algo que cambiar esta semana. Con eso te ajusto el plan."}));
+ msgs.forEach(m=>{const b=el("div",{class:"msg "+m.r,text:m.t});if(m.chg)b.append(el("span",{class:"chg",text:m.chg}));log.append(b);});
+ log.scrollTop=log.scrollHeight;
+}
+function contextText(){
+ const lines=[];const wk=weekNum(today);const ph=phaseOf(wk);
+ lines.push("PERFIL: hombre, 28 años, 180 cm. Grasa corporal bastante elevada. Dolor de espalda (lumbar) frecuente sin diagnóstico. Prioridades: 1 estética (perder grasa y ganar músculo), 2 capacidad aeróbica, 3 fuerza. Hizo pesas durante años, pero lleva tiempo sin entrenar. Se acaba de apuntar al gimnasio y puede entrenar todos los días. Come mucha comida rápida, bebe mucha agua, duerme pocas horas, tiene ansiedad por comer y le cuesta ser constante. No quiere claras de huevo, solo huevos enteros. Toma arroz congelado de Mercadona en bolsitas individuales.");
+ const n=profile.nut||{};const w=n.w||82,h=n.h||180;const bmr=10*w+6.25*h-5*28+5;const kcal=Math.round(bmr*(n.act||1.55)*(1-(n.def||0.2))/10)*10;
+ lines.push("NUTRICIÓN OBJETIVO: "+kcal+" kcal/día, proteína "+Math.round(w*2)+" g, grasa "+Math.round(w*0.8)+" g.");
+ lines.push("PROGRAMA: semana "+wk+" de 13, fase "+ph.n+" ("+ph.name+"): "+ph.desc+" RIR "+ph.rir+".");
+ lines.push("PRÓXIMOS DÍAS:");
+ for(let i=-1;i<=7;i++){const d=new Date();d.setDate(d.getDate()+i);const k=iso(d);const p=WEEK[d.getDay()];const dd=days[k];
+  let t="- "+k+" ("+DAYN[d.getDay()]+(i===0?", HOY":i===-1?", ayer":"")+"): "+p.label;
+  if(p.sess)t+=" | "+S[p.sess].ex.map((e,j)=>e[1]+" "+phaseOf(weekNum(k)).sets(weekNum(k),j)+"x"+e[2]).join("; ");
+  const c=p.cardio?cardioRx(p.cardio,weekNum(k)):null;if(c)t+=" | "+c.t+": "+c.rx;
+  if(dd&&dd.adj)t+=" | YA AJUSTADO: "+dd.adj.titulo;
+  if(i<=0&&dd&&dd.h)t+=" | hábitos cumplidos: "+HABITS.filter(([hk])=>dd.h[hk]).map(x=>x[0]).join(",");
+  lines.push(t);}
+ const ws=Object.keys(days).filter(k=>days[k].w).sort().slice(-10).map(k=>k.slice(5)+": "+days[k].w+" kg");
+ if(ws.length)lines.push("PESOS RECIENTES: "+ws.join(", "));
+ if(profile.weekNote&&profile.weekNote.text)lines.push("NOTA DE SEMANA ACTUAL: "+profile.weekNote.text);
+ return lines.join("\n");
+}
+const INSTR=`Eres el entrenador personal y nutricionista deportivo de este usuario, dentro de su app de fitness. Hablas en español de España, cercano, motivador y directo, como un buen coach. Te basas en la evidencia científica.
+Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos.
+Reglas:
+- Sueño < 6 h o mucha fatiga: baja la intensidad (menos series, RIR más alto) o cambia las pesas por cardio Z2 suave y movilidad.
+- Molestia lumbar leve: quita los ejercicios que carguen la columna (peso muerto rumano, zancadas pesadas, press de pie), usa máquinas con apoyo y el protocolo McGill, y añade caminar.
+- Dolor fuerte, que baja por la pierna, con hormigueo o pérdida de fuerza: nada de entreno intenso. Recomiéndale ir a un fisioterapeuta o al médico. Nunca hagas diagnósticos.
+- Poco tiempo: haz una versión condensada con superseries, priorizando los ejercicios compuestos y la constancia. La versión mínima también cuenta.
+- Si no puede ir algún día, reorganiza la semana para no perder sesiones de pierna, ni más de 2 días seguidos.
+- Si se ha pasado con la comida: nada de culpa ni de compensar ayunando. Vuelve al plan en la siguiente comida y añade pasos.
+- Comida: huevos enteros (nunca claras), arroz congelado de Mercadona en bolsitas y opciones fáciles de supermercado o de comida rápida "mejor elegida".
+Responde SOLO con JSON válido con esta forma exacta:
+{"respuesta":"texto para leer en voz alta, máximo 110 palabras, sin listas, sin markdown ni emojis","ajustes":[{"fecha":"AAAA-MM-DD","titulo":"nombre corto de la sesión","motivo":"una frase","bloques":[{"nombre":"ejercicio o actividad","pauta":"p. ej. 3 × 10 o 30 min","nota":"consejo breve"}]}],"nota_semana":null}
+"ajustes" es una lista vacía si no cambias ningún entreno. Incluye la sesión completa del día ajustado (calentamiento y cardio incluidos). Usa solo fechas de la lista PRÓXIMOS DÍAS. "nota_semana" es un texto corto si cambias algo de la semana en general; si no, null.`;
+async function sendCoach(text){
+ text=(text||"").trim();if(!text||busy)return;
+ if(!sampleFn){$("#coachStatus").textContent="El coach necesita abrir esta página en claude.ai con tu sesión iniciada.";return;}
+ busy=true;$("#sendBtn").disabled=true;$("#chatIn").value="";
+ const c=chatOf(today);c.m.push({r:"u",t:text});renderChat();
+ $("#coachStatus").textContent="El coach está pensando…";
+ const yd=new Date();yd.setDate(yd.getDate()-1);
+ const hist=[...(chats[iso(yd)]?chats[iso(yd)].m.slice(-6):[]),...c.m.slice(-14,-1)].map(m=>(m.r==="u"?"USUARIO: ":"COACH: ")+m.t).join("\n");
+ const input=INSTR+"\n\nDATOS ACTUALES:\n"+contextText()+"\n\nCONVERSACIÓN RECIENTE:\n"+(hist||"(ninguna)")+"\n\nMENSAJE NUEVO DEL USUARIO:\n"+text;
+ try{
+  const out=await sampleFn.json(input,{cache:false});
+  const reply=String(out&&out.respuesta||"Vale, apuntado.");
+  const changed=[];
+  (Array.isArray(out&&out.ajustes)?out.ajustes:[]).forEach(a=>{
+   if(!a||!/^\d{4}-\d{2}-\d{2}$/.test(a.fecha||""))return;
+   const diff=(new Date(a.fecha+"T00:00:00")-new Date(today+"T00:00:00"))/864e5;if(diff<-1||diff>7)return;
+   const dd=getDay(a.fecha);dd.adj={titulo:String(a.titulo||"Sesión ajustada"),motivo:String(a.motivo||""),bloques:(Array.isArray(a.bloques)?a.bloques:[]).slice(0,14).map(b=>({nombre:String(b&&b.nombre||""),pauta:String(b&&b.pauta||""),nota:String(b&&b.nota||"")}))};
+   delete dd.adjDone;saveDay(a.fecha);
+   const d=new Date(a.fecha+"T00:00:00");changed.push(diff===0?"hoy":DAYN[d.getDay()].toLowerCase()+" "+d.getDate());
+  });
+  if(out&&typeof out.nota_semana==="string"&&out.nota_semana.trim()){profile.weekNote={text:out.nota_semana.trim(),week:weekNum(today),date:today};persist("profile",profile);changed.push("nota de la semana");}
+  c.m.push({r:"a",t:reply,chg:changed.length?"Plan actualizado: "+changed.join(", ")+". Lo verás en la pestaña Hoy.":""});
+  if(c.m.length>60)c.m=c.m.slice(-60);
+  persist("c-"+today,c);renderChat();renderToday();renderPlan();
+  $("#coachStatus").textContent="";
+  if(tts&&$("#ttsOn").checked){tts.speak(reply,{language:"es"}).catch(()=>{});}
+ }catch(e){
+  c.m.pop();renderChat();$("#chatIn").value=text;
+  $("#coachStatus").textContent=e&&e.code==="not_granted"?"No has dado permiso al coach. Puedes activarlo en el menú Permisos de la página.":e&&e.code==="rate_limited"?"Demasiadas consultas seguidas. Espera un minuto y vuelve a enviarlo.":"No he podido obtener respuesta. Vuelve a enviarlo.";
+ }finally{busy=false;$("#sendBtn").disabled=false;}
+}
+let dictBase="",dictFinal="",micOn=false;
+async function initCoach(){
+ const chips=$("#chips");CHIPS.forEach(t=>{const b=el("button",{type:"button",text:t});b.addEventListener("click",()=>sendCoach(t));chips.append(b);});
+ $("#sendBtn").addEventListener("click",()=>sendCoach($("#chatIn").value));
+ $("#chatIn").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendCoach($("#chatIn").value);}});
+ renderChat();
+ try{sampleFn=await window.claude?.use?.("sample");}catch(e){}
+ try{dict=await window.claude?.use?.("dictation");}catch(e){}
+ try{tts=await window.claude?.use?.("tts");}catch(e){}
+ $("#coachStatus").textContent=sampleFn?(dict?"Pulsa el micro y habla, o escribe.":"Escribe tu mensaje. El micro funciona en Chrome o en la app de escritorio de Claude."):"El coach necesita abrir esta página en claude.ai con tu sesión iniciada.";
+ $("#ttsWrap").hidden=!tts;
+ try{const v=localStorage.getItem(LS+"-tts");if(v!==null)$("#ttsOn").checked=v==="1";}catch(e){}
+ $("#ttsOn").addEventListener("change",e=>{try{localStorage.setItem(LS+"-tts",e.target.checked?"1":"0");}catch(_){};if(!e.target.checked&&tts)tts.stop();});
+ if(!dict)return;
+ const mic=$("#micBtn");mic.hidden=false;
+ dict.onPartial(({text})=>{$("#chatIn").value=(dictBase+" "+dictFinal+" "+text).trim();});
+ dict.onFinal(({text})=>{dictFinal=(dictFinal+" "+text).trim();$("#chatIn").value=(dictBase+" "+dictFinal).trim();});
+ dict.onState(({state,reason})=>{
+  micOn=state==="listening"||state==="starting";mic.classList.toggle("on",micOn);mic.setAttribute("aria-label",micOn?"Parar y enviar":"Hablar");
+  if(state==="listening")$("#coachStatus").textContent="Te escucho… pulsa otra vez el micro para enviar.";
+  if(state==="idle"){
+   if(reason==="not_granted"){mic.hidden=true;$("#coachStatus").textContent="Sin permiso para el micrófono: puedes escribir.";return;}
+   if((reason==="stopped"||reason==="viewer_stopped")&&$("#chatIn").value.trim())sendCoach($("#chatIn").value);
+   else if(!busy)$("#coachStatus").textContent="";
+  }
+ });
+ mic.addEventListener("click",()=>{
+  if(micOn){dict.stop().catch(()=>{});return;}
+  if(tts)tts.stop();
+  dictBase=$("#chatIn").value.trim();dictFinal="";
+  dict.start({language:"es"}).catch(e=>{if(e&&e.code==="not_granted"){mic.hidden=true;$("#coachStatus").textContent="Sin permiso para el micrófono: puedes escribir.";}else{$("#coachStatus").textContent="No se pudo activar el micro. Vuelve a pulsarlo.";}});
+ });
+}
+
 /* ---------- MITOS ---------- */
 const MYTHS=[
  ["si","Comer proteína alta (unos 2 g/kg) en déficit","Conserva el músculo y es el macronutriente que más sacia."],
@@ -589,8 +757,9 @@ function renderMyths(){const b=$("#myths");MYTHS.forEach(([v,t,d])=>b.append(el(
 
 /* ---------- TABS ---------- */
 const tabs=[...document.querySelectorAll("nav.tabs button")];
-function show(v){tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset.v===v)));document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);if(v==="progreso")renderProgress();if(v==="plan")renderPlan();try{localStorage.setItem(LS+"-tab",v);}catch(e){}}
+function show(v){tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset.v===v)));document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);if(v==="progreso")renderProgress();if(v==="plan")renderPlan();if(v==="coach")renderChat();try{localStorage.setItem(LS+"-tab",v);}catch(e){}}
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
+$("#goCoach").addEventListener("click",()=>show("coach"));
 
 function renderAll(){buildDayPicker();renderToday();renderPlan();loadNut();renderMacros();renderProgress();}
 
@@ -599,6 +768,7 @@ lsLoad();renderMyths();renderAll();
 try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t))show(t);}catch(e){}
 
 (async function(){
+ initCoach();
  const timer=setTimeout(()=>setSave("Guardado en este navegador"),10000);
  try{
   const db=await window.claude?.use?.("db");const user=await window.claude?.use?.("user");
@@ -609,7 +779,7 @@ try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t
   col.onSnapshot(snap=>{
    clearTimeout(timer);
    const remote={};let rp=null;
-   snap.docs.forEach(d=>{const v=d.data();if(!v)return;if(d.id==="profile")rp=v;else if(d.id.startsWith("d-"))remote[d.id.slice(2)]=JSON.parse(JSON.stringify(v));});
+   snap.docs.forEach(d=>{const v=d.data();if(!v)return;if(d.id==="profile")rp=v;else if(d.id.startsWith("d-"))remote[d.id.slice(2)]=JSON.parse(JSON.stringify(v));else if(d.id.startsWith("c-"))chats[d.id.slice(2)]=JSON.parse(JSON.stringify(v));});
    if(first){
     first=false;
     // sube lo que solo existía en este navegador
@@ -618,7 +788,7 @@ try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t
    }
    Object.assign(days,remote);if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
    lsSave();
-   const active=document.activeElement;if(!(active&&active.tagName==="INPUT"))renderAll();
+   const active=document.activeElement;if(!(active&&active.tagName==="INPUT"))renderAll();renderChat();
    setSave("Sincronizado");
   },()=>{clearTimeout(timer);setSave("Sin conexión con la nube; guardado en este navegador");col=null;});
  }catch(e){clearTimeout(timer);setSave("Guardado en este navegador");}
