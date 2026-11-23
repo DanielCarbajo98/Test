@@ -8,6 +8,7 @@
   --bg:#f3f5f8; --surface:#ffffff; --ink:#121a2b; --muted:#5b6577; --line:#dde2ea;
   --accent:#2747d6; --accent-soft:#e6ebff; --heat:#e0582a; --heat-soft:#fde9e1;
   --ok:#1d8a55; --ok-soft:#e2f4ea; --warn:#b7791f;
+  --hud-bg:#060c18; --hud-ink:#d4e6ff; --hud-glow:#45c4ff; --hud-dim:#2b4a72;
   --display:"Archivo",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -115,6 +116,28 @@ svg text{fill:var(--muted);font:11px var(--mono)}
 .adj{margin-top:12px;border:1px solid var(--ok);border-radius:10px;padding:12px 14px;background:var(--ok-soft)}
 a.vid{font-size:.8rem;font-weight:600;color:var(--heat);text-decoration:none;white-space:nowrap}
 a.vid:hover{text-decoration:underline}
+.hud{background:var(--hud-bg);color:var(--hud-ink);border-radius:14px;padding:26px 16px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden;background-image:radial-gradient(circle at 50% 38%,rgba(69,196,255,.16),transparent 60%),repeating-linear-gradient(0deg,rgba(69,196,255,.05) 0 1px,transparent 1px 24px),repeating-linear-gradient(90deg,rgba(69,196,255,.05) 0 1px,transparent 1px 24px)}
+.hud .ainame{font:800 1.6rem var(--display);font-stretch:115%;letter-spacing:.32em;margin-right:-.32em;color:var(--hud-ink)}
+.hud .state{font:700 .72rem var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--hud-glow);min-height:1.2em;text-align:center}
+.orb{--c:var(--hud-glow);position:relative;width:170px;height:170px;max-width:100%;border-radius:50%;border:0;cursor:pointer;background:radial-gradient(circle,var(--c) 0,color-mix(in srgb,var(--c) 40%,transparent) 22%,transparent 46%);display:grid;place-items:center}
+.orb::before,.orb::after,.orb span{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.orb::before{inset:6px;border:2px dashed color-mix(in srgb,var(--c) 70%,transparent)}
+.orb::after{inset:24px;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);border-top-color:var(--c);border-bottom-color:var(--c)}
+.orb span{inset:44px;border:3px solid transparent;border-left-color:var(--c);border-right-color:color-mix(in srgb,var(--c) 50%,transparent)}
+.orb svg{position:relative;color:var(--hud-bg);width:30px;height:30px}
+.orb[data-state="listening"]{--c:var(--heat)}
+.hud-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.hud-btn{font:700 .78rem var(--mono);letter-spacing:.08em;text-transform:uppercase;background:transparent;color:var(--hud-ink);border:1px solid var(--hud-dim);border-radius:6px;padding:8px 12px;cursor:pointer}
+.hud-btn:hover{border-color:var(--hud-glow);color:var(--hud-glow)}
+.hud-set{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.hud-set label{display:flex;flex-direction:column;gap:3px;font:600 .68rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#8fb0d8}
+.hud-set input,.hud-set select{font:500 .85rem var(--mono);background:transparent;color:var(--hud-ink);border:1px solid var(--hud-dim);border-radius:6px;padding:6px 8px;width:120px}
+.hud-set select option{background:var(--hud-bg)}
+@media (prefers-reduced-motion:no-preference){
+ .orb::before{animation:spin 24s linear infinite}.orb::after{animation:spin 14s linear infinite reverse}.orb span{animation:spin 8s linear infinite}
+ .orb[data-state="thinking"]::before{animation-duration:3s}.orb[data-state="thinking"]::after{animation-duration:1.6s}.orb[data-state="thinking"] span{animation-duration:.9s}
+ .orb[data-state="listening"],.orb[data-state="speaking"]{animation:breathe 1.1s ease-in-out infinite}
+ @keyframes spin{to{transform:rotate(360deg)}}@keyframes breathe{50%{transform:scale(1.06)}}}
 .savestate{font-size:.75rem;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.habit,.ex{transition:background .15s,border-color .15s}}
 </style>
@@ -127,7 +150,7 @@ a.vid:hover{text-decoration:underline}
     </div>
     <nav class="tabs" role="tablist" aria-label="Secciones">
       <button role="tab" data-v="hoy" aria-selected="true">Hoy</button>
-      <button role="tab" data-v="coach" aria-selected="false">Coach</button>
+      <button role="tab" data-v="coach" aria-selected="false">Asistente</button>
       <button role="tab" data-v="plan" aria-selected="false">Plan 13 semanas</button>
       <button role="tab" data-v="comida" aria-selected="false">Nutrición</button>
       <button role="tab" data-v="progreso" aria-selected="false">Progreso</button>
@@ -143,7 +166,7 @@ a.vid:hover{text-decoration:underline}
   <div class="card">
     <div class="session-head">
       <div><span class="eyebrow" id="todayDate">Hoy</span><h2 id="sessTitle">Sesión</h2><p class="muted small" id="sessSub"></p></div>
-      <button class="btn ghost" id="goCoach" type="button">Hablar con el coach</button>
+      <button class="btn ghost" id="goCoach" type="button">Hablar con el asistente</button>
       <label class="lbl" for="dayPick">Ver otro día<select class="f" id="dayPick" style="width:auto"></select></label>
     </div>
     <div id="weekNoteHoy" class="note" hidden></div>
@@ -174,13 +197,25 @@ a.vid:hover{text-decoration:underline}
 <!-- COACH -->
 <section class="view" id="v-coach" hidden>
   <div class="card">
-    <span class="eyebrow">Cuéntale cómo estás</span>
-    <h2>Tu coach</h2>
-    <p class="muted small" style="margin-top:4px;max-width:65ch">Pulsa el micro y háblale: cómo has dormido, cómo va la espalda, cuánto tiempo tienes, qué has comido o si no puedes ir algún día. Ajusta el entreno de hoy, el de los próximos días o la semana, y los cambios aparecen en la pestaña Hoy.</p>
+    <div class="hud">
+      <div class="ainame" id="aiName">VEGA</div>
+      <button class="orb" id="orb" type="button" data-state="idle" aria-label="Hablar con el asistente"><span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.92V21a1 1 0 1 1-2 0v-2.08A7 7 0 0 1 5 12a1 1 0 1 1 2 0 5 5 0 0 0 10 0Z"/></svg></button>
+      <div class="state" id="hudState">En línea</div>
+      <div class="hud-actions">
+        <button class="hud-btn" id="briefBtn" type="button">Informe del día</button>
+        <button class="hud-btn" id="nightBtn" type="button">Cierre del día</button>
+        <button class="hud-btn" id="setBtn" type="button" aria-expanded="false">Ajustes</button>
+      </div>
+      <div class="hud-set" id="hudSet" hidden>
+        <label for="aiNameIn">Nombre del asistente<input id="aiNameIn" maxlength="16" value="VEGA"></label>
+        <label for="nickIn">Cómo te llama<input id="nickIn" maxlength="20" value="jefe"></label>
+        <label for="voiceIn">Voz<select id="voiceIn"><option value="glassy">Cristalina</option><option value="rounded">Grave</option><option value="buttery">Cálida</option><option value="airy">Suave</option></select></label>
+      </div>
+    </div>
+    <p class="muted small" style="margin-top:12px;max-width:65ch">Toca el núcleo y habla; vuelve a tocarlo para enviar. Puedes decirle cómo has dormido, cómo va la espalda, cuánto tiempo tienes o qué has comido, o dictarle datos como "peso 81,6" o "he dormido 6 horas", que los apunta solo. Ajusta el entreno de hoy, los próximos días o la semana.</p>
     <div class="chips" id="chips"></div>
     <div class="chat" id="chatLog" aria-live="polite"></div>
     <div class="composer">
-      <button class="mic" id="micBtn" type="button" aria-label="Hablar" hidden><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.92V21a1 1 0 1 1-2 0v-2.08A7 7 0 0 1 5 12a1 1 0 1 1 2 0 5 5 0 0 0 10 0Z"/></svg></button>
       <textarea id="chatIn" rows="2" placeholder="Ej.: He dormido 5 horas, me molesta la lumbar y hoy solo tengo 40 minutos"></textarea>
       <button class="btn" id="sendBtn" type="button">Enviar</button>
     </div>
@@ -256,6 +291,15 @@ a.vid:hover{text-decoration:underline}
       </tbody>
     </table></div>
     <p class="small muted" style="margin-top:8px"><b>Tu arroz congelado:</b> mira en el envase cuántos gramos trae cada bolsita. La ración objetivo es de 200–250 g de arroz ya cocido (unas 260–330 kcal). Si la bolsita trae menos, añade patata o pan; si trae más, deja un poco. Viene sin aceite, así que la grasa la pones tú: 1 cucharada como mucho.</p><p class="small muted" style="margin-top:6px">Batch cooking el domingo: 1 kg de pollo o carne picada, una bandeja de verduras al horno y una docena de huevos cocidos. Con el arroz en bolsitas ya tienes 4 días resueltos sin depender de la comida rápida.</p>
+  </div>
+
+  <div class="card">
+    <h3>Lista de la compra semanal</h3>
+    <div class="grid3 small" style="margin-top:6px">
+      <div><span class="eyebrow">Proteína</span><ul class="clean"><li>2 docenas de huevos</li><li>1,5 kg de pechuga de pollo o pavo</li><li>500 g de carne picada de ternera 5% grasa</li><li>2–3 lomos de salmón o merluza (frescos o congelados)</li><li>Pavo o jamón en lonchas</li><li>4–6 skyr o yogures proteicos</li><li>Queso batido 0%</li></ul></div>
+      <div><span class="eyebrow">Carbohidratos</span><ul class="clean"><li>8–10 bolsitas de arroz congelado</li><li>Patatas (1,5 kg)</li><li>Pan integral de molde</li><li>Copos de avena</li><li>Tortitas de arroz</li><li>Plátanos y manzanas, más fruta de temporada</li></ul></div>
+      <div><span class="eyebrow">Verdura y extras</span><ul class="clean"><li>Bolsas de verdura congelada para saltear</li><li>Ensalada en bolsa y tomates</li><li>Espárragos, calabacín y pimiento</li><li>Aceite de oliva virgen extra</li><li>Nueces</li><li>Cacao puro, gelatina sin azúcar, infusiones</li><li>Bebidas zero</li></ul></div>
+    </div>
   </div>
 
   <div class="card">
@@ -425,6 +469,7 @@ const WEEK=[
  {d:5,label:"Pierna B + Z2",tag:"f",sess:"piernaB",cardio:"z2"},
  {d:6,label:"Cardio largo Z2",tag:"c",sess:null,cardio:"long"}
 ];
+const TEMPLATE=[WEEK[1],WEEK[2],WEEK[3],WEEK[4],WEEK[5],WEEK[6],WEEK[0]];
 const PHASES=[
  {n:1,name:"Reentrada",w:[1,4],rir:3,sets:w=>w<=2?2:3,rest:"90 s",desc:"Recuperas técnica y tendones. Terminas cada serie con 3 reps en reserva. Si después tienes agujetas fuertes, es normal las 2 primeras semanas."},
  {n:2,name:"Construcción",w:[5,8],rir:2,sets:()=>3,rest:"90–120 s",desc:"Más volumen. Doble progresión cada semana: más reps y luego más peso."},
@@ -475,9 +520,15 @@ function dayKey(date){return "d-"+date;}
 function getDay(date){return days[date]||(days[date]={h:{},ex:{}});}
 function saveDay(date){persist(dayKey(date),days[date]);}
 
-function startDate(){if(!profile.start){const t=new Date();const m=new Date(t);m.setDate(t.getDate()-((t.getDay()+6)%7));profile.start=iso(m);persist("profile",profile);}return profile.start;}
-function weekNum(dateStr){const s=new Date(startDate()+"T00:00:00");const d=new Date(dateStr+"T00:00:00");const w=Math.floor((d-s)/(7*864e5))+1;return w<1?1:((w-1)%13)+1;}
-function cycleNum(dateStr){const s=new Date(startDate()+"T00:00:00");const d=new Date(dateStr+"T00:00:00");return Math.floor(Math.max(0,(d-s)/(7*864e5))/13)+1;}
+const START="2026-11-24";
+function startDate(){return profile.start2||START;}
+function dayDiff(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/864e5);}
+function addDays(ds,n){const d=new Date(ds+"T00:00:00");d.setDate(d.getDate()+n);return iso(d);}
+function weekNum(dateStr){const x=dayDiff(startDate(),dateStr);if(x<0)return 1;return (Math.floor(x/7)%13)+1;}
+function cycleNum(dateStr){const x=dayDiff(startDate(),dateStr);return x<0?1:Math.floor(x/91)+1;}
+const PREP={label:"Día 0: preparación",tag:"r",sess:null,cardio:null,prep:true};
+const PREP_TASKS=[["Hacer la compra de la semana","Usa la lista de la compra de la pestaña Nutrición."],["Batch cooking","Pollo o carne picada para 3–4 días, verduras al horno y una docena de huevos cocidos."],["Preparar la bolsa del gimnasio","Toalla, candado, agua y la creatina si la vas a tomar."],["Caminar 30 minutos","Tu primera mini sesión: pasea a ritmo vivo."],["Probar el protocolo de espalda","Curl-up, plancha lateral y bird dog (pestaña Espalda) para aprenderlo antes de mañana."],["Acostarte con tiempo para dormir 7 h o más","Mañana te pesas en ayunas, te haces fotos y te mides la cintura antes de desayunar."]];
+function planFor(ds){const x=dayDiff(startDate(),ds);if(x<0)return PREP;return TEMPLATE[x%7];}
 
 /* ---------- HOY ---------- */
 const today=iso(new Date());
@@ -487,9 +538,10 @@ function buildDayPicker(){
  for(let i=-6;i<=6;i++){const d=new Date();d.setDate(d.getDate()+i);const v=iso(d);const o=el("option",{value:v,text:(i===0?"Hoy · ":"")+DAYN[d.getDay()]+" "+d.getDate()});if(v===viewDate)o.selected=true;sel.append(o);}
 }
 function renderToday(){
- const d=new Date(viewDate+"T00:00:00");const plan=WEEK[d.getDay()];const wk=weekNum(viewDate);const ph=phaseOf(wk);
- $("#pWeek").textContent="Semana "+wk+" de 13"+(cycleNum(viewDate)>1?" · ciclo "+cycleNum(viewDate):"");
- $("#pPhase").textContent="Fase "+ph.n+": "+ph.name;
+ const d=new Date(viewDate+"T00:00:00");const plan=planFor(viewDate);const wk=weekNum(viewDate);const ph=phaseOf(wk);
+ const pre=dayDiff(startDate(),today)<0;
+ $("#pWeek").textContent=pre?"Empiezas mañana":"Semana "+weekNum(today)+" de 13"+(cycleNum(today)>1?" · ciclo "+cycleNum(today):"");
+ $("#pPhase").textContent="Fase "+phaseOf(weekNum(today)).n+": "+phaseOf(weekNum(today)).name;
  $("#todayDate").textContent=DAYN[d.getDay()]+" "+d.getDate()+"/"+(d.getMonth()+1);
  const sess=plan.sess?S[plan.sess]:null;
  $("#sessTitle").textContent=plan.label;
@@ -510,6 +562,10 @@ function renderToday(){
   box.append(back);ab.append(box);
  }
  const wu=$("#warmup");wu.textContent="";
+ if(plan.prep&&!adj){$("#sessSub").textContent="Hoy no se entrena: se prepara todo para empezar mañana con buen pie.";
+  day.prep=day.prep||{};
+  PREP_TASKS.forEach(([t,n],i)=>{const c=el("input",{type:"checkbox",id:"prep-"+i,"aria-label":"Hecho: "+t});c.checked=!!day.prep[i];const row=el("div",{class:"ex"+(c.checked?" done":"")},c,el("div",{style:"min-width:0"},el("div",{class:"name",text:t}),el("div",{class:"tip",text:n})),el("div",{class:"rx",text:""}));
+   c.addEventListener("change",()=>{day.prep[i]=c.checked;row.classList.toggle("done",c.checked);saveDay(viewDate);});wu.append(row);});}
  if(sess){wu.append(el("span",{class:"eyebrow",text:"Calentamiento (10 min)"}),el("p",{class:"muted",text:"5 min de bici suave, el protocolo de espalda (curl-up, plancha lateral y bird dog) y 2 series de aproximación ligeras en el primer ejercicio."}));}
  const list=$("#exList");list.textContent="";
  if(sess){
@@ -537,7 +593,7 @@ function renderToday(){
  const w=$("#wIn"),ci=$("#cIn");w.value=day.w??"";ci.value=day.waist??"";
  renderHabits();
 }
-function autoTrain(day){const d=new Date(viewDate+"T00:00:00");const plan=WEEK[d.getDay()];if(!plan.sess)return;const ids=S[plan.sess].ex.map(e=>e[0]);if(ids.every(i=>day.ex[i]&&day.ex[i].done))day.h.train=true;}
+function autoTrain(day){const plan=planFor(viewDate);if(!plan.sess)return;const ids=S[plan.sess].ex.map(e=>e[0]);if(ids.every(i=>day.ex[i]&&day.ex[i].done))day.h.train=true;}
 function lastLift(id,before){const ks=Object.keys(days).filter(k=>k<before&&days[k].ex&&days[k].ex[id]&&days[k].ex[id].kg!=null).sort();if(!ks.length)return"";const s=days[ks[ks.length-1]].ex[id];return s.kg+" kg"+(s.reps?" × "+s.reps:"");}
 function renderHabits(){
  const day=getDay(viewDate);const box=$("#habits");box.textContent="";let n=0;
@@ -567,8 +623,9 @@ function renderPlan(){
  const pb=$("#phases");pb.textContent="";
  PHASES.forEach(p=>pb.append(el("div",{class:"phase"+(p===ph?" cur":"")},el("span",{class:"eyebrow",text:"Semanas "+p.w[0]+(p.w[1]!==p.w[0]?"–"+p.w[1]:"")}),el("h3",{text:p.name}),el("p",{class:"small muted",text:p.desc}))));
  const wg=$("#weekGrid");wg.textContent="";
- [1,2,3,4,5,6,0].forEach(i=>{const p=WEEK[i];const c=p.cardio?cardioRx(p.cardio,wk):null;
-  wg.append(el("div",{class:"day"+(new Date().getDay()===i?" is-today":"")},el("b",{text:DAYN[i]}),el("span",{text:p.label}),el("br"),el("span",{class:"tag "+p.tag,text:p.tag==="f"?"fuerza":p.tag==="c"?"cardio":"recupera"}),c?el("div",{class:"muted",style:"margin-top:4px",text:c.rx}):""));});
+ const x0=Math.max(0,dayDiff(startDate(),today));const ws=addDays(startDate(),x0-x0%7);
+ for(let j=0;j<7;j++){const ds=addDays(ws,j);const dd=new Date(ds+"T00:00:00");const p=TEMPLATE[j];const c=p.cardio?cardioRx(p.cardio,wk):null;const i=dd.getDay();
+  wg.append(el("div",{class:"day"+(ds===today?" is-today":"")},el("b",{text:DAYN[i]+" "+dd.getDate()}),el("span",{text:p.label}),el("br"),el("span",{class:"tag "+p.tag,text:p.tag==="f"?"fuerza":p.tag==="c"?"cardio":"recupera"}),c?el("div",{class:"muted",style:"margin-top:4px",text:c.rx}):""));}
  const sa=$("#sessionsAll");sa.textContent="";
  Object.values(S).forEach(s=>{const tb=el("tbody");s.ex.forEach(([id,n,r],i)=>tb.append(el("tr",{},el("td",{},el("div",{text:n}),vid(n)),el("td",{class:"num",text:ph.sets(wk,i)+"×"+r}))));
   sa.append(el("div",{class:"card"},el("h3",{text:s.title}),el("div",{class:"tablewrap"},el("table",{},tb))));});
@@ -631,13 +688,16 @@ function renderProgress(){
 
 /* ---------- COACH ---------- */
 let sampleFn=null,dict=null,tts=null,busy=false;
+function ai(){return Object.assign({name:"VEGA",nick:"jefe",voice:"glassy"},profile.ai||{});}
+const HUDTXT={idle:"En línea",listening:"Te escucho",thinking:"Procesando",speaking:"Hablando"};
+function hud(st,txt){const o=$("#orb");o.dataset.state=st;$("#hudState").textContent=txt||HUDTXT[st]||"";}
 const CHIPS=["He dormido mal y estoy cansado","Me molesta la espalda","Hoy solo tengo 30 minutos","No puedo ir al gimnasio mañana","Ayer me pasé con la comida","¿Qué ceno hoy?"];
 function chatOf(d){return chats[d]||(chats[d]={m:[]});}
 function renderChat(){
  const log=$("#chatLog");log.textContent="";
  const yd=new Date();yd.setDate(yd.getDate()-1);const ys=iso(yd);
  const msgs=[...(chats[ys]?chats[ys].m.slice(-4):[]),...chatOf(today).m];
- if(!msgs.length)log.append(el("div",{class:"msg a",text:"Hola. Cuéntame cómo te encuentras hoy: qué tal has dormido, cómo va la espalda, cuánto tiempo tienes y si hay algo que cambiar esta semana. Con eso te ajusto el plan."}));
+ if(!msgs.length)log.append(el("div",{class:"msg a",text:"Sistemas en línea, "+ai().nick+". Soy "+ai().name+", tu asistente de entrenamiento. Pulsa Informe del día y te cuento la misión de hoy, o toca el núcleo y dime cómo te encuentras."}));
  msgs.forEach(m=>{const b=el("div",{class:"msg "+m.r,text:m.t});if(m.chg)b.append(el("span",{class:"chg",text:m.chg}));log.append(b);});
  log.scrollTop=log.scrollHeight;
 }
@@ -646,9 +706,10 @@ function contextText(){
  lines.push("PERFIL: hombre, 28 años, 180 cm. Grasa corporal bastante elevada. Dolor de espalda (lumbar) frecuente sin diagnóstico. Prioridades: 1 estética (perder grasa y ganar músculo), 2 capacidad aeróbica, 3 fuerza. Hizo pesas durante años, pero lleva tiempo sin entrenar. Se acaba de apuntar al gimnasio y puede entrenar todos los días. Come mucha comida rápida, bebe mucha agua, duerme pocas horas, tiene ansiedad por comer y le cuesta ser constante. No quiere claras de huevo, solo huevos enteros. Toma arroz congelado de Mercadona en bolsitas individuales.");
  const n=profile.nut||{};const w=n.w||82,h=n.h||180;const bmr=10*w+6.25*h-5*28+5;const kcal=Math.round(bmr*(n.act||1.55)*(1-(n.def||0.2))/10)*10;
  lines.push("NUTRICIÓN OBJETIVO: "+kcal+" kcal/día, proteína "+Math.round(w*2)+" g, grasa "+Math.round(w*0.8)+" g.");
+ lines.push("FECHA DE HOY: "+today+" ("+DAYN[new Date().getDay()]+"). El programa empieza el "+startDate()+(dayDiff(startDate(),today)<0?" (mañana; hoy es el día 0 de preparación: compra, batch cooking, bolsa del gimnasio, caminar 30 min, aprender el protocolo de espalda y dormir pronto).":"."));
  lines.push("PROGRAMA: semana "+wk+" de 13, fase "+ph.n+" ("+ph.name+"): "+ph.desc+" RIR "+ph.rir+".");
  lines.push("PRÓXIMOS DÍAS:");
- for(let i=-1;i<=7;i++){const d=new Date();d.setDate(d.getDate()+i);const k=iso(d);const p=WEEK[d.getDay()];const dd=days[k];
+ for(let i=-1;i<=7;i++){const d=new Date();d.setDate(d.getDate()+i);const k=iso(d);const p=planFor(k);const dd=days[k];
   let t="- "+k+" ("+DAYN[d.getDay()]+(i===0?", HOY":i===-1?", ayer":"")+"): "+p.label;
   if(p.sess)t+=" | "+S[p.sess].ex.map((e,j)=>e[1]+" "+phaseOf(weekNum(k)).sets(weekNum(k),j)+"x"+e[2]).join("; ");
   const c=p.cardio?cardioRx(p.cardio,weekNum(k)):null;if(c)t+=" | "+c.t+": "+c.rx;
@@ -660,7 +721,7 @@ function contextText(){
  if(profile.weekNote&&profile.weekNote.text)lines.push("NOTA DE SEMANA ACTUAL: "+profile.weekNote.text);
  return lines.join("\n");
 }
-const INSTR=`Eres el entrenador personal y nutricionista deportivo de este usuario, dentro de su app de fitness. Hablas en español de España, cercano, motivador y directo, como un buen coach. Te basas en la evidencia científica.
+const INSTR=()=>`Te llamas ${ai().name}. Eres el asistente de IA personal de este usuario, dentro de su app de fitness, y actúas como su entrenador personal y nutricionista deportivo. Personalidad: asistente de IA sofisticado, sereno y muy eficiente, con humor seco e ironía amable (nunca borde). Llamas al usuario "${ai().nick}". Hablas en español de España, con frases cortas y precisas, y le motivas sin cursilería. Te basas en la evidencia científica.
 Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos.
 Reglas:
 - Sueño < 6 h o mucha fatiga: baja la intensidad (menos series, RIR más alto) o cambia las pesas por cardio Z2 suave y movilidad.
@@ -671,21 +732,30 @@ Reglas:
 - Si se ha pasado con la comida: nada de culpa ni de compensar ayunando. Vuelve al plan en la siguiente comida y añade pasos.
 - Comida: huevos enteros (nunca claras), arroz congelado de Mercadona en bolsitas y opciones fáciles de supermercado o de comida rápida "mejor elegida".
 Responde SOLO con JSON válido con esta forma exacta:
-{"respuesta":"texto para leer en voz alta, máximo 110 palabras, sin listas, sin markdown ni emojis","ajustes":[{"fecha":"AAAA-MM-DD","titulo":"nombre corto de la sesión","motivo":"una frase","bloques":[{"nombre":"ejercicio o actividad","pauta":"p. ej. 3 × 10 o 30 min","nota":"consejo breve"}]}],"nota_semana":null}
-"ajustes" es una lista vacía si no cambias ningún entreno. Incluye la sesión completa del día ajustado (calentamiento y cardio incluidos). Usa solo fechas de la lista PRÓXIMOS DÍAS. "nota_semana" es un texto corto si cambias algo de la semana en general; si no, null.`;
-async function sendCoach(text){
+{"respuesta":"texto para leer en voz alta, máximo 110 palabras (máximo 150 en informes), sin listas, sin markdown ni emojis","registrar":{"fecha":"AAAA-MM-DD","peso":null,"cintura":null,"habitos":{}},"ajustes":[{"fecha":"AAAA-MM-DD","titulo":"nombre corto de la sesión","motivo":"una frase","bloques":[{"nombre":"ejercicio o actividad","pauta":"p. ej. 3 × 10 o 30 min","nota":"consejo breve"}]}],"nota_semana":null}
+"ajustes" es una lista vacía si no cambias ningún entreno. Incluye la sesión completa del día ajustado (calentamiento y cardio incluidos). Usa solo fechas de la lista PRÓXIMOS DÍAS. "nota_semana" es un texto corto si cambias algo de la semana en general; si no, null.
+"registrar": si el usuario te dice datos (peso en kg, cintura en cm, o que ha cumplido un hábito), apúntalos. En "habitos" usa solo estas claves con true o false: train (entreno hecho), prot (proteína ≥160 g), steps (8.000+ pasos), sleep (durmió 7 h o más; si dice que durmió menos, false), food (sin comida basura no planificada), back (protocolo de espalda). La fecha es la de hoy salvo que diga "ayer". Si no hay datos, "registrar" es null. Confirma brevemente en la respuesta lo que has apuntado.
+Si el mensaje es [INFORME]: da el informe de la mañana. Saluda según la hora, di qué sesión toca hoy y su objetivo, un recordatorio de comida (calorías y proteína) y uno de hábitos según los datos recientes, y cierra con una frase de ánimo. Si hoy es el día 0, explica la preparación y qué pasará mañana.
+Si el mensaje es [CIERRE]: haz el cierre del día. Repasa qué hábitos constan como cumplidos, pregunta por los que faltan, recuerda la hora de dormir y adelanta qué toca mañana.`;
+async function sendCoach(text,label){
  text=(text||"").trim();if(!text||busy)return;
  if(!sampleFn){$("#coachStatus").textContent="El coach necesita abrir esta página en claude.ai con tu sesión iniciada.";return;}
  busy=true;$("#sendBtn").disabled=true;$("#chatIn").value="";
- const c=chatOf(today);c.m.push({r:"u",t:text});renderChat();
- $("#coachStatus").textContent="El coach está pensando…";
+ const c=chatOf(today);c.m.push({r:"u",t:label||text});renderChat();
+ $("#coachStatus").textContent="";hud("thinking");
  const yd=new Date();yd.setDate(yd.getDate()-1);
  const hist=[...(chats[iso(yd)]?chats[iso(yd)].m.slice(-6):[]),...c.m.slice(-14,-1)].map(m=>(m.r==="u"?"USUARIO: ":"COACH: ")+m.t).join("\n");
- const input=INSTR+"\n\nDATOS ACTUALES:\n"+contextText()+"\n\nCONVERSACIÓN RECIENTE:\n"+(hist||"(ninguna)")+"\n\nMENSAJE NUEVO DEL USUARIO:\n"+text;
+const input=INSTR()+"\n\nHORA ACTUAL: "+new Date().toTimeString().slice(0,5)+"\n\nDATOS ACTUALES:\n"+contextText()+"\n\nCONVERSACIÓN RECIENTE:\n"+(hist||"(ninguna)")+"\n\nMENSAJE NUEVO DEL USUARIO:\n"+text;
  try{
   const out=await sampleFn.json(input,{cache:false});
   const reply=String(out&&out.respuesta||"Vale, apuntado.");
   const changed=[];
+  const reg=out&&out.registrar;
+  if(reg&&typeof reg==="object"){const f=/^\d{4}-\d{2}-\d{2}$/.test(reg.fecha||"")&&Math.abs(dayDiff(today,reg.fecha))<=1?reg.fecha:today;const dd=getDay(f);let any=false;
+   if(typeof reg.peso==="number"&&reg.peso>40&&reg.peso<250){dd.w=reg.peso;any=true;}
+   if(typeof reg.cintura==="number"&&reg.cintura>50&&reg.cintura<200){dd.waist=reg.cintura;any=true;}
+   if(reg.habitos&&typeof reg.habitos==="object")HABITS.forEach(([k])=>{if(typeof reg.habitos[k]==="boolean"){dd.h[k]=reg.habitos[k];any=true;}});
+   if(any){saveDay(f);changed.push("datos registrados");}}
   (Array.isArray(out&&out.ajustes)?out.ajustes:[]).forEach(a=>{
    if(!a||!/^\d{4}-\d{2}-\d{2}$/.test(a.fecha||""))return;
    const diff=(new Date(a.fecha+"T00:00:00")-new Date(today+"T00:00:00"))/864e5;if(diff<-1||diff>7)return;
@@ -696,45 +766,53 @@ async function sendCoach(text){
   if(out&&typeof out.nota_semana==="string"&&out.nota_semana.trim()){profile.weekNote={text:out.nota_semana.trim(),week:weekNum(today),date:today};persist("profile",profile);changed.push("nota de la semana");}
   c.m.push({r:"a",t:reply,chg:changed.length?"Plan actualizado: "+changed.join(", ")+". Lo verás en la pestaña Hoy.":""});
   if(c.m.length>60)c.m=c.m.slice(-60);
-  persist("c-"+today,c);renderChat();renderToday();renderPlan();
-  $("#coachStatus").textContent="";
-  if(tts&&$("#ttsOn").checked){tts.speak(reply,{language:"es"}).catch(()=>{});}
+  persist("c-"+today,c);renderChat();renderToday();renderPlan();if(!$("#v-progreso").hidden)renderProgress();
+  $("#coachStatus").textContent="";hud("idle");
+  if(tts&&$("#ttsOn").checked){tts.speak(reply,{language:"es",voice:ai().voice}).catch(()=>{});}
  }catch(e){
-  c.m.pop();renderChat();$("#chatIn").value=text;
-  $("#coachStatus").textContent=e&&e.code==="not_granted"?"No has dado permiso al coach. Puedes activarlo en el menú Permisos de la página.":e&&e.code==="rate_limited"?"Demasiadas consultas seguidas. Espera un minuto y vuelve a enviarlo.":"No he podido obtener respuesta. Vuelve a enviarlo.";
+  c.m.pop();renderChat();if(!label)$("#chatIn").value=text;hud("idle","Error de enlace");
+  $("#coachStatus").textContent=e&&e.code==="not_granted"?"No has dado permiso al asistente. Puedes activarlo en el menú Permisos de la página.":e&&e.code==="rate_limited"?"Demasiadas consultas seguidas. Espera un minuto y vuelve a enviarlo.":"No he podido obtener respuesta. Vuelve a enviarlo.";
  }finally{busy=false;$("#sendBtn").disabled=false;}
 }
 let dictBase="",dictFinal="",micOn=false;
 async function initCoach(){
  const chips=$("#chips");CHIPS.forEach(t=>{const b=el("button",{type:"button",text:t});b.addEventListener("click",()=>sendCoach(t));chips.append(b);});
  $("#sendBtn").addEventListener("click",()=>sendCoach($("#chatIn").value));
+ $("#briefBtn").addEventListener("click",()=>{if(tts)tts.stop();sendCoach("[INFORME]","Informe del día");});
+ $("#nightBtn").addEventListener("click",()=>{if(tts)tts.stop();sendCoach("[CIERRE]","Cierre del día");});
+ $("#setBtn").addEventListener("click",()=>{const h=$("#hudSet");h.hidden=!h.hidden;$("#setBtn").setAttribute("aria-expanded",String(!h.hidden));});
+ const a=ai();$("#aiNameIn").value=a.name;$("#nickIn").value=a.nick;$("#voiceIn").value=a.voice;$("#aiName").textContent=a.name;
+ const saveAi=()=>{profile.ai={name:($("#aiNameIn").value.trim()||"VEGA").toUpperCase(),nick:$("#nickIn").value.trim()||"jefe",voice:$("#voiceIn").value};$("#aiName").textContent=profile.ai.name;persist("profile",profile);renderChat();};
+ ["#aiNameIn","#nickIn","#voiceIn"].forEach(q=>$(q).addEventListener("change",saveAi));
  $("#chatIn").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendCoach($("#chatIn").value);}});
  renderChat();
  try{sampleFn=await window.claude?.use?.("sample");}catch(e){}
  try{dict=await window.claude?.use?.("dictation");}catch(e){}
  try{tts=await window.claude?.use?.("tts");}catch(e){}
- $("#coachStatus").textContent=sampleFn?(dict?"Pulsa el micro y habla, o escribe.":"Escribe tu mensaje. El micro funciona en Chrome o en la app de escritorio de Claude."):"El coach necesita abrir esta página en claude.ai con tu sesión iniciada.";
+ $("#coachStatus").textContent=sampleFn?(dict?"":"Para hablarle, abre la página en Chrome o en la app de escritorio de Claude. Aquí puedes escribirle."):"El asistente necesita abrir esta página en claude.ai con tu sesión iniciada.";
+ if(!sampleFn)hud("idle","Sin conexión");
+ if(tts&&tts.onState)tts.onState(({state})=>{if(state==="speaking")hud("speaking");else if(!busy&&$("#orb").dataset.state==="speaking")hud("idle");});
  $("#ttsWrap").hidden=!tts;
  try{const v=localStorage.getItem(LS+"-tts");if(v!==null)$("#ttsOn").checked=v==="1";}catch(e){}
  $("#ttsOn").addEventListener("change",e=>{try{localStorage.setItem(LS+"-tts",e.target.checked?"1":"0");}catch(_){};if(!e.target.checked&&tts)tts.stop();});
- if(!dict)return;
- const mic=$("#micBtn");mic.hidden=false;
+ const mic=$("#orb");
+ if(!dict){mic.addEventListener("click",()=>{if(tts)tts.stop();$("#chatIn").focus();});return;}
  dict.onPartial(({text})=>{$("#chatIn").value=(dictBase+" "+dictFinal+" "+text).trim();});
  dict.onFinal(({text})=>{dictFinal=(dictFinal+" "+text).trim();$("#chatIn").value=(dictBase+" "+dictFinal).trim();});
  dict.onState(({state,reason})=>{
-  micOn=state==="listening"||state==="starting";mic.classList.toggle("on",micOn);mic.setAttribute("aria-label",micOn?"Parar y enviar":"Hablar");
-  if(state==="listening")$("#coachStatus").textContent="Te escucho… pulsa otra vez el micro para enviar.";
+  micOn=state==="listening"||state==="starting";mic.setAttribute("aria-label",micOn?"Parar y enviar":"Hablar con el asistente");
+  if(micOn)hud("listening");
   if(state==="idle"){
-   if(reason==="not_granted"){mic.hidden=true;$("#coachStatus").textContent="Sin permiso para el micrófono: puedes escribir.";return;}
+   if(reason==="not_granted"){hud("idle","Micro sin permiso");$("#coachStatus").textContent="Sin permiso para el micrófono: puedes escribir.";return;}
    if((reason==="stopped"||reason==="viewer_stopped")&&$("#chatIn").value.trim())sendCoach($("#chatIn").value);
-   else if(!busy)$("#coachStatus").textContent="";
+   else if(!busy)hud("idle");
   }
  });
  mic.addEventListener("click",()=>{
   if(micOn){dict.stop().catch(()=>{});return;}
   if(tts)tts.stop();
   dictBase=$("#chatIn").value.trim();dictFinal="";
-  dict.start({language:"es"}).catch(e=>{if(e&&e.code==="not_granted"){mic.hidden=true;$("#coachStatus").textContent="Sin permiso para el micrófono: puedes escribir.";}else{$("#coachStatus").textContent="No se pudo activar el micro. Vuelve a pulsarlo.";}});
+  dict.start({language:"es"}).catch(e=>{hud("idle");$("#coachStatus").textContent=e&&e.code==="not_granted"?"Sin permiso para el micrófono: puedes escribir.":"No se pudo activar el micro. Vuelve a tocar el núcleo.";});
  });
 }
 
@@ -766,6 +844,7 @@ function renderAll(){buildDayPicker();renderToday();renderPlan();loadNut();rende
 /* ---------- ARRANQUE ---------- */
 lsLoad();renderMyths();renderAll();
 try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t))show(t);}catch(e){}
+if(profile.ai&&profile.ai.name)$("#aiName").textContent=profile.ai.name;
 
 (async function(){
  initCoach();
