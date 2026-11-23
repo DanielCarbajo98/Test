@@ -138,6 +138,14 @@ a.vid:hover{text-decoration:underline}
  .orb[data-state="thinking"]::before{animation-duration:3s}.orb[data-state="thinking"]::after{animation-duration:1.6s}.orb[data-state="thinking"] span{animation-duration:.9s}
  .orb[data-state="listening"],.orb[data-state="speaking"]{animation:breathe 1.1s ease-in-out infinite}
  @keyframes spin{to{transform:rotate(360deg)}}@keyframes breathe{50%{transform:scale(1.06)}}}
+.item{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item input[type=checkbox]{width:20px;height:20px;accent-color:var(--ok)}
+.item .when{font:500 .76rem var(--mono);color:var(--muted)}
+.item .when.late{color:var(--heat)}
+.item.done .txt{text-decoration:line-through;color:var(--muted)}
+.del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1;padding:2px 6px;border-radius:4px}
+.del:hover{color:var(--heat);background:var(--heat-soft)}
 .savestate{font-size:.75rem;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.habit,.ex{transition:background .15s,border-color .15s}}
 </style>
@@ -187,6 +195,11 @@ a.vid:hover{text-decoration:underline}
     </div>
   </div>
 
+  <div class="card" id="todayTasksCard" hidden>
+    <div class="session-head"><div><span class="eyebrow">Agenda</span><h3>Pendiente para hoy</h3></div></div>
+    <div id="todayTasks"></div>
+  </div>
+
   <div class="card">
     <span class="eyebrow">Últimos 14 días</span>
     <div class="heat-row" id="heat14" aria-label="Cumplimiento de hábitos de los últimos 14 días"></div>
@@ -222,6 +235,28 @@ a.vid:hover{text-decoration:underline}
     <div class="row" style="margin-top:8px;justify-content:space-between">
       <label class="small" for="ttsOn" id="ttsWrap" hidden><input type="checkbox" id="ttsOn" checked> Leer las respuestas en voz alta</label>
       <span class="small muted" id="coachStatus">Conectando con el coach…</span>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="session-head"><div><span class="eyebrow">Tu día a día</span><h3>Tareas y recordatorios</h3></div><span class="pill" id="taskCount">0</span></div>
+      <p class="small muted">Díselo a tu asistente ("recuérdame llamar al taller el jueves a las 10") o escríbelo aquí.</p>
+      <form class="row" id="taskForm" style="margin-top:8px">
+        <input class="f" id="taskIn" placeholder="Nueva tarea" style="flex:1;min-width:140px;width:auto;font-family:var(--body)" aria-label="Nueva tarea">
+        <input class="f" id="taskDate" type="date" style="width:auto" aria-label="Fecha">
+        <input class="f" id="taskTime" type="time" style="width:auto" aria-label="Hora">
+        <button class="btn" type="submit">Añadir</button>
+      </form>
+      <div id="taskList" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div class="session-head"><div><span class="eyebrow">Memoria</span><h3>Lo que sé de ti</h3></div><span class="pill" id="memCount">0</span></div>
+      <p class="small muted">Aprende de cada conversación y lo usa en todas las siguientes. Borra lo que no quieras que recuerde.</p>
+      <form class="row" id="memForm" style="margin-top:8px">
+        <input class="f" id="memIn" placeholder="Algo que debería saber de ti" style="flex:1;min-width:160px;width:auto;font-family:var(--body)" aria-label="Nuevo recuerdo">
+        <button class="btn" type="submit">Guardar</button>
+      </form>
+      <div id="memList" style="margin-top:8px"></div>
     </div>
   </div>
 </section>
@@ -502,10 +537,11 @@ const HABITS=[
 ];
 
 /* ---------- ALMACENAMIENTO ---------- */
-let profile={}, days={}, chats={}; let col=null; const LS="coach-recomp-v1";
+let profile={}, days={}, chats={}, memory={items:[]}, tasks={items:[]};
+const uid36=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6); let col=null; const LS="coach-recomp-v1";
 const queues={};
-function lsLoad(){try{const o=JSON.parse(localStorage.getItem(LS)||"{}");profile=o.profile||{};days=o.days||{};chats=o.chats||{};}catch(e){}}
-function lsSave(){try{localStorage.setItem(LS,JSON.stringify({profile,days,chats}));}catch(e){}}
+function lsLoad(){try{const o=JSON.parse(localStorage.getItem(LS)||"{}");profile=o.profile||{};days=o.days||{};chats=o.chats||{};memory=o.memory||{items:[]};tasks=o.tasks||{items:[]};}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify({profile,days,chats,memory,tasks}));}catch(e){}}
 function setSave(t){$("#saveState").textContent=t;}
 function persist(key,obj){
  lsSave();
@@ -686,18 +722,43 @@ function renderProgress(){
 }
 
 
+/* ---------- TAREAS Y MEMORIA ---------- */
+function fmtWhen(t){if(!t.date)return t.time||"";const d=new Date(t.date+"T00:00:00");const x=dayDiff(today,t.date);const lab=x===0?"Hoy":x===1?"Mañana":x===-1?"Ayer":DAYN[d.getDay()].slice(0,3)+" "+d.getDate()+"/"+(d.getMonth()+1);return lab+(t.time?" "+t.time:"");}
+function sortTasks(a,b){return (a.done-b.done)||((a.date||"9999")+(a.time||"")).localeCompare((b.date||"9999")+(b.time||""));}
+function taskRow(t){const c=el("input",{type:"checkbox","aria-label":"Hecha: "+t.text});c.checked=!!t.done;
+ const late=!t.done&&t.date&&t.date<today;
+ const row=el("div",{class:"item"+(t.done?" done":"")},c,el("div",{style:"min-width:0"},el("div",{class:"txt",text:t.text}),t.date||t.time?el("div",{class:"when"+(late?" late":""),text:fmtWhen(t)+(late?" · atrasada":"")}):""),el("button",{class:"del",type:"button","aria-label":"Borrar tarea",text:"×"}));
+ c.addEventListener("change",()=>{t.done=c.checked;if(t.done)t.doneAt=today;persist("tasks",tasks);renderMemTasks();});
+ row.lastChild.addEventListener("click",()=>{tasks.items=tasks.items.filter(x=>x!==t);persist("tasks",tasks);renderMemTasks();});
+ return row;}
+function renderMemTasks(){
+ tasks.items=tasks.items.filter(t=>!(t.done&&t.doneAt&&dayDiff(t.doneAt,today)>7));
+ const tl=$("#taskList");tl.textContent="";const its=[...tasks.items].sort(sortTasks);
+ if(!its.length)tl.append(el("p",{class:"small muted",text:"Sin tareas. Prueba a decirle: \"recuérdame comprar creatina mañana\"."}));
+ its.forEach(t=>tl.append(taskRow(t)));
+ {const n=tasks.items.filter(t=>!t.done).length;$("#taskCount").textContent=n+(n===1?" pendiente":" pendientes");}
+ const due=its.filter(t=>!t.done&&t.date&&t.date<=today);const tt=$("#todayTasks");tt.textContent="";due.forEach(t=>tt.append(taskRow(t)));$("#todayTasksCard").hidden=!due.length;
+ const ml=$("#memList");ml.textContent="";
+ if(!memory.items.length)ml.append(el("p",{class:"small muted",text:"Todavía no sé nada de ti más allá de tu perfil. Cuéntame cosas: tu horario, tu trabajo, qué comidas te gustan…"}));
+ [...memory.items].reverse().forEach(m=>{const row=el("div",{class:"item",style:"grid-template-columns:1fr auto"},el("div",{style:"min-width:0"},el("div",{class:"txt",text:m.t}),el("div",{class:"when",text:m.d?m.d.slice(8)+"/"+m.d.slice(5,7):""})),el("button",{class:"del",type:"button","aria-label":"Olvidar",text:"×"}));
+  row.lastChild.addEventListener("click",()=>{memory.items=memory.items.filter(x=>x!==m);persist("memory",memory);renderMemTasks();});ml.append(row);});
+ $("#memCount").textContent=memory.items.length+(memory.items.length===1?" recuerdo":" recuerdos");
+}
+$("#taskForm").addEventListener("submit",e=>{e.preventDefault();const t=$("#taskIn").value.trim();if(!t)return;tasks.items.push({id:uid36("t"),text:t,date:$("#taskDate").value||null,time:$("#taskTime").value||null,done:false});$("#taskIn").value="";$("#taskTime").value="";persist("tasks",tasks);renderMemTasks();});
+$("#memForm").addEventListener("submit",e=>{e.preventDefault();const t=$("#memIn").value.trim();if(!t)return;memory.items.push({id:uid36("m"),t,d:today});$("#memIn").value="";persist("memory",memory);renderMemTasks();});
+
 /* ---------- COACH ---------- */
 let sampleFn=null,dict=null,tts=null,busy=false;
 function ai(){return Object.assign({name:"VEGA",nick:"jefe",voice:"glassy"},profile.ai||{});}
 const HUDTXT={idle:"En línea",listening:"Te escucho",thinking:"Procesando",speaking:"Hablando"};
 function hud(st,txt){const o=$("#orb");o.dataset.state=st;$("#hudState").textContent=txt||HUDTXT[st]||"";}
-const CHIPS=["He dormido mal y estoy cansado","Me molesta la espalda","Hoy solo tengo 30 minutos","No puedo ir al gimnasio mañana","Ayer me pasé con la comida","¿Qué ceno hoy?"];
+const CHIPS=["He dormido mal y estoy cansado","Me molesta la espalda","Hoy solo tengo 30 minutos","No puedo ir al gimnasio mañana","¿Qué ceno hoy?","Organízame el día","¿Qué sabes de mí?"];
 function chatOf(d){return chats[d]||(chats[d]={m:[]});}
 function renderChat(){
  const log=$("#chatLog");log.textContent="";
  const yd=new Date();yd.setDate(yd.getDate()-1);const ys=iso(yd);
  const msgs=[...(chats[ys]?chats[ys].m.slice(-4):[]),...chatOf(today).m];
- if(!msgs.length)log.append(el("div",{class:"msg a",text:"Sistemas en línea, "+ai().nick+". Soy "+ai().name+", tu asistente de entrenamiento. Pulsa Informe del día y te cuento la misión de hoy, o toca el núcleo y dime cómo te encuentras."}));
+ if(!msgs.length)log.append(el("div",{class:"msg a",text:"Sistemas en línea, "+ai().nick+". Soy "+ai().name+", tu asistente de entrenamiento. Pulsa Informe del día y te cuento la misión de hoy, o toca el núcleo y háblame: entreno, comida, tareas o lo que necesites. Cuanto más me cuentes, mejor te conoceré."}));
  msgs.forEach(m=>{const b=el("div",{class:"msg "+m.r,text:m.t});if(m.chg)b.append(el("span",{class:"chg",text:m.chg}));log.append(b);});
  log.scrollTop=log.scrollHeight;
 }
@@ -719,10 +780,14 @@ function contextText(){
  const ws=Object.keys(days).filter(k=>days[k].w).sort().slice(-10).map(k=>k.slice(5)+": "+days[k].w+" kg");
  if(ws.length)lines.push("PESOS RECIENTES: "+ws.join(", "));
  if(profile.weekNote&&profile.weekNote.text)lines.push("NOTA DE SEMANA ACTUAL: "+profile.weekNote.text);
+ lines.push("MEMORIA A LARGO PLAZO (lo que sabes del usuario; [id] texto):\n"+(memory.items.length?memory.items.map(m=>"["+m.id+"] "+m.t).join("\n"):"(vacía)"));
+ const pend=tasks.items.filter(t=>!t.done).sort(sortTasks);
+ lines.push("TAREAS PENDIENTES ([id] texto · cuándo):\n"+(pend.length?pend.map(t=>"["+t.id+"] "+t.text+(t.date||t.time?" · "+(t.date||"")+" "+(t.time||""):"")).join("\n"):"(ninguna)"));
  return lines.join("\n");
 }
-const INSTR=()=>`Te llamas ${ai().name}. Eres el asistente de IA personal de este usuario, dentro de su app de fitness, y actúas como su entrenador personal y nutricionista deportivo. Personalidad: asistente de IA sofisticado, sereno y muy eficiente, con humor seco e ironía amable (nunca borde). Llamas al usuario "${ai().nick}". Hablas en español de España, con frases cortas y precisas, y le motivas sin cursilería. Te basas en la evidencia científica.
-Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos.
+const INSTR=()=>`Te llamas ${ai().name}. Eres el asistente de IA personal de este usuario para el día a día y, además, su entrenador personal y nutricionista deportivo. Personalidad: asistente de IA sofisticado, sereno y muy eficiente, con humor seco e ironía amable (nunca borde). Llamas al usuario "${ai().nick}". Hablas en español de España, con frases cortas y precisas, y le motivas sin cursilería. Te basas en la evidencia científica.
+Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos. Como asistente personal le ayudas con cualquier cosa del día a día: organizar el día, tareas y recordatorios, ideas, redactar mensajes, recetas, decisiones, estudio o trabajo. No tienes acceso a internet, al calendario, al correo ni al móvil: no inventes datos actuales (tiempo, noticias, horarios o precios) y, si te los pide, dile que no puedes consultarlos. Los recordatorios solo se ven cuando abre la app: díselo la primera vez que te pida uno.
+MEMORIA: aprendes del usuario en cada conversación. Usa siempre la MEMORIA A LARGO PLAZO para personalizar tus respuestas. Cuando te cuente algo duradero y útil (horarios, trabajo, gustos, comidas, personas importantes, objetivos, lesiones, preferencias de entreno, logros o cómo le gusta que le hables), guárdalo en "recordar" como frase corta en tercera persona. No guardes lo trivial ni lo pasajero, ni contraseñas o datos bancarios. Si algo contradice un recuerdo, pon su id en "olvidar" y guarda la versión nueva. No repitas recuerdos que ya existen.
 Reglas:
 - Sueño < 6 h o mucha fatiga: baja la intensidad (menos series, RIR más alto) o cambia las pesas por cardio Z2 suave y movilidad.
 - Molestia lumbar leve: quita los ejercicios que carguen la columna (peso muerto rumano, zancadas pesadas, press de pie), usa máquinas con apoyo y el protocolo McGill, y añade caminar.
@@ -732,11 +797,12 @@ Reglas:
 - Si se ha pasado con la comida: nada de culpa ni de compensar ayunando. Vuelve al plan en la siguiente comida y añade pasos.
 - Comida: huevos enteros (nunca claras), arroz congelado de Mercadona en bolsitas y opciones fáciles de supermercado o de comida rápida "mejor elegida".
 Responde SOLO con JSON válido con esta forma exacta:
-{"respuesta":"texto para leer en voz alta, máximo 110 palabras (máximo 150 en informes), sin listas, sin markdown ni emojis","registrar":{"fecha":"AAAA-MM-DD","peso":null,"cintura":null,"habitos":{}},"ajustes":[{"fecha":"AAAA-MM-DD","titulo":"nombre corto de la sesión","motivo":"una frase","bloques":[{"nombre":"ejercicio o actividad","pauta":"p. ej. 3 × 10 o 30 min","nota":"consejo breve"}]}],"nota_semana":null}
+{"respuesta":"texto para leer en voz alta, máximo 110 palabras (máximo 150 en informes), sin listas, sin markdown ni emojis","registrar":{"fecha":"AAAA-MM-DD","peso":null,"cintura":null,"habitos":{}},"recordar":[],"olvidar":[],"tareas_nuevas":[{"texto":"","fecha":"AAAA-MM-DD o null","hora":"HH:MM o null"}],"tareas_hechas":[],"ajustes":[{"fecha":"AAAA-MM-DD","titulo":"nombre corto de la sesión","motivo":"una frase","bloques":[{"nombre":"ejercicio o actividad","pauta":"p. ej. 3 × 10 o 30 min","nota":"consejo breve"}]}],"nota_semana":null}
 "ajustes" es una lista vacía si no cambias ningún entreno. Incluye la sesión completa del día ajustado (calentamiento y cardio incluidos). Usa solo fechas de la lista PRÓXIMOS DÍAS. "nota_semana" es un texto corto si cambias algo de la semana en general; si no, null.
 "registrar": si el usuario te dice datos (peso en kg, cintura en cm, o que ha cumplido un hábito), apúntalos. En "habitos" usa solo estas claves con true o false: train (entreno hecho), prot (proteína ≥160 g), steps (8.000+ pasos), sleep (durmió 7 h o más; si dice que durmió menos, false), food (sin comida basura no planificada), back (protocolo de espalda). La fecha es la de hoy salvo que diga "ayer". Si no hay datos, "registrar" es null. Confirma brevemente en la respuesta lo que has apuntado.
-Si el mensaje es [INFORME]: da el informe de la mañana. Saluda según la hora, di qué sesión toca hoy y su objetivo, un recordatorio de comida (calorías y proteína) y uno de hábitos según los datos recientes, y cierra con una frase de ánimo. Si hoy es el día 0, explica la preparación y qué pasará mañana.
-Si el mensaje es [CIERRE]: haz el cierre del día. Repasa qué hábitos constan como cumplidos, pregunta por los que faltan, recuerda la hora de dormir y adelanta qué toca mañana.`;
+"tareas_nuevas": tareas o recordatorios que te pida (resuelve las fechas relativas a partir de la fecha de hoy); si no hay, lista vacía. "tareas_hechas": ids de tareas que diga que ya ha hecho.
+Si el mensaje es [INFORME]: da el informe de la mañana. Saluda según la hora, di qué sesión toca hoy y su objetivo, las tareas pendientes de hoy si las hay, un recordatorio de comida (calorías y proteína) y uno de hábitos según los datos recientes, y cierra con una frase de ánimo. Si hoy es el día 0, explica la preparación y qué pasará mañana.
+Si el mensaje es [CIERRE]: haz el cierre del día. Repasa qué hábitos constan como cumplidos y las tareas de hoy sin terminar, pregunta por los que faltan, recuerda la hora de dormir y adelanta qué toca mañana.`;
 async function sendCoach(text,label){
  text=(text||"").trim();if(!text||busy)return;
  if(!sampleFn){$("#coachStatus").textContent="El coach necesita abrir esta página en claude.ai con tu sesión iniciada.";return;}
@@ -756,6 +822,15 @@ const input=INSTR()+"\n\nHORA ACTUAL: "+new Date().toTimeString().slice(0,5)+"\n
    if(typeof reg.cintura==="number"&&reg.cintura>50&&reg.cintura<200){dd.waist=reg.cintura;any=true;}
    if(reg.habitos&&typeof reg.habitos==="object")HABITS.forEach(([k])=>{if(typeof reg.habitos[k]==="boolean"){dd.h[k]=reg.habitos[k];any=true;}});
    if(any){saveDay(f);changed.push("datos registrados");}}
+  let memCh=false;
+  if(Array.isArray(out&&out.olvidar)&&out.olvidar.length){const ids=new Set(out.olvidar.map(String));const n0=memory.items.length;memory.items=memory.items.filter(m=>!ids.has(m.id));memCh=memory.items.length!==n0;}
+  if(Array.isArray(out&&out.recordar))out.recordar.forEach(t=>{t=String(t||"").trim().slice(0,240);if(t&&!memory.items.some(m=>m.t.toLowerCase()===t.toLowerCase())){memory.items.push({id:uid36("m"),t,d:today});memCh=true;}});
+  if(memory.items.length>150)memory.items=memory.items.slice(-150);
+  if(memCh){persist("memory",memory);changed.push("memoria actualizada");}
+  let tCh=0;
+  if(Array.isArray(out&&out.tareas_nuevas))out.tareas_nuevas.forEach(t=>{const tx=String(t&&t.texto||"").trim().slice(0,200);if(!tx)return;tasks.items.push({id:uid36("t"),text:tx,date:/^\d{4}-\d{2}-\d{2}$/.test(t.fecha||"")?t.fecha:null,time:/^\d{2}:\d{2}$/.test(t.hora||"")?t.hora:null,done:false});tCh++;});
+  if(Array.isArray(out&&out.tareas_hechas))out.tareas_hechas.forEach(id=>{const t=tasks.items.find(x=>x.id===String(id));if(t&&!t.done){t.done=true;t.doneAt=today;tCh++;}});
+  if(tCh){persist("tasks",tasks);changed.push("tareas actualizadas");}
   (Array.isArray(out&&out.ajustes)?out.ajustes:[]).forEach(a=>{
    if(!a||!/^\d{4}-\d{2}-\d{2}$/.test(a.fecha||""))return;
    const diff=(new Date(a.fecha+"T00:00:00")-new Date(today+"T00:00:00"))/864e5;if(diff<-1||diff>7)return;
@@ -764,9 +839,9 @@ const input=INSTR()+"\n\nHORA ACTUAL: "+new Date().toTimeString().slice(0,5)+"\n
    const d=new Date(a.fecha+"T00:00:00");changed.push(diff===0?"hoy":DAYN[d.getDay()].toLowerCase()+" "+d.getDate());
   });
   if(out&&typeof out.nota_semana==="string"&&out.nota_semana.trim()){profile.weekNote={text:out.nota_semana.trim(),week:weekNum(today),date:today};persist("profile",profile);changed.push("nota de la semana");}
-  c.m.push({r:"a",t:reply,chg:changed.length?"Plan actualizado: "+changed.join(", ")+". Lo verás en la pestaña Hoy.":""});
+  c.m.push({r:"a",t:reply,chg:changed.length?"Plan actualizado: "+changed.join(", ")+". ":""});
   if(c.m.length>60)c.m=c.m.slice(-60);
-  persist("c-"+today,c);renderChat();renderToday();renderPlan();if(!$("#v-progreso").hidden)renderProgress();
+  persist("c-"+today,c);renderChat();renderToday();renderPlan();renderMemTasks();if(!$("#v-progreso").hidden)renderProgress();
   $("#coachStatus").textContent="";hud("idle");
   if(tts&&$("#ttsOn").checked){tts.speak(reply,{language:"es",voice:ai().voice}).catch(()=>{});}
  }catch(e){
@@ -839,7 +914,7 @@ function show(v){tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
 $("#goCoach").addEventListener("click",()=>show("coach"));
 
-function renderAll(){buildDayPicker();renderToday();renderPlan();loadNut();renderMacros();renderProgress();}
+function renderAll(){buildDayPicker();renderToday();renderPlan();loadNut();renderMacros();renderProgress();renderMemTasks();}
 
 /* ---------- ARRANQUE ---------- */
 lsLoad();renderMyths();renderAll();
@@ -857,17 +932,19 @@ if(profile.ai&&profile.ai.name)$("#aiName").textContent=profile.ai.name;
   let first=true;
   col.onSnapshot(snap=>{
    clearTimeout(timer);
-   const remote={};let rp=null;
-   snap.docs.forEach(d=>{const v=d.data();if(!v)return;if(d.id==="profile")rp=v;else if(d.id.startsWith("d-"))remote[d.id.slice(2)]=JSON.parse(JSON.stringify(v));else if(d.id.startsWith("c-"))chats[d.id.slice(2)]=JSON.parse(JSON.stringify(v));});
+   const remote={};let rp=null,remoteMem=null,remoteTasks=null;
+   snap.docs.forEach(d=>{const v=d.data();if(!v)return;if(d.id==="profile")rp=v;else if(d.id.startsWith("d-"))remote[d.id.slice(2)]=JSON.parse(JSON.stringify(v));else if(d.id.startsWith("c-"))chats[d.id.slice(2)]=JSON.parse(JSON.stringify(v));else if(d.id==="memory")remoteMem=JSON.parse(JSON.stringify(v));else if(d.id==="tasks")remoteTasks=JSON.parse(JSON.stringify(v));});
    if(first){
     first=false;
     // sube lo que solo existía en este navegador
     Object.keys(days).forEach(k=>{if(!remote[k])persist(dayKey(k),days[k]);});
     if(!rp&&Object.keys(profile).length)persist("profile",profile);
+    if(!remoteMem&&memory.items.length)persist("memory",memory);
+    if(!remoteTasks&&tasks.items.length)persist("tasks",tasks);
    }
-   Object.assign(days,remote);if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
+   Object.assign(days,remote);if(remoteMem)memory=remoteMem;if(remoteTasks)tasks=remoteTasks;if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
    lsSave();
-   const active=document.activeElement;if(!(active&&active.tagName==="INPUT"))renderAll();renderChat();
+   const active=document.activeElement;if(!(active&&active.tagName==="INPUT"))renderAll();renderChat();renderMemTasks();
    setSave("Sincronizado");
   },()=>{clearTimeout(timer);setSave("Sin conexión con la nube; guardado en este navegador");col=null;});
  }catch(e){clearTimeout(timer);setSave("Guardado en este navegador");}
