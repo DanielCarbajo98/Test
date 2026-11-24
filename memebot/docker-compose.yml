@@ -25,13 +25,13 @@ services:
       - ./state:/app/state
     command: ["python", "-m", "bot.dashboard", "--state", "state", "--host", "0.0.0.0"]
 
-  brain:                     # aprende cada 6 h y actualiza la estrategia del bot
+  brain:                     # aprendizaje continuo: reentrena cada 30 min, reoptimización completa cada 6 h
     <<: *base
     volumes:
       - ./data:/app/data
       - ./data_launches:/app/data_launches
       - ./state:/app/state
-    command: ["python", "-m", "bot.brain", "--data", "data,data_launches", "--state", "state", "--loop", "6"]
+    command: ["python", "-m", "bot.brain", "--data", "data,data_launches", "--state", "state", "--every-min", "30", "--full-every", "12"]
 
   collector:                 # velas "a futuro" del universo activo
     <<: *base

@@ -7,3 +7,4 @@ numpy>=1.26
 numba>=0.60
 scikit-learn>=1.5
 joblib>=1.4
+qrcode>=7.4

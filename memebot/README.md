@@ -6,6 +6,8 @@
 > autoengaños, y aplicar una gestión de riesgo que limita cuánto puedes perder. Usa solo dinero que puedas
 > perder entero.
 
+**👉 ¿Qué tengo que hacer yo? → [TU_PARTE.md](TU_PARTE.md)** (paso a paso, para dummies).
+
 **¿Empiezas con poco dinero? → [GUIA_50EUR.md](GUIA_50EUR.md)** (cómo funciona, dónde depositar, qué wallet y cómo pasar a real).
 
 **Cerebro autónomo:** `bot/brain.py` aprende de las velas y de sus propias operaciones, hace competir estrategias en

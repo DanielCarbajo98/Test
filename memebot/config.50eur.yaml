@@ -9,7 +9,7 @@ quote_mint: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
 quote_decimals: 6
 state_dir: state
 scanner:
-  interval_seconds: 20
+  interval_seconds: 10
   entry_interval_seconds: 60
   max_candidates: 60
   include_gecko: true

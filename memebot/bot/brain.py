@@ -254,7 +254,7 @@ def lessons_from(X, y, imp, reality: dict, cost_penalty: float) -> list[str]:
 
 
 # --------------------------------------------------------------------------- ciclo completo
-def learn(data_dirs: list[str], state_dir: str) -> dict:
+def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
     from research.backtest import load
 
     state = Path(state_dir)
@@ -290,7 +290,13 @@ def learn(data_dirs: list[str], state_dir: str) -> dict:
     ml = train_model(X, y, ts, pid)
     t1, t2 = (ml["split"] if ml else np.quantile(ts, [0.6, 0.8]).tolist())
     # 3) aspirantes de reglas
-    rules = evaluate_rules(pools, t1, t2, pen)
+    # reoptimizar las reglas es caro: se hace en los ciclos completos; en los rápidos se conserva lo último
+    if full or not brain.get("_rules_cache"):
+        rules = evaluate_rules(pools, t1, t2, pen)
+        brain["_rules_cache"] = {k: {kk: vv for kk, vv in v.items() if kk != "_test_r"} for k, v in rules.items()}
+        brain["last_full_learn"] = int(time.time())
+    else:
+        rules = brain["_rules_cache"]
     candidates = []
     for name, r in rules.items():
         candidates.append({"kind": "rule", "strategy": name, "params": r["entry"], "exits_bt": r["exit"],
@@ -352,6 +358,7 @@ def learn(data_dirs: list[str], state_dir: str) -> dict:
                         "version": brain["version"], "best": best["strategy"] if best else None,
                         "best_score": best["score"] if best else None, "samples": n}])[-50:]
     brain["learn_seconds"] = round(time.time() - t0, 1)
+    brain["learn_mode"] = "completo" if full else "rápido"
     bfile.write_text(json.dumps(brain, indent=1, default=str))
     log.info(brain["status_text"])
     return brain
@@ -429,17 +436,23 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="data,data_launches")
     ap.add_argument("--state", default="state")
-    ap.add_argument("--loop", type=float, default=0, help="repetir cada N horas")
+    ap.add_argument("--loop", type=float, default=0, help="repetir cada N horas (formato antiguo)")
+    ap.add_argument("--every-min", type=float, default=0, help="aprendizaje continuo: reentrenar cada N minutos")
+    ap.add_argument("--full-every", type=int, default=12, help="reoptimización completa de reglas cada N ciclos")
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s: %(message)s")
+    period = a.every_min * 60 if a.every_min else a.loop * 3600
+    k = 0
     while True:
+        t0 = time.time()
         try:
-            learn(a.data.split(","), a.state)
+            learn(a.data.split(","), a.state, full=(k % max(1, a.full_every) == 0) or not a.every_min)
         except Exception:  # noqa: BLE001
             log.exception("Fallo en el ciclo de aprendizaje")
-        if not a.loop:
+        k += 1
+        if not period:
             break
-        time.sleep(a.loop * 3600)
+        time.sleep(max(30, period - (time.time() - t0)))
 
 
 if __name__ == "__main__":

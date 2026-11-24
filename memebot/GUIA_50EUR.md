@@ -6,7 +6,7 @@
 
 ## 1. Cómo funciona, en 30 segundos
 1. **Recoge datos**: cada 15 minutos descarga velas de cientos de memecoins de Solana y registra lanzamientos nuevos.
-2. **Aprende** (el cerebro, cada 6 h): estudia esas velas y tus propias operaciones y entrena un modelo. Hace
+2. **Aprende continuamente** (el cerebro reentrena cada 30 min; reoptimización completa cada 6 h): estudia esas velas y tus propias operaciones y entrena un modelo. Hace
    competir estrategias con datos que no han visto y se queda con la que demuestra ventaja. Si la realidad le sale
    peor de lo esperado, se corrige.
 3. **Opera** (cada 20–60 s): busca tokens, aplica la estrategia del cerebro, descarta los peligrosos (tokens con los
@@ -49,7 +49,7 @@ cp config.50eur.yaml config.yaml  # perfil de 50 €, empieza en mode: paper
 # En un servidor 24/7, un solo comando:  sudo bash deploy/install.sh
 # O a mano en tu ordenador (4 terminales):
 python -m research.collect --loop 15                            # datos
-python -m bot.brain --data data,data_launches --state state --loop 6   # cerebro
+python -m bot.brain --data data,data_launches --state state --every-min 30   # cerebro
 python -m bot.main --config config.yaml                         # bot
 python -m bot.dashboard --state state                           # panel: http://127.0.0.1:8050
 ```

@@ -464,7 +464,8 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <span>Salidas</span><b>SL −${c.exits_bt.sl}% · TP ${c.exits_bt.tp.map(x => "+" + x[0] + "%").join(" / ")} · trailing ${c.exits_bt.trail}%</b></div>`
       : `<div class="big">${st === "defensivo" ? "Sin ventaja demostrada" : "Aún sin estrategia propia"}</div><p>${esc(b.status_text || "")}</p>`;
     const meta = `<div class="kv"><span>Ejemplos estudiados</span><b>${(b.samples || 0).toLocaleString("es-ES")}</b>
-      <span>Tokens analizados</span><b>${b.pools ?? "—"}</b><span>Último aprendizaje</span><b>${b.updated_at ? ago(S.now - b.updated_at) : "—"}</b>
+      <span>Tokens analizados</span><b>${b.pools ?? "—"}</b><span>Último aprendizaje</span><b>${b.updated_at ? ago(S.now - b.updated_at) : "—"}${b.learn_mode ? " · " + b.learn_mode : ""}</b>
+      <span>Ritmo</span><b>reentrena cada 30 min</b>
       ${b.cost_penalty ? `<span>Corrección de costes por la realidad</span><b>+${(100 * b.cost_penalty).toFixed(1)} pts</b>` : ""}
       ${b.reality && b.reality.n ? `<span>Resultado real vs esperado</span><b class="${cls(b.reality.expectancy)}">${pct(b.reality.expectancy, 2)} vs ${b.reality.expected != null ? pct(b.reality.expected, 2) : "—"}</b>` : ""}</div>`;
     const imp = (b.ml && b.ml.importance || []).slice(0, 6);

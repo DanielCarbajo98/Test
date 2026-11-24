@@ -91,7 +91,8 @@ def build_state(state: Path) -> dict:
     control = _read_json(state / "control.json", {})
     brain = _read_json(state / "brain.json", {})
     brain_view = {k: brain.get(k) for k in ("version", "status", "status_text", "updated_at", "samples", "pools",
-                                            "cost_penalty", "lessons", "reality", "ml", "learn_seconds")}
+                                            "cost_penalty", "lessons", "reality", "ml", "learn_seconds", "learn_mode",
+                                            "last_full_learn")}
     champ = brain.get("champion") or {}
     brain_view["champion"] = {k: champ.get(k) for k in ("kind", "strategy", "version", "test", "promoted_at",
                                                         "exits_bt", "threshold", "params")} if champ else None
