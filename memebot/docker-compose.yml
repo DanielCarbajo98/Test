@@ -15,9 +15,15 @@ services:
     volumes:
       - ./config.live.yaml:/app/config.yaml:ro
       - ./state-live:/app/state
-  collector:                    # amplía el dataset de backtest cada 6 h
+  collector:                    # dataset de backtest "a futuro" (sin sesgo de selección)
     build: .
     restart: unless-stopped
     volumes:
       - ./data:/app/data
-    command: ["sh", "-c", "while true; do python -m research.collect --hours 72 --out data; sleep 21600; done"]
+    command: ["python", "-m", "research.collect", "--loop", "15", "--out", "data"]
+  launches:                     # muestra de lanzamientos al azar + sus velas
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./data_launches:/app/data_launches
+    command: ["sh", "-c", "while true; do python -m research.sample_launches --minutes 60 --every 180; python -m research.sample_launches --fetch; done"]
