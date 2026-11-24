@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MemeBot · Panel</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233987e5'/%3E%3Cpath d='M7 21l6-7 5 4 7-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #111110;
+  --surface: #1a1a19;
+  --surface-2: #222220;
+  --border: #2c2c2a;
+  --text: #f0efec;
+  --text-2: #c3c2b7;
+  --muted: #8b8a82;
+  --accent: #3987e5;
+  --accent-soft: rgba(57,135,229,.14);
+  --good: #0ca30c;
+  --good-text: #3fcf5b;
+  --bad: #d03b3b;
+  --bad-text: #f07070;
+  --warn: #fab219;
+  --grid: #2a2a28;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.25);
+  --radius: 14px;
+  --font: ui-sans-serif, -apple-system, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #f4f4f2; --surface: #fcfcfb; --surface-2: #f0efec; --border: #e3e2dd;
+    --text: #0b0b0b; --text-2: #52514e; --muted: #7b7a75;
+    --accent: #2a78d6; --accent-soft: rgba(42,120,214,.10);
+    --good-text: #006300; --bad-text: #b02a2a; --grid: #ebeae6;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 18px rgba(0,0,0,.05);
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f4f2; --surface: #fcfcfb; --surface-2: #f0efec; --border: #e3e2dd;
+  --text: #0b0b0b; --text-2: #52514e; --muted: #7b7a75;
+  --accent: #2a78d6; --accent-soft: rgba(42,120,214,.10);
+  --good-text: #006300; --bad-text: #b02a2a; --grid: #ebeae6;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 18px rgba(0,0,0,.05);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--text); font: 14px/1.45 var(--font); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--accent); }
+button { font: inherit; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 20px 24px 48px; }
+
+/* ---------- cabecera ---------- */
+header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 17px; letter-spacing: -.01em; }
+.brand svg { width: 28px; height: 28px; }
+.pills { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 999px;
+        background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2); font-size: 12px; font-weight: 550; }
+.pill.live { color: var(--bad-text); border-color: color-mix(in srgb, var(--bad) 45%, var(--border)); }
+.pill.paper { color: var(--text); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.dot.on { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 25%, transparent); }
+.dot.off { background: var(--bad); }
+.dot.paused { background: var(--warn); }
+.spacer { flex: 1; }
+.actions { display: flex; gap: 8px; }
+.btn { height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface);
+       color: var(--text); cursor: pointer; font-weight: 550; display: inline-flex; align-items: center; gap: 7px; }
+.btn:hover { background: var(--surface-2); }
+.btn.danger { color: var(--bad-text); border-color: color-mix(in srgb, var(--bad) 40%, var(--border)); }
+.btn.danger:hover { background: color-mix(in srgb, var(--bad) 12%, var(--surface)); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn:disabled { opacity: .5; cursor: default; }
+.icon-btn { width: 34px; padding: 0; justify-content: center; }
+
+/* ---------- tarjetas ---------- */
+.grid { display: grid; gap: 16px; }
+.grid > * { min-width: 0; }
+.top { grid-template-columns: minmax(280px, 1.15fr) 2fr; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card-h { display: flex; align-items: center; gap: 12px; padding: 16px 18px 0; }
+.card-h h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--text-2); letter-spacing: .01em; }
+.card-b { padding: 14px 18px 18px; }
+.hero { padding: 20px 22px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
+.label { font-size: 12.5px; color: var(--muted); font-weight: 550; }
+.hero-value { font-size: 48px; font-weight: 650; letter-spacing: -.02em; line-height: 1.05; margin-top: 6px; }
+.delta { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; font-size: 13.5px; margin-top: 8px; }
+.up { color: var(--good-text); } .down { color: var(--bad-text); } .flat { color: var(--muted); }
+.hero-foot { display: flex; gap: 22px; flex-wrap: wrap; }
+.hero-foot div b { display: block; font-size: 15px; font-weight: 600; margin-top: 2px; }
+.tiles { grid-template-columns: repeat(3, 1fr); }
+.tile { padding: 16px 18px; }
+.tile .v { font-size: 24px; font-weight: 640; letter-spacing: -.01em; margin-top: 6px; }
+.tile .s { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+.meter { height: 6px; border-radius: 99px; background: var(--surface-2); margin-top: 10px; overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 99px; background: var(--accent); transition: width .4s; }
+.meter i.warn { background: var(--warn); } .meter i.crit { background: var(--bad); }
+
+/* ---------- gráfico ---------- */
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 2px; margin-left: auto; }
+.seg button { border: 0; background: transparent; color: var(--muted); height: 26px; padding: 0 10px; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 600; }
+.seg button.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.chart { position: relative; height: 260px; }
+.chart svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.chart .axis text { fill: var(--muted); font-size: 11px; font-family: var(--font); font-variant-numeric: tabular-nums; }
+.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+.chart .base { stroke: var(--muted); stroke-dasharray: 4 4; stroke-width: 1; opacity: .7; }
+.chart .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .cross { stroke: var(--text-2); stroke-width: 1; opacity: .5; }
+.chart .hoverdot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.tip { position: absolute; pointer-events: none; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+       padding: 8px 10px; font-size: 12px; box-shadow: var(--shadow); white-space: nowrap; transform: translate(-50%, -110%); display: none; }
+.tip b { display: block; font-size: 14px; font-weight: 650; }
+.empty { display: grid; place-items: center; height: 100%; color: var(--muted); font-size: 13px; text-align: center; padding: 20px; }
+
+/* ---------- tablas ---------- */
+.table-wrap { overflow-x: auto; }
+.scroll { max-height: 460px; overflow-y: auto; }
+.scroll thead th { position: sticky; top: 0; background: var(--surface); z-index: 1; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em;
+     padding: 0 12px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 11px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
+.tok { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.avatar { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #fff; flex: none; }
+.sub { color: var(--muted); font-weight: 450; font-size: 12px; }
+.tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600;
+       background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
+.tag.tp { color: var(--good-text); }
+.tag.sl { color: var(--bad-text); }
+.bar { position: relative; width: 120px; height: 6px; border-radius: 99px; background: var(--surface-2); }
+.bar i { position: absolute; top: -3px; width: 2px; height: 12px; border-radius: 2px; background: var(--text-2); }
+.bar .z { position: absolute; top: 0; bottom: 0; border-radius: 99px; }
+
+.bottom { grid-template-columns: 1.6fr 1fr; }
+.feed { list-style: none; margin: 0; padding: 0; max-height: 360px; overflow: auto; }
+.feed li { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.feed li:last-child { border-bottom: 0; }
+.feed time { color: var(--muted); font-size: 12px; min-width: 52px; font-variant-numeric: tabular-nums; }
+.funnel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
+.funnel div { background: var(--surface-2); border-radius: 10px; padding: 10px; }
+.funnel b { display: block; font-size: 18px; font-weight: 650; }
+.funnel span { font-size: 11.5px; color: var(--muted); }
+.tabs { display: inline-flex; gap: 4px; margin-left: auto; }
+.tabs button { border: 0; background: transparent; color: var(--muted); font-weight: 600; font-size: 12.5px; padding: 4px 8px; border-radius: 7px; cursor: pointer; }
+.tabs button.on { color: var(--text); background: var(--surface-2); }
+footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; gap: 14px; flex-wrap: wrap; }
+
+/* ---------- modal / toast ---------- */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; place-items: center; z-index: 10; padding: 16px; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; max-width: 420px; width: 100%; box-shadow: var(--shadow); }
+.modal h3 { margin: 0 0 8px; font-size: 17px; }
+.modal p { margin: 0 0 18px; color: var(--text-2); }
+.modal .row { display: flex; gap: 8px; justify-content: flex-end; }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0; transition: .25s;
+         background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; box-shadow: var(--shadow); z-index: 11; }
+.toast.show { opacity: 1; transform: translateX(-50%); }
+.banner { display: none; margin-bottom: 16px; padding: 12px 16px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--bad) 40%, var(--border));
+          background: color-mix(in srgb, var(--bad) 10%, var(--surface)); color: var(--text); }
+
+@media (max-width: 1000px) {
+  .top, .bottom { grid-template-columns: 1fr; }
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .wrap { padding: 16px 16px 40px; }
+  .hero-value { font-size: 38px; }
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .tile .v { font-size: 20px; }
+  .funnel { grid-template-columns: repeat(3, 1fr); }
+  .actions { width: 100%; } .actions .btn { flex: 1; justify-content: center; } .actions .icon-btn { flex: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="var(--accent)"/><path d="M7 21l6-7 5 4 7-9" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      MemeBot
+    </div>
+    <div class="pills">
+      <span class="pill" id="mode">—</span>
+      <span class="pill" id="strategy">—</span>
+      <span class="pill"><span class="dot" id="dot"></span><span id="online">Conectando…</span></span>
+    </div>
+    <div class="spacer"></div>
+    <div class="actions">
+      <button class="btn icon-btn" id="theme" title="Cambiar tema claro/oscuro" aria-label="Cambiar tema"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg></button>
+      <button class="btn" id="pauseBtn">Pausar entradas</button>
+      <button class="btn danger" id="closeBtn">Cerrar todo</button>
+    </div>
+  </header>
+
+  <div class="banner" id="banner"></div>
+
+  <section class="grid top">
+    <div class="card hero">
+      <div>
+        <div class="label">Saldo total</div>
+        <div class="hero-value" id="equity">—</div>
+        <div class="delta" id="equityDelta"></div>
+      </div>
+      <div class="hero-foot">
+        <div><span class="label">Capital inicial</span><b id="startEq">—</b></div>
+        <div><span class="label">En posiciones</span><b id="invested">—</b></div>
+        <div><span class="label">Activo desde</span><b id="uptime">—</b></div>
+      </div>
+    </div>
+    <div class="grid tiles">
+      <div class="card tile"><div class="label">Caja disponible</div><div class="v" id="cash">—</div><div class="s" id="cashS"></div></div>
+      <div class="card tile"><div class="label">PnL de hoy</div><div class="v" id="daily">—</div>
+        <div class="meter" title="Pérdida diaria usada frente al límite"><i id="dailyMeter" style="width:0"></i></div><div class="s" id="dailyS"></div></div>
+      <div class="card tile"><div class="label">PnL realizado</div><div class="v" id="realized">—</div><div class="s" id="realizedS"></div></div>
+      <div class="card tile"><div class="label">Tasa de acierto</div><div class="v" id="winrate">—</div><div class="s" id="winrateS"></div></div>
+      <div class="card tile"><div class="label">Esperanza por operación</div><div class="v" id="expect">—</div><div class="s" id="expectS"></div></div>
+      <div class="card tile"><div class="label">Posiciones abiertas</div><div class="v" id="openN">—</div>
+        <div class="meter"><i id="openMeter" style="width:0"></i></div><div class="s" id="openS"></div></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <div class="card-h"><h2>Evolución del saldo</h2>
+      <div class="seg" id="range">
+        <button data-r="3600">1H</button><button data-r="86400" class="on">24H</button><button data-r="604800">7D</button><button data-r="0">Todo</button>
+      </div>
+    </div>
+    <div class="card-b"><div class="chart" id="chart"></div></div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <div class="card-h"><h2>Posiciones abiertas</h2></div>
+    <div class="card-b table-wrap" id="positions"></div>
+  </section>
+
+  <section class="grid bottom" style="margin-top:16px">
+    <div class="card">
+      <div class="card-h"><h2>Operaciones</h2>
+        <div class="tabs" id="histTabs"><button data-t="closed" class="on">Cerradas</button><button data-t="fills">Ejecuciones</button></div>
+      </div>
+      <div class="card-b table-wrap scroll" id="history"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>Escáner y actividad</h2></div>
+      <div class="card-b">
+        <div class="funnel" id="funnel"></div>
+        <ul class="feed" id="feed"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer><span id="foot">—</span><span>Actualización automática cada 3 s</span></footer>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal">
+  <h3 id="mTitle"></h3><p id="mText"></p>
+  <div class="row"><button class="btn" id="mCancel">Cancelar</button><button class="btn danger" id="mOk">Confirmar</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const token = new URLSearchParams(location.search).get("token") || "";
+  const H = token ? { "X-Token": token } : {};
+  let S = null, range = 86400, histTab = "closed";
+
+  // ---------- formato ----------
+  const nf = (v, d) => Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: "always" });
+  const usd = (v, d = 2) => (v < 0 ? "−$" : "$") + nf(v, d);
+  const sgnUsd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + nf(v, 2);
+  const pct = (v, d = 1) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(d) + "%";
+  const cls = v => v > 0.0001 ? "up" : v < -0.0001 ? "down" : "flat";
+  const arrow = v => v > 0.0001 ? "▲" : v < -0.0001 ? "▼" : "•";
+  const price = p => {
+    if (!p) return "—";
+    if (p >= 1) return "$" + p.toLocaleString("es-ES", { maximumFractionDigits: 4 });
+    const z = Math.floor(-Math.log10(p));
+    if (z >= 4) { const sig = (p * Math.pow(10, z + 3)).toFixed(0); return "$0.0" + toSub(z) + sig; }
+    return "$" + p.toPrecision(4);
+  };
+  const toSub = n => String(n).split("").map(c => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("");
+  const ago = s => { s = Math.max(0, Math.round(s)); if (s < 60) return `hace ${s} s`; if (s < 3600) return `hace ${Math.floor(s / 60)} min`;
+                     if (s < 86400) return `hace ${Math.floor(s / 3600)} h`; return `hace ${Math.floor(s / 86400)} d`; };
+  const dur = s => { s = Math.max(0, s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
+                     return h >= 24 ? `${Math.floor(h / 24)} d ${h % 24} h` : h ? `${h} h ${m} min` : `${m} min`; };
+  const hhmm = ts => new Date(ts * 1000).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  const dt = ts => new Date(ts * 1000).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+  const isoTs = s => Math.floor(Date.parse(s) / 1000);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const hueOf = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+  const avatar = sym => `<span class="avatar" style="background:hsl(${hueOf(sym)} 45% 42%)">${esc(String(sym).slice(0, 2).toUpperCase())}</span>`;
+  const dexLink = (mint, pool) => `https://dexscreener.com/solana/${encodeURIComponent(pool || mint)}`;
+
+  // ---------- datos ----------
+  async function load() {
+    try {
+      const r = await fetch("api/state" + location.search, { headers: H, cache: "no-store" });
+      if (!r.ok) throw new Error(r.status === 401 ? "Token no válido" : "HTTP " + r.status);
+      S = await r.json();
+      render();
+    } catch (e) {
+      $("dot").className = "dot off"; $("online").textContent = "Sin conexión con el panel";
+    }
+  }
+
+  function render() {
+    const st = S.status || {};
+    const has = !!st.ts;
+    // cabecera
+    const mode = (st.mode || "—").toUpperCase();
+    $("mode").textContent = mode === "LIVE" ? "● DINERO REAL" : mode === "PAPER" ? "Paper trading" : "—";
+    $("mode").className = "pill " + (mode === "LIVE" ? "live" : "paper");
+    $("strategy").textContent = "Estrategia: " + (st.strategy || "—");
+    const paused = S.control.paused;
+    $("dot").className = "dot " + (!S.online ? "off" : paused ? "paused" : "on");
+    $("online").textContent = !has ? "Bot sin iniciar" : !S.online ? `Bot detenido · ${ago(S.now - st.ts)}`
+      : paused ? `En pausa · ${ago(S.now - st.ts)}` : `En marcha · ciclo ${ago(S.now - st.ts)}`;
+    $("pauseBtn").textContent = paused ? "Reanudar entradas" : "Pausar entradas";
+    $("pauseBtn").className = paused ? "btn primary" : "btn";
+    $("closeBtn").disabled = !(st.positions || []).length;
+    const banner = $("banner");
+    if (has && !S.online) { banner.style.display = "block"; banner.textContent = "El bot no ha escrito su estado recientemente: puede estar detenido. Revisa el proceso (systemctl status memebot o docker compose ps)."; }
+    else if (S.control.close_all_pending) { banner.style.display = "block"; banner.textContent = "Cierre de todas las posiciones solicitado: se ejecutará en el próximo ciclo del bot."; }
+    else banner.style.display = "none";
+
+    // saldo
+    const eq = st.equity ?? 0, start = st.start_equity ?? 0;
+    const invested = (st.positions || []).reduce((a, p) => a + p.value, 0);
+    $("equity").textContent = has ? usd(eq) : "—";
+    const dTot = eq - start, dPct = start ? 100 * dTot / start : 0;
+    $("equityDelta").className = "delta " + cls(dTot);
+    $("equityDelta").innerHTML = has ? `${arrow(dTot)} ${sgnUsd(dTot)} <span class="flat" style="font-weight:500">(${pct(dPct, 2)}) desde el inicio</span>` : "";
+    $("startEq").textContent = has ? usd(start) : "—";
+    $("invested").textContent = has ? usd(invested) : "—";
+    $("uptime").textContent = has ? dur(S.now - st.started_at) : "—";
+
+    // tiles
+    $("cash").textContent = has ? usd(st.cash) : "—";
+    $("cashS").textContent = has && eq ? `${(100 * st.cash / eq).toFixed(0)}% del saldo` : "";
+    const dp = st.daily_pnl ?? 0;
+    $("daily").textContent = has ? sgnUsd(dp) : "—"; $("daily").className = "v " + cls(dp);
+    const limit = (st.day_start_equity || start) * (st.daily_loss_limit_pct || 5) / 100;
+    const used = dp < 0 ? Math.min(1, -dp / limit) : 0;
+    $("dailyMeter").style.width = (used * 100) + "%";
+    $("dailyMeter").className = used > .8 ? "crit" : used > .5 ? "warn" : "";
+    $("dailyS").textContent = has ? (dp < 0 ? `${(used * 100).toFixed(0)}% del límite diario (−${usd(limit)})` : `Límite de pérdida diaria: −${usd(limit)}`) : "";
+    const s = S.stats || { n: 0 };
+    $("realized").textContent = s.n ? sgnUsd(s.pnl_usd) : usd(0); $("realized").className = "v " + cls(s.n ? s.pnl_usd : 0);
+    $("realizedS").textContent = s.n ? `${s.n} operaciones cerradas` : "Sin operaciones cerradas";
+    $("winrate").textContent = s.n ? s.win_rate.toFixed(0) + "%" : "—";
+    $("winrateS").textContent = s.n ? `Ganancia media ${pct(s.avg_win)} · pérdida media ${pct(s.avg_loss)}` : "Aparece con la primera operación";
+    $("expect").textContent = s.n ? pct(s.expectancy, 2) : "—"; $("expect").className = "v " + cls(s.n ? s.expectancy : 0);
+    $("expectS").textContent = s.n ? `Profit factor ${isFinite(s.profit_factor) ? s.profit_factor.toFixed(2) : "∞"} · peor ${pct(s.worst, 0)}` : "Media de retorno por operación";
+    const n = (st.positions || []).length, mx = st.max_open || 4;
+    $("openN").textContent = has ? `${n} / ${mx}` : "—";
+    $("openMeter").style.width = (100 * n / mx) + "%";
+    $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
+
+    renderChart(); renderPositions(); renderHistory(); renderActivity();
+    $("foot").textContent = has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos";
+  }
+
+  // ---------- gráfico de saldo ----------
+  function renderChart() {
+    const box = $("chart");
+    let pts = (S.equity || []).slice();
+    const st = S.status || {};
+    if (st.ts && (!pts.length || pts[pts.length - 1][0] < st.ts)) pts.push([st.ts, st.equity]);
+    if (range) pts = pts.filter(p => p[0] >= S.now - range);
+    if (pts.length < 2) { box.innerHTML = `<div class="empty">La curva de saldo aparece tras unos minutos de funcionamiento.</div>`; return; }
+    const W = box.clientWidth, Hh = box.clientHeight, L = 64, R = 12, T = 12, B = 26;
+    if (W < 160) return;
+    const base = st.start_equity;
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]).concat(base ? [base] : []);
+    let y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const pad = Math.max((y1 - y0) * .15, y1 * .002, 0.5); y0 -= pad; y1 += pad;
+    const x0 = xs[0], x1 = xs[xs.length - 1];
+    const X = t => L + (W - L - R) * (t - x0) / Math.max(1, x1 - x0);
+    const Y = v => T + (Hh - T - B) * (1 - (v - y0) / (y1 - y0));
+    const ticks = niceTicks(y0, y1, 4);
+    const tdec = ticks.length > 1 && ticks[1] - ticks[0] >= 1 ? 0 : 2;
+    const xt = Array.from({ length: 5 }, (_, i) => x0 + (x1 - x0) * i / 4);
+    const span = x1 - x0;
+    const fmtX = t => span > 172800 ? new Date(t * 1000).toLocaleDateString("es-ES", { day: "2-digit", month: "short" }) : hhmm(t);
+    const d = pts.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join("");
+    const area = d + `L${X(x1).toFixed(1)},${(Hh - B).toFixed(1)}L${X(x0).toFixed(1)},${(Hh - B).toFixed(1)}Z`;
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Evolución del saldo">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".16"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+      <g class="axis">${ticks.map(v => `<line class="gridline" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L - 10}" y="${Y(v) + 4}" text-anchor="end">${usd(v, tdec)}</text>`).join("")}
+      ${xt.map((t, i) => `<text x="${X(t)}" y="${Hh - 6}" text-anchor="${i === 0 ? "start" : i === 4 ? "end" : "middle"}">${fmtX(t)}</text>`).join("")}</g>
+      ${base && base > y0 && base < y1 ? `<line class="base" x1="${L}" x2="${W - R}" y1="${Y(base)}" y2="${Y(base)}"><title>Capital inicial</title></line>` : ""}
+      <path d="${area}" fill="url(#g)"/><path class="line" d="${d}"/>
+      <line class="cross" id="cx" y1="${T}" y2="${Hh - B}" style="display:none"/><circle class="hoverdot" id="cd" r="5" style="display:none"/>
+      <rect x="${L}" y="0" width="${W - L - R}" height="${Hh}" fill="transparent" id="hit"/></svg><div class="tip" id="tip"></div>`;
+    const hit = $("hit"), cx = $("cx"), cd = $("cd"), tip = $("tip");
+    const move = ev => {
+      const rect = box.getBoundingClientRect();
+      const mx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left;
+      const t = x0 + (mx - L) / (W - L - R) * (x1 - x0);
+      let i = 0, best = Infinity; pts.forEach((p, k) => { const dd = Math.abs(p[0] - t); if (dd < best) { best = dd; i = k; } });
+      const px = X(pts[i][0]), py = Y(pts[i][1]);
+      cx.setAttribute("x1", px); cx.setAttribute("x2", px); cx.style.display = "";
+      cd.setAttribute("cx", px); cd.setAttribute("cy", py); cd.style.display = "";
+      const ch = base ? pts[i][1] - base : 0;
+      tip.innerHTML = `<b>${usd(pts[i][1])}</b><span class="${cls(ch)}">${sgnUsd(ch)} vs inicio</span> · <span class="flat">${dt(pts[i][0])}</span>`;
+      tip.style.display = "block"; tip.style.left = Math.min(Math.max(px, 90), W - 90) + "px"; tip.style.top = py + "px";
+    };
+    const out = () => { cx.style.display = cd.style.display = "none"; tip.style.display = "none"; };
+    hit.addEventListener("mousemove", move); hit.addEventListener("touchmove", move, { passive: true });
+    hit.addEventListener("mouseleave", out); hit.addEventListener("touchend", out);
+  }
+  function niceTicks(a, b, n) {
+    const step0 = (b - a) / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+    const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= step0) || step0;
+    const out = []; for (let v = Math.ceil(a / step) * step; v <= b; v += step) out.push(+v.toFixed(10)); return out;
+  }
+
+  // ---------- posiciones ----------
+  function renderPositions() {
+    const ps = (S.status || {}).positions || [];
+    if (!ps.length) { $("positions").innerHTML = `<div class="empty" style="height:110px">Sin posiciones abiertas. El bot está buscando señales que pasen todos los filtros.</div>`; return; }
+    $("positions").innerHTML = `<table><thead><tr><th>Token</th><th class="num">Entrada</th><th class="num">Precio</th><th class="num">Valor</th>
+      <th class="num">PnL</th><th>Stop · precio · máximo</th><th>Estado</th><th class="num">Tiempo</th></tr></thead><tbody>${ps.map(p => {
+        const lo = Math.min(p.stop, p.price, p.entry_price) * .97, hi = Math.max(p.peak, p.price, p.entry_price) * 1.03;
+        const pos = v => (100 * (v - lo) / (hi - lo)).toFixed(1) + "%";
+        return `<tr><td><a class="tok" href="${dexLink(p.mint, p.pool)}" target="_blank" rel="noopener">${avatar(p.symbol)}<span>${esc(p.symbol)}<div class="sub">${esc(p.mint.slice(0, 4))}…${esc(p.mint.slice(-4))}</div></span></a></td>
+        <td class="num">${price(p.entry_price)}</td><td class="num">${price(p.price)}</td><td class="num">${usd(p.value)}</td>
+        <td class="num"><span class="${cls(p.pnl_usd)}">${sgnUsd(p.pnl_usd)}</span><div class="sub ${cls(p.pnl_pct)}">${pct(p.pnl_pct)}</div></td>
+        <td><div class="bar" title="Stop ${price(p.stop)} · máximo ${price(p.peak)}">
+          <span class="z" style="left:${pos(p.stop)};right:calc(100% - ${pos(p.peak)});background:color-mix(in srgb, var(--accent) 30%, transparent)"></span>
+          <i style="left:${pos(p.stop)};background:var(--bad)"></i><i style="left:${pos(p.price)};background:var(--text)"></i><i style="left:${pos(p.peak)};background:var(--good)"></i></div></td>
+        <td>${p.tp_hit ? `<span class="tag tp">TP ${p.tp_hit} · stop en entrada</span>` : `<span class="tag">Abierta</span>`}</td>
+        <td class="num">${dur(S.now - p.opened_at)}</td></tr>`; }).join("")}</tbody></table>`;
+  }
+
+  // ---------- historial ----------
+  function reasonTag(r) {
+    r = String(r || ""); const k = r.toLowerCase();
+    const c = k.includes("take") || k.includes("trailing") ? "tp" : k.includes("stop loss") || k.includes("rug") ? "sl" : "";
+    const label = k.startsWith("take") ? "Take profit" : k.startsWith("trailing") ? "Trailing stop" : k.startsWith("stop loss") ? "Stop loss"
+      : k.startsWith("break") ? "Break-even" : k.startsWith("time") ? "Time stop" : k.includes("rug") ? "Liquidez (rug)" : k.includes("manual") ? "Cierre manual" : r || "—";
+    return `<span class="tag ${c}" title="${esc(r)}">${esc(label)}</span>`;
+  }
+  function renderHistory() {
+    const el = $("history");
+    if (histTab === "closed") {
+      const cs = S.closed || [];
+      if (!cs.length) { el.innerHTML = `<div class="empty" style="height:140px">Todavía no hay operaciones cerradas.</div>`; return; }
+      el.innerHTML = `<table><thead><tr><th>Token</th><th>Cierre</th><th class="num">Invertido</th><th class="num">Resultado</th><th class="num">Retorno</th><th>Salida</th></tr></thead><tbody>${
+        cs.slice(0, 60).map(c => `<tr><td><span class="tok">${avatar(c.symbol)}${esc(c.symbol)}</span></td><td class="sub">${dt(isoTs(c.closed))}</td>
+        <td class="num">${usd(c.cost)}</td><td class="num ${cls(c.got - c.cost)}">${sgnUsd(c.got - c.cost)}</td>
+        <td class="num ${cls(c.ret)}">${pct(100 * c.ret)}</td><td>${reasonTag(c.reason)}</td></tr>`).join("")}</tbody></table>`;
+    } else {
+      const fs = S.fills || [];
+      if (!fs.length) { el.innerHTML = `<div class="empty" style="height:140px">Sin ejecuciones todavía.</div>`; return; }
+      el.innerHTML = `<table><thead><tr><th>Hora</th><th>Lado</th><th>Token</th><th class="num">Importe</th><th class="num">Precio</th><th>Motivo</th></tr></thead><tbody>${
+        fs.map(f => `<tr><td class="sub">${dt(isoTs(f.ts))}</td><td><span class="tag ${f.side === "BUY" ? "tp" : "sl"}">${f.side === "BUY" ? "Compra" : "Venta"}</span></td>
+        <td><span class="tok">${avatar(f.symbol)}${esc(f.symbol)}</span></td><td class="num">${usd(+f.usd)}</td><td class="num">${price(+f.price)}</td>
+        <td class="sub">${esc(f.reason)}${f.tx && !String(f.tx).startsWith("paper") ? ` · <a href="https://solscan.io/tx/${encodeURIComponent(f.tx)}" target="_blank" rel="noopener">tx ↗</a>` : ""}</td></tr>`).join("")}</tbody></table>`;
+    }
+  }
+
+  // ---------- escáner y actividad ----------
+  function renderActivity() {
+    const sc = (S.status || {}).last_scan || {};
+    const cells = [["Descubiertos", sc.discovered], ["Con datos", sc.with_data], ["Prefiltro", sc.prefilter], ["Analizados", sc.analyzed], ["Señales", sc.signals]];
+    $("funnel").innerHTML = cells.map(([k, v]) => `<div><b>${v ?? "—"}</b><span>${k}</span></div>`).join("");
+    const ev = ((S.status || {}).events || []).map(e => ({ ts: e.ts, html: esc(e.text).replace(/https:\/\/dexscreener\.com\/\S+/g, u => `<a href="${u}" target="_blank" rel="noopener">gráfico ↗</a>`) }));
+    const dec = (S.decisions || []).slice(0, 12).map(d => ({ ts: d.ts, html: `${d.signal ? '<span class="up">✓ Señal</span>' : '<span class="flat">✗ Sin señal</span>'} · <b>${esc(d.symbol)}</b>
+      <span class="sub">${d.ret_60m == null ? "sin velas disponibles (se reintenta)" : `1h ${pct(d.ret_60m)} · aceleración ${(+d.accel).toFixed(2)}`} · liquidez ${d.liq ? usd(d.liq, 0) : "—"}</span>` }));
+    const all = ev.concat(dec).sort((a, b) => b.ts - a.ts).slice(0, 40);
+    $("feed").innerHTML = all.length ? all.map(x => `<li><time>${hhmm(x.ts)}</time><div>${x.html}</div></li>`).join("") : `<li class="sub">Sin actividad todavía.</li>`;
+  }
+
+  // ---------- controles ----------
+  async function control(action) {
+    try {
+      const r = await fetch("api/control" + location.search, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ action }) });
+      if (!r.ok) throw new Error();
+      toast(action === "pause" ? "Entradas en pausa: el bot seguirá gestionando las posiciones abiertas" : action === "resume" ? "Entradas reanudadas" : "Cierre solicitado: se ejecutará en el próximo ciclo");
+      load();
+    } catch { toast("No se pudo enviar la orden"); }
+  }
+  function confirmDlg(title, text, ok) {
+    $("mTitle").textContent = title; $("mText").textContent = text; $("modalBg").style.display = "grid";
+    $("mOk").onclick = () => { $("modalBg").style.display = "none"; ok(); };
+  }
+  $("mCancel").onclick = () => $("modalBg").style.display = "none";
+  $("modalBg").onclick = e => { if (e.target.id === "modalBg") $("modalBg").style.display = "none"; };
+  $("pauseBtn").onclick = () => control(S && S.control.paused ? "resume" : "pause");
+  $("closeBtn").onclick = () => confirmDlg("¿Cerrar todas las posiciones?",
+    ((S.status || {}).mode === "live" ? "Se venderán TODAS las posiciones a precio de mercado con dinero real. " : "Se cerrarán todas las posiciones simuladas. ") + "Las entradas no se pausan automáticamente.", () => control("close_all"));
+  let toastT; function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), 3200); }
+  document.querySelectorAll("#range button").forEach(b => b.onclick = () => {
+    document.querySelectorAll("#range button").forEach(x => x.classList.toggle("on", x === b)); range = +b.dataset.r; if (S) renderChart(); });
+  document.querySelectorAll("#histTabs button").forEach(b => b.onclick = () => {
+    document.querySelectorAll("#histTabs button").forEach(x => x.classList.toggle("on", x === b)); histTab = b.dataset.t; if (S) renderHistory(); });
+  try { const t = localStorage.getItem("memebot-theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+  $("theme").onclick = () => {
+    const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    const nx = cur === "light" ? "dark" : "light"; document.documentElement.dataset.theme = nx;
+    try { localStorage.setItem("memebot-theme", nx); } catch {} if (S) renderChart();
+  };
+  addEventListener("resize", () => S && renderChart());
+  load(); setInterval(load, 3000);
+})();
+</script>
+</body>
+</html>

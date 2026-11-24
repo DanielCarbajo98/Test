@@ -15,6 +15,7 @@ import argparse
 import json
 import logging
 import time
+from collections import deque
 from datetime import datetime, timezone
 
 import httpx
@@ -36,9 +37,11 @@ log = logging.getLogger("memebot")
 class Notifier:
     def __init__(self, token: str, chat_id: str):
         self.token, self.chat_id = token, chat_id
+        self.events: deque = deque(maxlen=50)   # se muestran en el panel
 
     def send(self, text: str):
         log.info(text)
+        self.events.appendleft({"ts": int(time.time()), "text": text})
         if not (self.token and self.chat_id):
             return
         try:
@@ -65,6 +68,43 @@ class Bot:
         self.notify = Notifier(cfg.telegram_token, cfg.telegram_chat_id)
         self._last_summary_day = ""
         self._last_entry_scan = 0.0
+        self._last_equity_log = 0.0
+        self.started_at = time.time()
+        self.last_scan: dict = {}
+        self.liquidity: dict[str, float] = {}
+        self.paused = False
+
+    # ------------------------------------------------------------------ control desde el panel
+    def read_control(self):
+        """state/control.json lo escribe el panel: {"paused": bool, "close_all": bool}."""
+        f = self.pf.dir / "control.json"
+        try:
+            ctl = json.loads(f.read_text()) if f.exists() else {}
+        except (OSError, ValueError):
+            return
+        if bool(ctl.get("paused")) != self.paused:
+            self.paused = bool(ctl.get("paused"))
+            self.notify.send("⏸️ Entradas en pausa (desde el panel)" if self.paused else "▶️ Entradas reanudadas")
+        if ctl.get("close_all"):
+            ctl["close_all"] = False
+            f.write_text(json.dumps(ctl))
+            self.close_all("cierre manual")
+
+    def close_all(self, reason: str):
+        if not self.pf.positions:
+            return
+        snaps = self.dex.best_pairs(list(self.pf.positions))
+        for mint, pos in list(self.pf.positions.items()):
+            s = snaps.get(mint)
+            price = s.price_usd if s else self.pf.last_prices.get(mint, pos.entry_price)
+            liq = s.liquidity_usd if s else pos.entry_liquidity
+            try:
+                fill = self.exe.sell(mint, pos.decimals, pos.qty, price, liq)
+            except Exception as e:  # noqa: BLE001
+                self.notify.send(f"⚠️ No se pudo cerrar {pos.symbol}: {e}")
+                continue
+            pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, reason, fill.tx)
+            self.notify.send(f"🔴 SELL {pos.symbol} por ${fill.usd:.2f} — {reason} (PnL ${pnl:+.2f})")
 
     # ------------------------------------------------------------------ salidas
     def manage_positions(self):
@@ -78,6 +118,7 @@ class Bot:
                 log.warning("Sin datos para %s; se reintentará", pos.symbol)
                 continue
             self.pf.last_prices[mint] = s.price_usd
+            self.liquidity[mint] = s.liquidity_usd
             d = evaluate_exit(pos, s.price_usd, s.liquidity_usd, now, self.cfg.exits)
             if d is None:
                 continue
@@ -114,6 +155,8 @@ class Bot:
                 passed.append(s)
         passed.sort(key=rank, reverse=True)
         log.info("Candidatos: %d descubiertos, %d con datos, %d pasan el prefiltro", len(addrs), len(snaps), len(passed))
+        self.last_scan = {"ts": int(time.time()), "discovered": len(addrs), "with_data": len(snaps),
+                          "prefilter": len(passed), "analyzed": 0, "signals": 0}
 
         for s in passed[: c.strategy.max_ohlcv_per_cycle]:
             if len(self.pf.positions) >= c.risk.max_open_positions:
@@ -123,6 +166,8 @@ class Bot:
             created = int(time.time() - s.age_minutes * 60)
             signal, feat = latest_signal(c.strategy.name, rows, created, supply, c.strategy.params)
             self._log_decision(s, signal, feat)
+            self.last_scan["analyzed"] += 1
+            self.last_scan["signals"] += int(signal)
             if not signal:
                 log.debug("%s sin señal %s (ret60 %.1f%%, accel %.2f)", s.symbol, c.strategy.name,
                           feat.get("ret_60m", 0), feat.get("accel", 0))
@@ -145,7 +190,7 @@ class Bot:
             pos = Position(token_address=s.token_address, symbol=s.symbol, decimals=rep.decimals or 6,
                            entry_price=fill.price, qty=fill.qty, initial_qty=fill.qty, cost_usd=fill.usd,
                            realized_usd=0.0, entry_liquidity=s.liquidity_usd, opened_at=time.time(),
-                           peak_price=fill.price)
+                           peak_price=fill.price, pool=s.pair_address)
             self.pf.open(pos, f"{c.strategy.name}", fill.tx)
             self.notify.send(
                 f"🟢 BUY {s.symbol} ${fill.usd:.2f} @ {fill.price:.6g} [{c.mode}] | {c.strategy.name} | "
@@ -172,12 +217,59 @@ class Bot:
             self.notify.send(f"📊 Resumen: equity ${self.pf.equity():.2f}, caja ${self.pf.cash:.2f}, "
                              f"{len(self.pf.positions)} posiciones abiertas")
 
+    def write_status(self):
+        """state/status.json + state/equity.csv: lo que lee el panel."""
+        now = time.time()
+        positions = []
+        for m, p in self.pf.positions.items():
+            price = self.pf.last_prices.get(m, p.entry_price)
+            value = p.qty * price
+            cost_left = p.cost_usd * p.qty / p.initial_qty
+            positions.append({
+                "symbol": p.symbol, "mint": m, "pool": p.pool, "entry_price": p.entry_price, "price": price,
+                "qty": p.qty, "cost": p.cost_usd, "value": value, "realized": p.realized_usd,
+                "pnl_usd": value + p.realized_usd - p.cost_usd,
+                "pnl_pct": 100 * (value + p.realized_usd - p.cost_usd) / p.cost_usd if p.cost_usd else 0,
+                "unrealized_pct": 100 * (value / cost_left - 1) if cost_left else 0,
+                "opened_at": p.opened_at, "tp_hit": len(p.tp_levels_hit), "peak": p.peak_price,
+                "stop": p.entry_price if p.tp_levels_hit else p.entry_price * (1 - self.cfg.exits.stop_loss_pct / 100),
+                "liquidity": self.liquidity.get(m, p.entry_liquidity),
+            })
+        eq = self.pf.equity()
+        status = {
+            "ts": int(now), "started_at": int(self.started_at), "mode": self.cfg.mode,
+            "strategy": self.cfg.strategy.name, "paused": self.paused,
+            "equity": eq, "cash": self.pf.cash, "start_equity": self.cfg.risk.starting_equity_usd,
+            "daily_pnl": self.pf.daily_pnl(), "day_start_equity": self.pf.start_equity_today(),
+            "max_open": self.cfg.risk.max_open_positions,
+            "daily_loss_limit_pct": self.cfg.risk.daily_loss_limit_pct,
+            "positions": positions, "last_scan": self.last_scan, "events": list(self.notify.events)[:30],
+            "interval": self.cfg.scanner.interval_seconds,
+        }
+        try:
+            tmp = self.pf.dir / "status.tmp"
+            tmp.write_text(json.dumps(status))
+            tmp.replace(self.pf.dir / "status.json")
+            if now - self._last_equity_log >= 60:
+                self._last_equity_log = now
+                f = self.pf.dir / "equity.csv"
+                new = not f.exists()
+                with f.open("a") as fh:
+                    if new:
+                        fh.write("ts,equity,cash\n")
+                    fh.write(f"{int(now)},{eq:.4f},{self.pf.cash:.4f}\n")
+        except OSError as e:
+            log.warning("No se pudo escribir el estado: %s", e)
+
     def cycle(self, force_entries: bool = False):
+        self.read_control()
         self.manage_positions()
-        if force_entries or time.time() - self._last_entry_scan >= self.cfg.scanner.entry_interval_seconds:
+        if not self.paused and (force_entries or
+                                time.time() - self._last_entry_scan >= self.cfg.scanner.entry_interval_seconds):
             self._last_entry_scan = time.time()
             self.find_entries()
         self.daily_summary()
+        self.write_status()
         log.info("Equity ${:.2f} | caja ${:.2f} | posiciones {} | PnL hoy ${:+.2f}".format(
             self.pf.equity(), self.pf.cash, len(self.pf.positions), self.pf.daily_pnl()))
 

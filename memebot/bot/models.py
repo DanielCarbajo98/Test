@@ -90,10 +90,11 @@ class Position:
     opened_at: float            # epoch segundos
     peak_price: float
     tp_levels_hit: list[int] = field(default_factory=list)
+    pool: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> "Position":
-        return cls(**d)
+        return cls(**{k: v for k, v in d.items() if k in cls.__dataclass_fields__})

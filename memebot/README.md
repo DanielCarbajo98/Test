@@ -8,6 +8,8 @@
 
 **Resultados actuales del backtest:** [`reports/RESULTADOS.md`](reports/RESULTADOS.md)
 
+![Panel](docs/panel.png)
+
 ---
 
 ## 1. Las estrategias que existen y qué dicen los datos
@@ -69,6 +71,24 @@ bot/main.py  cada 20 s: salidas  ·  cada 60 s: entradas
 
 Todos los valores salen del backtest.
 
+### Panel en tiempo real
+```bash
+python -m bot.dashboard --state state          # abre http://127.0.0.1:8050
+```
+- **Saldo total**, con la variación desde el inicio y la curva de saldo (1H / 24H / 7D / Todo, con cursor).
+- **Indicadores:** caja disponible, PnL de hoy (con el consumo del límite diario), PnL realizado, tasa de acierto,
+  esperanza por operación y posiciones abiertas.
+- **Posiciones abiertas** con PnL en vivo y una barra que sitúa el stop, el precio actual y el máximo.
+- **Historial:** operaciones cerradas con su motivo de salida, y ejecuciones con enlace a Solscan en modo real.
+- **Escáner:** el embudo de candidatos y la actividad del bot.
+- **Botones Pausar entradas y Cerrar todo:** el bot los ejecuta en su siguiente ciclo, en 20 s como máximo.
+- **Aviso** si el bot deja de responder.
+
+El panel es de solo lectura, salvo esos dos botones. Por defecto solo escucha en tu máquina. En un VPS, ábrelo
+con un túnel: `ssh -L 8050:127.0.0.1:8050 usuario@vps`. Si lo expones de otra forma, `DASHBOARD_TOKEN` es
+obligatorio. Para verlo con datos de ejemplo: `python -m research.demo_state --out state-demo` y
+`python -m bot.dashboard --state state-demo`.
+
 ---
 
 ## 3. Puesta en marcha
@@ -103,7 +123,8 @@ out-of-sample. Repite el backtest cada semana, con más datos.
 ```bash
 python -m bot.preflight --config config.paper.yaml
 python -m bot.main --config config.paper.yaml
-python -m research.report --state state                # cuando quieras ver resultados
+python -m bot.dashboard --state state                  # panel en http://127.0.0.1:8050
+python -m research.report --state state                # informe en texto
 ```
 En paper, las compras y ventas se valoran con **cotizaciones reales de Jupiter** (ruta e impacto auténticos), con un
 0,5 % de margen extra en contra. Compara el informe con el backtest: si el paper rinde mucho peor, el backtest era
@@ -130,7 +151,7 @@ Si no has hecho paper, o este tiene esperanza negativa, preflight te lo advierte
 ```bash
 bash deploy/install_vps.sh                   # instala en /opt/memebot con servicio systemd
 # o con Docker:
-docker compose up -d paper collector launches
+docker compose up -d paper panel collector launches
 docker compose --profile live up -d live     # solo cuando decidas pasar a real
 ```
 

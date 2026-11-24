@@ -7,6 +7,15 @@ services:
       - ./config.paper.yaml:/app/config.yaml:ro
       - ./state-paper:/app/state
     command: ["python", "-m", "bot.main", "--config", "config.yaml"]
+  panel:                        # http://127.0.0.1:8050 (en el VPS: túnel SSH)
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8050:8050"
+    volumes:
+      - ./state-paper:/app/state      # cambia a ./state-live cuando operes en real
+    command: ["python", "-m", "bot.dashboard", "--state", "state", "--host", "0.0.0.0"]
   live:
     build: .
     restart: unless-stopped

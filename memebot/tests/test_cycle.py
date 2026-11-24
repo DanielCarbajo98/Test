@@ -85,3 +85,31 @@ def test_full_cycle_buy_then_take_profit(tmp_path, monkeypatch):
     bot.cycle(force_entries=True)
     assert "MINT" not in bot.pf.positions
     assert bot.pf.equity() > 1000  # el TP parcial dejó la operación en positivo
+
+
+def test_panel_controls_pause_and_close_all(tmp_path):
+    import json
+    import time
+    state = {"price": 0.001, "now_ms": int(time.time() * 1000)}
+    client = httpx.Client(transport=make_transport(state))
+    bot = Bot(Config(state_dir=str(tmp_path)))
+    bot.dex = DexScreener(client)
+    bot.safety.rpc = SolanaRPC("http://rpc", client)
+    bot.safety.http = client
+    bot.candles = Candles(client, min_interval=0)
+    bot.exe.quoter = Quoter("", 300, client)
+
+    (tmp_path / "control.json").write_text(json.dumps({"paused": True}))
+    bot.cycle(force_entries=True)
+    assert bot.paused and not bot.pf.positions          # en pausa no compra
+
+    (tmp_path / "control.json").write_text(json.dumps({"paused": False}))
+    bot.cycle(force_entries=True)
+    assert "MINT" in bot.pf.positions
+    st = json.loads((tmp_path / "status.json").read_text())
+    assert st["positions"][0]["symbol"] == "MEME" and (tmp_path / "equity.csv").exists()
+
+    (tmp_path / "control.json").write_text(json.dumps({"paused": True, "close_all": True}))
+    bot.cycle()
+    assert not bot.pf.positions
+    assert json.loads((tmp_path / "control.json").read_text())["close_all"] is False
