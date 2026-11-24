@@ -141,6 +141,21 @@ tbody tr:hover { background: color-mix(in srgb, var(--surface-2) 60%, transparen
 .bar .z { position: absolute; top: 0; bottom: 0; border-radius: 99px; }
 
 .bottom { grid-template-columns: 1.6fr 1fr; }
+.brain { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 22px; }
+.brain h3 { margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.brain .big { font-size: 20px; font-weight: 650; }
+.brain p { margin: 6px 0 0; color: var(--text-2); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin-top: 12px; font-size: 13px; }
+.kv span { color: var(--muted); }
+.kv b { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.imp { display: grid; grid-template-columns: 1fr 90px; gap: 8px 10px; align-items: center; font-size: 12.5px; }
+.imp .track { height: 6px; border-radius: 99px; background: var(--surface-2); }
+.imp .track i { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
+.lessons { margin: 0; padding-left: 18px; color: var(--text-2); font-size: 13px; }
+.lessons li { margin-bottom: 8px; }
+.cands { width: 100%; font-size: 12.5px; margin-top: 14px; }
+.cands td, .cands th { padding: 6px 8px; }
+.pill.good { color: var(--good-text); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad-text); }
 .feed { list-style: none; margin: 0; padding: 0; max-height: 360px; overflow: auto; }
 .feed li { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
 .feed li:last-child { border-bottom: 0; }
@@ -167,7 +182,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
           background: color-mix(in srgb, var(--bad) 10%, var(--surface)); color: var(--text); }
 
 @media (max-width: 1000px) {
-  .top, .bottom { grid-template-columns: 1fr; }
+  .top, .bottom, .brain { grid-template-columns: 1fr; }
   .tiles { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 560px) {
@@ -234,6 +249,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       </div>
     </div>
     <div class="card-b"><div class="chart" id="chart"></div></div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <div class="card-h"><h2>Cerebro</h2><span class="pill" id="brainPill" style="margin-left:auto">—</span></div>
+    <div class="card-b" id="brain"></div>
   </section>
 
   <section class="card" style="margin-top:16px">
@@ -365,7 +385,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("openMeter").style.width = (100 * n / mx) + "%";
     $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
 
-    renderChart(); renderPositions(); renderHistory(); renderActivity();
+    renderChart(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
     $("foot").textContent = has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos";
   }
 
@@ -422,6 +442,41 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const step0 = (b - a) / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
     const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= step0) || step0;
     const out = []; for (let v = Math.ceil(a / step) * step; v <= b; v += step) out.push(+v.toFixed(10)); return out;
+  }
+
+  // ---------- cerebro ----------
+  const STRAT_ES = { momentum: "Momentum (segunda ola)", breakout: "Ruptura de máximos", dip: "Rebote tras caída", early: "Entrada temprana", ml: "Modelo de machine learning" };
+  function renderBrain() {
+    const b = S.brain, el = $("brain"), pill = $("brainPill");
+    if (!b) {
+      pill.textContent = "Sin iniciar"; pill.className = "pill";
+      el.innerHTML = `<div class="empty" style="height:90px">El cerebro aún no ha hecho su primer ciclo de aprendizaje (python -m bot.brain --loop 6).</div>`; return;
+    }
+    const st = b.status || "recopilando";
+    const lbl = { nueva: "Nueva estrategia", mantener: "Estrategia confirmada", defensivo: "Modo defensivo", recopilando: "Aprendiendo" }[st] || st;
+    pill.textContent = `🧠 ${lbl}${b.version ? " · v" + b.version : ""}`;
+    pill.className = "pill " + (st === "defensivo" ? "bad" : st === "recopilando" ? "warn" : "good");
+    const c = b.champion, t = c && c.test;
+    const champHtml = c ? `<div class="big">${esc(STRAT_ES[c.strategy] || c.strategy)}</div>
+      <p>${esc(b.status_text || "")}</p>
+      <div class="kv"><span>Esperanza en datos no vistos</span><b class="${cls(t.expectancy)}">${pct(t.expectancy, 2)}</b>
+        <span>Tasa de acierto</span><b>${t.win_rate}%</b><span>Operaciones de prueba</span><b>${t.n}</b>
+        <span>Salidas</span><b>SL −${c.exits_bt.sl}% · TP ${c.exits_bt.tp.map(x => "+" + x[0] + "%").join(" / ")} · trailing ${c.exits_bt.trail}%</b></div>`
+      : `<div class="big">${st === "defensivo" ? "Sin ventaja demostrada" : "Aún sin estrategia propia"}</div><p>${esc(b.status_text || "")}</p>`;
+    const meta = `<div class="kv"><span>Ejemplos estudiados</span><b>${(b.samples || 0).toLocaleString("es-ES")}</b>
+      <span>Tokens analizados</span><b>${b.pools ?? "—"}</b><span>Último aprendizaje</span><b>${b.updated_at ? ago(S.now - b.updated_at) : "—"}</b>
+      ${b.cost_penalty ? `<span>Corrección de costes por la realidad</span><b>+${(100 * b.cost_penalty).toFixed(1)} pts</b>` : ""}
+      ${b.reality && b.reality.n ? `<span>Resultado real vs esperado</span><b class="${cls(b.reality.expectancy)}">${pct(b.reality.expectancy, 2)} vs ${b.reality.expected != null ? pct(b.reality.expected, 2) : "—"}</b>` : ""}</div>`;
+    const imp = (b.ml && b.ml.importance || []).slice(0, 6);
+    const mx = Math.max(1e-9, ...imp.map(x => x.value));
+    const impHtml = imp.length ? `<div class="imp">${imp.map(x => `<span>${esc(x.name)}</span><span class="track"><i style="width:${Math.max(3, 100 * x.value / mx)}%"></i></span>`).join("")}</div>`
+      : `<p class="sub">Aparecerá cuando haya suficientes datos.</p>`;
+    const les = (b.lessons || []).length ? `<ul class="lessons">${b.lessons.map(l => `<li>${esc(l)}</li>`).join("")}</ul>` : `<p class="sub">Todavía sin lecciones: necesita más datos.</p>`;
+    const cands = (b.candidates || []).length ? `<table class="cands"><thead><tr><th>Aspirante</th><th class="num">Esperanza</th><th class="num">Ops</th></tr></thead><tbody>${
+      b.candidates.map(x => `<tr><td>${esc(STRAT_ES[x.strategy] || x.strategy)}</td><td class="num ${cls(x.test.expectancy)}">${pct(x.test.expectancy, 2)}</td><td class="num">${x.test.n}</td></tr>`).join("")}</tbody></table>` : "";
+    el.innerHTML = `<div class="brain"><div><h3>Estrategia activa</h3>${champHtml}${meta}</div>
+      <div><h3>Lo que ha aprendido</h3>${les}</div>
+      <div><h3>Qué factores pesan más</h3>${impHtml}${cands}</div></div>`;
   }
 
   // ---------- posiciones ----------

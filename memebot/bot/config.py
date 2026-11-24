@@ -42,6 +42,14 @@ class StrategyCfg:
 
 
 @dataclass
+class BrainCfg:
+    """Cerebro autónomo (bot/brain.py). Decide la estrategia y las salidas; NUNCA el riesgo."""
+    enabled: bool = True
+    auto_apply_live: bool = True      # aplica sus decisiones también con dinero real, sin aprobación
+    defensive_in_paper: bool = False  # en paper sigue operando sin ventaja demostrada (para aprender)
+
+
+@dataclass
 class SafetyCfg:
     require_mint_revoked: bool = True
     require_freeze_revoked: bool = True
@@ -59,6 +67,7 @@ class RiskCfg:
     max_pool_share_pct: float = 1.0   # no comprar más del 1% de la liquidez de la pool
     max_open_positions: int = 4
     daily_loss_limit_pct: float = 5.0  # kill-switch diario
+    max_drawdown_pct: float = 0.0     # freno total: sin entradas si el saldo cae este % desde el inicio (0 = off)
     cooldown_minutes: int = 240       # no reentrar en el mismo token
     slippage_bps: int = 300
     max_price_impact_pct: float = 3.0  # rechaza órdenes con más impacto
@@ -84,6 +93,7 @@ class Config:
     scanner: ScannerCfg = field(default_factory=ScannerCfg)
     filters: FilterCfg = field(default_factory=FilterCfg)
     strategy: StrategyCfg = field(default_factory=StrategyCfg)
+    brain: BrainCfg = field(default_factory=BrainCfg)
     safety: SafetyCfg = field(default_factory=SafetyCfg)
     risk: RiskCfg = field(default_factory=RiskCfg)
     exits: ExitCfg = field(default_factory=ExitCfg)
@@ -118,6 +128,7 @@ def load_config(path: str | Path = "config.yaml") -> Config:
         scanner=_section(ScannerCfg, raw.get("scanner")),
         filters=_section(FilterCfg, raw.get("filters")),
         strategy=_section(StrategyCfg, raw.get("strategy")),
+        brain=_section(BrainCfg, raw.get("brain")),
         safety=_section(SafetyCfg, raw.get("safety")),
         risk=_section(RiskCfg, raw.get("risk")),
         exits=_section(ExitCfg, raw.get("exits")),

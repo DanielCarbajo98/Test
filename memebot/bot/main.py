@@ -20,7 +20,8 @@ from datetime import datetime, timezone
 
 import httpx
 
-from .config import Config, load_config
+from .brain import BrainRuntime
+from .config import Config, ExitCfg, load_config
 from .executor import JupiterExecutor, PaperExecutor, Quoter
 from .market import DEFAULT_SOURCES, Candles, discover
 from .models import Position
@@ -73,6 +74,33 @@ class Bot:
         self.last_scan: dict = {}
         self.liquidity: dict[str, float] = {}
         self.paused = False
+        self.pending_reclaim: dict[str, int] = {}   # mint -> intentos de recuperar el rent
+        self.brain = BrainRuntime(cfg.state_dir)
+        self._brain_version_seen = 0
+
+    # ------------------------------------------------------------------ cerebro
+    def brain_active(self) -> bool:
+        b = self.cfg.brain
+        return b.enabled and self.brain.champion is not None and (self.cfg.mode == "paper" or b.auto_apply_live)
+
+    def exit_cfg(self) -> ExitCfg:
+        if self.brain_active():
+            ov = self.brain.exits()
+            if ov:
+                base = self.cfg.exits
+                return ExitCfg(**{**base.__dict__, **ov})
+        return self.cfg.exits
+
+    def brain_blocks_entries(self) -> bool:
+        if not self.cfg.brain.enabled or not self.brain.defensive:
+            return False
+        return self.cfg.mode == "live" or self.cfg.brain.defensive_in_paper
+
+    def strategy_label(self) -> str:
+        if self.brain_active():
+            c = self.brain.champion
+            return f"{c['strategy']} v{c['version']} (cerebro)"
+        return self.cfg.strategy.name
 
     # ------------------------------------------------------------------ control desde el panel
     def read_control(self):
@@ -105,6 +133,7 @@ class Bot:
                 continue
             pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, reason, fill.tx)
             self.notify.send(f"🔴 SELL {pos.symbol} por ${fill.usd:.2f} — {reason} (PnL ${pnl:+.2f})")
+            self.pending_reclaim[mint] = 0
 
     # ------------------------------------------------------------------ salidas
     def manage_positions(self):
@@ -119,7 +148,7 @@ class Bot:
                 continue
             self.pf.last_prices[mint] = s.price_usd
             self.liquidity[mint] = s.liquidity_usd
-            d = evaluate_exit(pos, s.price_usd, s.liquidity_usd, now, self.cfg.exits)
+            d = evaluate_exit(pos, s.price_usd, s.liquidity_usd, now, self.exit_cfg())
             if d is None:
                 continue
             try:
@@ -130,12 +159,33 @@ class Bot:
             pos.tp_levels_hit = d.new_tp_levels
             pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, d.reason, fill.tx)
             self.notify.send(f"🔴 SELL {pos.symbol} {fill.qty:.4g} por ${fill.usd:.2f} — {d.reason} (PnL ${pnl:+.2f})")
+            if mint not in self.pf.positions:
+                self.pending_reclaim[mint] = 0
         self.pf.save()
+
+    def reclaim(self):
+        """Recupera el SOL bloqueado en cuentas de token vacías (solo live)."""
+        if not hasattr(self.exe, "reclaim_rent"):
+            self.pending_reclaim.clear()
+            return
+        for mint, tries in list(self.pending_reclaim.items()):
+            try:
+                n = self.exe.reclaim_rent(mint)
+                if n:
+                    log.info("Recuperado el depósito de %d cuenta(s) de %s", n, mint)
+                    del self.pending_reclaim[mint]
+                    continue
+            except Exception as e:  # noqa: BLE001
+                log.info("Recuperación de rent pendiente para %s: %s", mint, e)
+            self.pending_reclaim[mint] = tries + 1
+            if tries + 1 >= 5:
+                del self.pending_reclaim[mint]
 
     # ------------------------------------------------------------------ entradas
     def find_entries(self):
         c = self.cfg
-        ok, why = can_open(len(self.pf.positions), self.pf.daily_pnl(), self.pf.start_equity_today(), c.risk)
+        ok, why = can_open(len(self.pf.positions), self.pf.daily_pnl(), self.pf.start_equity_today(), c.risk,
+                           self.pf.equity())
         if not ok:
             log.info("No se abren posiciones: %s", why)
             return
@@ -164,7 +214,13 @@ class Bot:
             rows = self.candles.minute(s.pair_address)
             supply = s.fdv / s.price_usd
             created = int(time.time() - s.age_minutes * 60)
-            signal, feat = latest_signal(c.strategy.name, rows, created, supply, c.strategy.params)
+            pred = None
+            if self.brain_active():
+                signal, feat, pred = self.brain.signal(rows, created, supply)
+            else:
+                signal, feat = latest_signal(c.strategy.name, rows, created, supply, c.strategy.params)
+            if pred is not None:
+                feat["ml_pred"] = pred
             self._log_decision(s, signal, feat)
             self.last_scan["analyzed"] += 1
             self.last_scan["signals"] += int(signal)
@@ -177,7 +233,7 @@ class Bot:
                 log.info("%s con señal pero NO seguro: %s", s.symbol, "; ".join(rep.reasons))
                 self.pf.cooldowns[s.token_address] = time.time()
                 continue
-            size = position_size_usd(self.pf.equity(), self.pf.cash, s.liquidity_usd, c.exits.stop_loss_pct, c.risk)
+            size = position_size_usd(self.pf.equity(), self.pf.cash, s.liquidity_usd, self.exit_cfg().stop_loss_pct, c.risk)
             if size < 5:
                 log.info("Tamaño insuficiente para %s (%.2f USD)", s.symbol, size)
                 continue
@@ -191,9 +247,9 @@ class Bot:
                            entry_price=fill.price, qty=fill.qty, initial_qty=fill.qty, cost_usd=fill.usd,
                            realized_usd=0.0, entry_liquidity=s.liquidity_usd, opened_at=time.time(),
                            peak_price=fill.price, pool=s.pair_address)
-            self.pf.open(pos, f"{c.strategy.name}", fill.tx)
+            self.pf.open(pos, self.strategy_label(), fill.tx)
             self.notify.send(
-                f"🟢 BUY {s.symbol} ${fill.usd:.2f} @ {fill.price:.6g} [{c.mode}] | {c.strategy.name} | "
+                f"🟢 BUY {s.symbol} ${fill.usd:.2f} @ {fill.price:.6g} [{c.mode}] | {self.strategy_label()} | "
                 f"liq ${s.liquidity_usd:,.0f} | 1h {feat.get('ret_60m', 0):+.0f}% | top10 {rep.top10_pct}% | "
                 f"https://dexscreener.com/solana/{s.pair_address}")
         self.pf.save()
@@ -232,13 +288,16 @@ class Bot:
                 "pnl_pct": 100 * (value + p.realized_usd - p.cost_usd) / p.cost_usd if p.cost_usd else 0,
                 "unrealized_pct": 100 * (value / cost_left - 1) if cost_left else 0,
                 "opened_at": p.opened_at, "tp_hit": len(p.tp_levels_hit), "peak": p.peak_price,
-                "stop": p.entry_price if p.tp_levels_hit else p.entry_price * (1 - self.cfg.exits.stop_loss_pct / 100),
+                "stop": p.entry_price if p.tp_levels_hit else p.entry_price * (1 - self.exit_cfg().stop_loss_pct / 100),
                 "liquidity": self.liquidity.get(m, p.entry_liquidity),
             })
         eq = self.pf.equity()
         status = {
             "ts": int(now), "started_at": int(self.started_at), "mode": self.cfg.mode,
-            "strategy": self.cfg.strategy.name, "paused": self.paused,
+            "strategy": self.strategy_label(), "paused": self.paused,
+            "brain": {"enabled": self.cfg.brain.enabled, "active": self.brain_active(),
+                      "status": self.brain.data.get("status"), "version": self.brain.version,
+                      "blocks_entries": self.brain_blocks_entries()},
             "equity": eq, "cash": self.pf.cash, "start_equity": self.cfg.risk.starting_equity_usd,
             "daily_pnl": self.pf.daily_pnl(), "day_start_equity": self.pf.start_equity_today(),
             "max_open": self.cfg.risk.max_open_positions,
@@ -263,8 +322,16 @@ class Bot:
 
     def cycle(self, force_entries: bool = False):
         self.read_control()
+        self.brain.refresh()
+        if self.brain.version != self._brain_version_seen:
+            if self._brain_version_seen or self.brain.version:
+                self.notify.send(f"🧠 Cerebro: {self.brain.data.get('status_text', '')}")
+            self._brain_version_seen = self.brain.version
         self.manage_positions()
-        if not self.paused and (force_entries or
+        self.reclaim()
+        if self.brain_blocks_entries():
+            log.info("Cerebro en modo defensivo: no se abren posiciones")
+        elif not self.paused and (force_entries or
                                 time.time() - self._last_entry_scan >= self.cfg.scanner.entry_interval_seconds):
             self._last_entry_scan = time.time()
             self.find_entries()

@@ -28,6 +28,11 @@ strategy:                      # señal validada en backtest (bot/signals.py)
   params: {}
   max_ohlcv_per_cycle: 8
 
+brain:                         # cerebro autónomo: elige estrategia y salidas (nunca el riesgo)
+  enabled: true
+  auto_apply_live: true        # aplica sus decisiones en real sin pedir aprobación
+  defensive_in_paper: false    # en paper sigue operando aunque no haya ventaja (para aprender)
+
 safety:
   require_mint_revoked: true
   require_freeze_revoked: true

@@ -24,9 +24,15 @@ class SolanaRPC:
         self.http = client or httpx.Client(timeout=15)
         self._id = 0
 
-    def call(self, method: str, params: list):
-        self._id += 1
-        r = self.http.post(self.url, json={"jsonrpc": "2.0", "id": self._id, "method": method, "params": params})
+    def call(self, method: str, params: list, retries: int = 3):
+        import time as _t
+        for attempt in range(retries + 1):
+            self._id += 1
+            r = self.http.post(self.url, json={"jsonrpc": "2.0", "id": self._id, "method": method, "params": params})
+            if r.status_code == 429 and attempt < retries:
+                _t.sleep(1.5 * (attempt + 1))
+                continue
+            break
         r.raise_for_status()
         body = r.json()
         if "error" in body:

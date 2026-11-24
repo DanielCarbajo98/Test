@@ -1,0 +1,69 @@
+# Perfil AGRESIVO para empezar con ~50 EUR (≈ 50 USDC).
+#  - posiciones de ~10 $ (20 % del saldo), hasta 3 a la vez
+#  - riesgo por operación 4 % del saldo (stop −25 % sobre 10 $ ≈ −2,5 $... o más si hay rug)
+#  - stop diario −15 %  ·  FRENO TOTAL: si el saldo cae por debajo de 30 $, no abre nada más
+#  - el cerebro elige estrategia y salidas por su cuenta; nunca toca estos límites
+# Uso:  cp config.50eur.yaml config.yaml  -> primero mode: paper, luego mode: live
+mode: paper
+quote_mint: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+quote_decimals: 6
+state_dir: state
+scanner:
+  interval_seconds: 20
+  entry_interval_seconds: 60
+  max_candidates: 60
+  include_gecko: true
+  include_boosted: true
+  include_profiles: true
+filters:
+  min_liquidity_usd: 40000
+  max_liquidity_usd: 5000000
+  min_age_minutes: 30
+  max_age_minutes: 4320
+  min_volume_h1_usd: 30000
+  min_txns_h1: 200
+  min_buy_ratio_m5: 0.0
+  max_fdv_usd: 50000000
+  allowed_dexes:
+  - raydium
+  - pumpswap
+  - meteora
+  - orca
+strategy:
+  name: momentum
+  params: {}
+  max_ohlcv_per_cycle: 6
+brain:
+  enabled: true
+  auto_apply_live: true
+  defensive_in_paper: false
+safety:
+  require_mint_revoked: true
+  require_freeze_revoked: true
+  max_top10_pct: 35
+  use_rugcheck: true
+  max_rugcheck_danger: 0
+  simulate_sell: true
+risk:
+  starting_equity_usd: 50
+  risk_per_trade_pct: 4.0
+  max_position_pct: 20.0
+  max_pool_share_pct: 1.0
+  max_open_positions: 3
+  daily_loss_limit_pct: 15.0
+  cooldown_minutes: 240
+  slippage_bps: 400
+  max_price_impact_pct: 3.0
+  max_drawdown_pct: 40.0
+exits:
+  stop_loss_pct: 25
+  take_profits:
+  - - 100
+    - 50
+  - - 300
+    - 25
+  trailing_stop_pct: 30
+  trailing_activation_pct: 50
+  time_stop_minutes: 90
+  time_stop_min_gain_pct: 10
+  liquidity_drop_exit_pct: 40

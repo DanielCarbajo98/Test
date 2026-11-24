@@ -1,38 +1,46 @@
+# Todo el sistema 24/7. Arranque:  docker compose up -d     ·  Logs:  docker compose logs -f bot
+# Cambiar paper -> real: edita config.yaml (mode: live) y  docker compose restart bot
+x-base: &base
+  build: .
+  restart: always            # se levanta solo si falla o si el servidor se reinicia
+  init: true                 # gestión correcta de señales (parada limpia)
+  env_file: .env
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
 services:
-  paper:
-    build: .
-    restart: unless-stopped
-    env_file: .env
+  bot:                       # el que opera
+    <<: *base
     volumes:
-      - ./config.paper.yaml:/app/config.yaml:ro
-      - ./state-paper:/app/state
+      - ./config.yaml:/app/config.yaml:ro
+      - ./state:/app/state
     command: ["python", "-m", "bot.main", "--config", "config.yaml"]
-  panel:                        # http://127.0.0.1:8050 (en el VPS: túnel SSH)
-    build: .
-    restart: unless-stopped
-    env_file: .env
+
+  panel:                     # http://127.0.0.1:8050 (en el servidor: túnel SSH)
+    <<: *base
     ports:
       - "127.0.0.1:8050:8050"
     volumes:
-      - ./state-paper:/app/state      # cambia a ./state-live cuando operes en real
+      - ./state:/app/state
     command: ["python", "-m", "bot.dashboard", "--state", "state", "--host", "0.0.0.0"]
-  live:
-    build: .
-    restart: unless-stopped
-    env_file: .env
-    profiles: ["live"]          # solo arranca con: docker compose --profile live up -d
+
+  brain:                     # aprende cada 6 h y actualiza la estrategia del bot
+    <<: *base
     volumes:
-      - ./config.live.yaml:/app/config.yaml:ro
-      - ./state-live:/app/state
-  collector:                    # dataset de backtest "a futuro" (sin sesgo de selección)
-    build: .
-    restart: unless-stopped
+      - ./data:/app/data
+      - ./data_launches:/app/data_launches
+      - ./state:/app/state
+    command: ["python", "-m", "bot.brain", "--data", "data,data_launches", "--state", "state", "--loop", "6"]
+
+  collector:                 # velas "a futuro" del universo activo
+    <<: *base
     volumes:
       - ./data:/app/data
     command: ["python", "-m", "research.collect", "--loop", "15", "--out", "data"]
-  launches:                     # muestra de lanzamientos al azar + sus velas
-    build: .
-    restart: unless-stopped
+
+  launches:                  # lanzamientos al azar (muestra sin sesgo) + sus velas
+    <<: *base
     volumes:
       - ./data_launches:/app/data_launches
     command: ["sh", "-c", "while true; do python -m research.sample_launches --minutes 60 --every 180; python -m research.sample_launches --fetch; done"]

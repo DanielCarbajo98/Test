@@ -21,7 +21,10 @@ def position_size_usd(equity: float, cash: float, liquidity_usd: float, stop_los
     return round(max(0.0, min(by_risk, by_cap, by_pool, cash)), 2)
 
 
-def can_open(open_positions: int, daily_pnl_usd: float, day_start_equity: float, r: RiskCfg) -> tuple[bool, str]:
+def can_open(open_positions: int, daily_pnl_usd: float, day_start_equity: float, r: RiskCfg,
+             equity: float | None = None) -> tuple[bool, str]:
+    if r.max_drawdown_pct and equity is not None and equity < r.starting_equity_usd * (1 - r.max_drawdown_pct / 100):
+        return False, f"freno total: saldo {equity:.2f} por debajo del {100 - r.max_drawdown_pct:.0f}% del inicial"
     if open_positions >= r.max_open_positions:
         return False, "máximo de posiciones abiertas"
     if day_start_equity > 0 and -daily_pnl_usd >= day_start_equity * r.daily_loss_limit_pct / 100:

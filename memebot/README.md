@@ -6,7 +6,11 @@
 > autoengaños, y aplicar una gestión de riesgo que limita cuánto puedes perder. Usa solo dinero que puedas
 > perder entero.
 
-**Resultados actuales del backtest:** [`reports/RESULTADOS.md`](reports/RESULTADOS.md)
+**¿Empiezas con poco dinero? → [GUIA_50EUR.md](GUIA_50EUR.md)** (cómo funciona, dónde depositar, qué wallet y cómo pasar a real).
+
+**Cerebro autónomo:** `bot/brain.py` aprende de las velas y de sus propias operaciones, hace competir estrategias en
+datos no vistos y cambia la del bot solo si demuestra ventaja. Nunca toca el riesgo. Ver la sección *Cerebro* del panel.
+
 
 ![Panel](docs/panel.png)
 
@@ -149,10 +153,8 @@ Si no has hecho paper, o este tiene esperanza negativa, preflight te lo advierte
 
 ### Paso 7 — 24/7 en un VPS (Hetzner o DigitalOcean, ~5 €/mes, en EE. UU. o Frankfurt)
 ```bash
-bash deploy/install_vps.sh                   # instala en /opt/memebot con servicio systemd
-# o con Docker:
-docker compose up -d paper panel collector launches
-docker compose --profile live up -d live     # solo cuando decidas pasar a real
+# alternativa sin Docker (solo el bot, con systemd): bash deploy/install_vps.sh
+sudo bash deploy/install.sh                  # recomendado: Docker con los 5 servicios, 24/7 y autorreinicio
 ```
 
 ---

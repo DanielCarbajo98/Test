@@ -1,11 +1,11 @@
 .env
-state/
-__pycache__/
 .venv/
+__pycache__/
+config.live.yaml
+config.paper.yaml
 config.yaml
 data/
 data_launches/
-state-paper/
 state-live/
-config.paper.yaml
-config.live.yaml
+state-paper/
+state/

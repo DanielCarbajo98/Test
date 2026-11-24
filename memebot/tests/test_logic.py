@@ -114,6 +114,9 @@ def test_kill_switch():
     assert can_open(0, -10, 1000, r)[0]
     assert not can_open(0, -50, 1000, r)[0]
     assert not can_open(4, 0, 1000, r)[0]
+    r2 = RiskCfg(starting_equity_usd=50, max_drawdown_pct=40)
+    assert can_open(0, 0, 40, r2, equity=40)[0]
+    assert not can_open(0, 0, 29, r2, equity=29)[0]
 
 
 def test_stop_loss_and_liquidity_rug():
@@ -180,3 +183,31 @@ def test_example_config_loads(monkeypatch):
     monkeypatch.chdir(__file__.rsplit("/tests/", 1)[0])
     cfg = load_config("config.example.yaml")
     assert cfg.mode == "paper" and cfg.exits.take_profits[0] == [100, 50]
+
+
+def test_reclaim_rent_builds_close_tx_only_for_empty_accounts():
+    import base64
+    from solders.keypair import Keypair
+    from solders.transaction import Transaction
+    from bot.executor import JupiterExecutor
+
+    kp = Keypair()
+    sent = []
+
+    class FakeRPC:
+        def call(self, method, params):
+            if method == "getTokenAccountsByOwner":
+                acc = lambda pk, amt: {"pubkey": pk, "account": {"owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                                       "data": {"parsed": {"info": {"tokenAmount": {"amount": amt, "uiAmount": 0}}}}}}
+                return {"value": [acc(str(Keypair().pubkey()), "0"), acc(str(Keypair().pubkey()), "5")]}
+            if method == "getLatestBlockhash":
+                return {"value": {"blockhash": "11111111111111111111111111111111"}}
+            if method == "sendTransaction":
+                sent.append(params[0])
+                return "sig"
+
+    exe = JupiterExecutor("k", str(kp), "USDC", 6, 300, rpc=FakeRPC())
+    assert exe.reclaim_rent("MINT") == 1                       # solo la cuenta vacía
+    tx = Transaction.from_bytes(base64.b64decode(sent[0]))
+    assert tx.verify() is None and len(tx.message.instructions) == 1
+    assert bytes(tx.message.instructions[0].data) == bytes([9])

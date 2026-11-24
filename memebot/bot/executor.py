@@ -186,3 +186,38 @@ class JupiterExecutor:
     def can_sell(self, mint: str, decimals: int) -> bool:
         """Anti-honeypot: ¿existe ruta para vender?"""
         return self.quoter.quote(mint, self.quote_mint, 10 ** decimals * 1000) is not None
+
+    def reclaim_rent(self, mint: str) -> int:
+        """Cierra las cuentas de token VACÍAS de `mint` y recupera su depósito (~0,002 SOL cada una).
+
+        Cada token comprado crea una cuenta que bloquea SOL de "rent". Con capital pequeño
+        y muchas operaciones eso se come una parte enorme del saldo; aquí se devuelve.
+        Devuelve cuántas cuentas se cerraron.
+        """
+        from solders.hash import Hash
+        from solders.instruction import AccountMeta, Instruction
+        from solders.message import Message
+        from solders.pubkey import Pubkey
+        from solders.transaction import Transaction
+
+        if self.rpc is None:
+            return 0
+        res = self.rpc.call("getTokenAccountsByOwner", [self.taker, {"mint": mint}, {"encoding": "jsonParsed"}])
+        owner = self.kp.pubkey()
+        ixs = []
+        for a in res["value"]:
+            info = a["account"]["data"]["parsed"]["info"]
+            if info["tokenAmount"]["amount"] != "0":
+                continue                                   # nunca cerrar una cuenta con saldo
+            program = Pubkey.from_string(a["account"]["owner"])   # Token o Token-2022
+            ixs.append(Instruction(program, bytes([9]), [      # 9 = CloseAccount
+                AccountMeta(Pubkey.from_string(a["pubkey"]), is_signer=False, is_writable=True),
+                AccountMeta(owner, is_signer=False, is_writable=True),     # destino del SOL
+                AccountMeta(owner, is_signer=True, is_writable=False),     # propietario
+            ]))
+        if not ixs:
+            return 0
+        bh = Hash.from_string(self.rpc.call("getLatestBlockhash", [{"commitment": "finalized"}])["value"]["blockhash"])
+        tx = Transaction([self.kp], Message.new_with_blockhash(ixs, owner, bh), bh)
+        self.rpc.call("sendTransaction", [base64.b64encode(bytes(tx)).decode(), {"encoding": "base64"}])
+        return len(ixs)

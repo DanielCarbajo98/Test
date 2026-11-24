@@ -89,11 +89,20 @@ def build_state(state: Path) -> dict:
         except ValueError:
             continue
     control = _read_json(state / "control.json", {})
+    brain = _read_json(state / "brain.json", {})
+    brain_view = {k: brain.get(k) for k in ("version", "status", "status_text", "updated_at", "samples", "pools",
+                                            "cost_penalty", "lessons", "reality", "ml", "learn_seconds")}
+    champ = brain.get("champion") or {}
+    brain_view["champion"] = {k: champ.get(k) for k in ("kind", "strategy", "version", "test", "promoted_at",
+                                                        "exits_bt", "threshold", "params")} if champ else None
+    brain_view["candidates"] = [{k: c.get(k) for k in ("kind", "strategy", "test", "score")}
+                                for c in brain.get("candidates", [])]
+    brain_view["history"] = brain.get("history", [])[-12:]
     return {
         "now": int(now), "online": online, "status": status, "equity": equity_series(state),
         "closed": [{k: v for k, v in c.items() if k != "reasons"} | {"reason": (c["reasons"] or ["?"])[-1]}
                    for c in closed[::-1][:100]],
-        "stats": stats, "fills": fills, "decisions": decisions,
+        "stats": stats, "fills": fills, "decisions": decisions, "brain": brain_view if brain else None,
         "control": {"paused": bool(control.get("paused", status.get("paused", False))),
                     "close_all_pending": bool(control.get("close_all"))},
     }
