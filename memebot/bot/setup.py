@@ -224,7 +224,10 @@ def main():
     if env_f.exists():
         shutil.copy(env_f, env_f.with_suffix(".bak"))
     env_f.write_text("".join(f"{k}={v}\n" for k, v in env.items()))
-    os.chmod(env_f, 0o600)
+    try:
+        os.chmod(env_f, 0o600)
+    except OSError:
+        pass                     # carpetas de Windows montadas en Docker no admiten permisos Unix
     ok(".env guardado (solo lo puede leer tu usuario)")
 
     # 6. Fondos ------------------------------------------------------------
