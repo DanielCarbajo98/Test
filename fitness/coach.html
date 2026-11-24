@@ -258,13 +258,16 @@ details.rec .rb{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,
       <div class="meter" aria-hidden="true"><span id="cafBar" style="width:0%"></span></div>
       <p class="small muted" id="cafTxt"></p>
       <div class="cafbtns" style="margin-top:10px">
-        <button type="button" data-caf="esp">+ Espresso · 70 mg</button>
-        <button type="button" data-caf="dob">+ Doble · 130 mg</button>
-        <button type="button" data-caf="fil">+ Filtro / V60 · 150 mg</button>
-        <button type="button" data-caf="lec">+ Flat white · 130 mg</button>
+        <button type="button" data-caf="con">+ Café con leche · doble + 200 ml</button>
+        <button type="button" data-caf="lec">+ Flat white · doble + 120 ml</button>
+        <button type="button" data-caf="cor">+ Cortado · espresso + 50 ml</button>
+        <button type="button" data-caf="vle">+ V60 con leche · 150 mg + 100 ml</button>
+        <button type="button" data-caf="esp">+ Solo · 70 mg</button>
         <button type="button" id="cafUndo">Deshacer</button>
       </div>
       <p class="small muted" id="cafList" style="margin-top:8px"></p>
+      <label class="lbl" for="milkSel" style="margin-top:10px">Tu leche<select class="f" id="milkSel" style="width:auto">
+        <option value="semi">Semidesnatada (46 kcal/100 ml)</option><option value="entera">Entera (63 kcal/100 ml)</option><option value="desn">Desnatada (35 kcal/100 ml)</option><option value="sinlac">Sin lactosa semi (45 kcal/100 ml)</option><option value="avena">Bebida de avena (45 kcal/100 ml)</option><option value="soja">Bebida de soja (36 kcal/100 ml)</option><option value="prot">Leche proteica (55 kcal/100 ml)</option></select></label>
     </div>
   </div>
 
@@ -834,8 +837,9 @@ function renderProgress(){
 
 
 /* ---------- TAREAS Y MEMORIA ---------- */
-function seedMemory2(){if(profile.seeded2)return;profile.seeded2=true;
- ["Tiene una perra staffy (staffordshire) llamada Blu y la saca a pasear a diario.","No toma copos de avena ni espárragos.","Tiene una pulsera WHOOP, pero ahora mismo no paga la suscripción."].forEach(t=>{if(!memory.items.some(m=>m.t===t))memory.items.push({id:uid36("m"),t,d:today});});
+function seedMemory3(){if(profile.seeded3)return;profile.seeded3=true;if(!memory.items.some(m=>/caf[eé] con leche/i.test(m.t)))memory.items.push({id:uid36("m"),t:"Toma el café con leche.",d:today});persist("memory",memory);persist("profile",profile);renderMemTasks();}
+function seedMemory2(){if(profile.seeded2){seedMemory3();return;}profile.seeded3=true;profile.seeded2=true;
+ ["Tiene una perra staffy (staffordshire) llamada Blu y la saca a pasear a diario.","No toma copos de avena ni espárragos.","Tiene una pulsera WHOOP, pero ahora mismo no paga la suscripción.","Toma el café con leche."].forEach(t=>{if(!memory.items.some(m=>m.t===t))memory.items.push({id:uid36("m"),t,d:today});});
  persist("memory",memory);persist("profile",profile);renderMemTasks();}
 function seedMemory(){if(profile.seeded){seedMemory2();return;}profile.seeded=true;
  ["Trabaja de lunes a viernes de 7:00 a 15:00.","Está de vacaciones hasta el domingo 29 de noviembre de 2026; vuelve al trabajo el lunes 30.","Tiene cafetera nueva y toma café de especialidad todos los días.","No le gustan las claras de huevo: solo huevos enteros.","Usa arroz congelado de Mercadona en bolsitas individuales.","Empezó el programa de entrenamiento el martes 24 de noviembre de 2026."]
@@ -918,7 +922,7 @@ function contextText(){
  lines.push("PERFIL: hombre, 28 años, 180 cm. Grasa corporal bastante elevada. Dolor de espalda (lumbar) frecuente sin diagnóstico. Prioridades: 1 estética (perder grasa y ganar músculo), 2 capacidad aeróbica, 3 fuerza. Hizo pesas durante años, pero lleva tiempo sin entrenar. Se acaba de apuntar al gimnasio y puede entrenar todos los días. Come mucha comida rápida, bebe mucha agua, duerme pocas horas, tiene ansiedad por comer y le cuesta ser constante. No quiere claras de huevo, solo huevos enteros. Toma arroz congelado de Mercadona en bolsitas individuales.");
  const n=profile.nut||{};const w=n.w||82,h=n.h||180;const bmr=10*w+6.25*h-5*28+5;const kcal=Math.round(bmr*(n.act||1.55)*(1-(n.def||0.2))/10)*10;
  lines.push("NUTRICIÓN OBJETIVO: "+kcal+" kcal/día, proteína "+Math.round(w*2)+" g, grasa "+Math.round(w*0.8)+" g.");
- const cfT=(days[today]&&days[today].caf)||[];lines.push("HORARIO: hoy es "+({vac:"día de vacaciones",work:"día de trabajo (7:00–15:00)",free:"día libre"})[dayMode(today)]+". Vacaciones hasta "+vacUntil()+". Corte de cafeína hoy: "+cutoffFor(today)+". Cafés de hoy: "+(cfT.length?cfT.map(c=>c.time+" "+(CAF[c.k]?CAF[c.k][0]:c.k)).join(", "):"ninguno")+". Plan horario de hoy: "+scheduleFor(today).filter(Boolean).map(x=>x[0]+" "+x[1]).join(" | "));
+ const cfT=(days[today]&&days[today].caf)||[];lines.push("HORARIO: hoy es "+({vac:"día de vacaciones",work:"día de trabajo (7:00–15:00)",free:"día libre"})[dayMode(today)]+". Vacaciones hasta "+vacUntil()+". Corte de cafeína hoy: "+cutoffFor(today)+". Cafés de hoy: "+(cfT.length?cfT.map(c=>c.time+" "+(CAF[c.k]?CAF[c.k][0]:c.k)).join(", "):"ninguno")+". Leche de los cafés hoy: "+cafMilk(cfT).ml+" ml ≈ "+cafMilk(cfT).kcal+" kcal. Plan horario de hoy: "+scheduleFor(today).filter(Boolean).map(x=>x[0]+" "+x[1]).join(" | "));
  lines.push("FECHA DE HOY: "+today+" ("+DAYN[new Date().getDay()]+"). El programa empieza el "+startDate()+(dayDiff(startDate(),today)<0?" (mañana; hoy es el día 0 de preparación: compra, batch cooking, bolsa del gimnasio, caminar 30 min, aprender el protocolo de espalda y dormir pronto).":"."));
  lines.push("PROGRAMA: semana "+wk+" de 13, fase "+ph.n+" ("+ph.name+"): "+ph.desc+" RIR "+ph.rir+".");
  lines.push("PRÓXIMOS DÍAS:");
@@ -945,6 +949,7 @@ Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próx
 EVIDENCIA RECIENTE (úsala): HIIT es lo más eficiente contra la grasa visceral (meta-análisis 2024–2026), y desde la fase 2 puedes añadir un segundo bloque corto. Café: 400 mg a 4 h de dormir quitan unos 50 min de sueño; 100 mg apenas afectan (Gardiner 2025). Alargar el sueño reduce unas 270 kcal/día de ingesta. Hipertrofia: RIR 1–2, y cerca del fallo ayuda en hipertrofia más que en fuerza; da énfasis a la posición estirada. Proteína en déficit: más es mejor hasta unos 2,4 g/kg. Creatina: ayuda cuando duerme poco.
 DATOS DE LA PULSERA: si hay recuperación de hoy, úsala. Verde (67% o más): entreno completo, puedes apretar. Amarilla (34–66%): entreno normal con RIR 2–3. Roja (menos del 33%): versión ligera, zona 2 o movilidad. Una HRV bajando varios días o la FC en reposo subiendo indican fatiga o enfermedad.
 RECETAS DE LA APP (recomiéndalas por su nombre cuando pregunte qué comer): Bowl de pollo teriyaki, Smash burger casera, Salmón con patata y brócoli, Merluza en papillote, Revuelto de 3 huevos con pavo, Salteado de ternera y verduras, Tiramisú proteico de café, Proffee helado. Si un día no va al gimnasio, el botón "Hoy entreno en casa" de la pestaña Hoy cambia la sesión a la versión en casa (mochila, silla y mesa).
+CAFÉ: lo toma CON LECHE (su leche: ${milk()[0]}). Cuenta la leche dentro de sus calorías: 200 ml de semidesnatada son unas 90 kcal y 7 g de proteína. Con 2–3 cafés con leche al día son 180–270 kcal, así que recomiéndale leche semidesnatada o desnatada, o una proteica. No lo prohíbas.
 HÁBITOS CLAVE: tiene una perra staffy llamada Blu y la pasea a diario; usa esos paseos para sumar pasos y zona 2 y menciónala con naturalidad. toma café de especialidad a diario (orienta sobre la cafeína, la hora de corte y las calorías de la leche, sin prohibírselo). Grasa abdominal: déficit, cardio, sueño, proteína, fibra, poco alcohol y pasos. Suplementos de nivel A: creatina, cafeína y proteína.
 MEMORIA: aprendes del usuario en cada conversación. Usa siempre la MEMORIA A LARGO PLAZO para personalizar tus respuestas. Cuando te cuente algo duradero y útil (horarios, trabajo, gustos, comidas, personas importantes, objetivos, lesiones, preferencias de entreno, logros o cómo le gusta que le hables), guárdalo en "recordar" como frase corta en tercera persona. No guardes lo trivial ni lo pasajero, ni contraseñas o datos bancarios. Si algo contradice un recuerdo, pon su id en "olvidar" y guarda la versión nueva. No repitas recuerdos que ya existen.
 Reglas:
@@ -1126,7 +1131,10 @@ function scheduleFor(ds){const mode=dayMode(ds);const p=planFor(ds);const tr=p.s
  return [["08:00","Levantarte, agua y paseo con Blu al sol (20–30 min)"],["08:30","Café de especialidad sin prisa"],["08:50","Desayuno proteico"],tr?["10:30",tr+" (antes, el protocolo de espalda)"]:["10:30","Actividad libre: paseo largo, bici o montaña"],["13:00","Comida: proteína, arroz y verdura"],["15:00","Último café"],["17:30","Merienda proteica y paseo largo con Blu (45–60 min)"],["20:30","Cena"],["22:30","Pantallas fuera"],["23:00","A dormir"]];}
 function _u(){}
 function cutoffFor(ds){return dayMode(ds)==="work"?"13:00":"15:00";}
-const CAF={esp:["Espresso",70,0],dob:["Doble",130,0],fil:["Filtro/V60",150,0],lec:["Flat white",130,70]};
+const CAF={con:["Café con leche",130,200],lec:["Flat white",130,120],cor:["Cortado",70,50],vle:["V60 con leche",150,100],esp:["Solo",70,0],dob:["Doble",130,0],fil:["Filtro/V60",150,0]};
+const MILK={semi:["semidesnatada",46,3.3],entera:["entera",63,3.2],desn:["desnatada",35,3.4],sinlac:["sin lactosa semi",45,3.2],avena:["bebida de avena",45,0.5],soja:["bebida de soja",36,3.3],prot:["leche proteica",55,6]};
+function milk(){return MILK[profile.milk]||MILK.semi;}
+function cafMilk(list){const ml=(list||[]).reduce((a,c)=>a+(CAF[c.k]?CAF[c.k][2]:0),0);const m=milk();return{ml,kcal:Math.round(ml*m[1]/100),prot:Math.round(ml*m[2]/100)};}
 function renderSchedule(){
  const mode=dayMode(viewDate);$("#vacIn").value=vacUntil();
  $("#modeLbl").textContent=mode==="vac"?"Modo vacaciones":mode==="work"?"Día de trabajo · 7:00–15:00":"Día libre";
@@ -1138,9 +1146,11 @@ function renderSchedule(){
  $("#cafPill").textContent=mg+" mg";const bar=$("#cafBar");bar.style.width=Math.min(100,mg/400*100)+"%";bar.classList.toggle("hi",mg>=300);
  const co=cutoffFor(viewDate);const late=cf.some(c=>c.time>co);
  $("#cafTxt").textContent=(mg>=400?"Has llegado al límite seguro (400 mg). Hoy, solo descafeinado.":"Te quedan "+(400-mg)+" mg hasta el límite de 400 mg.")+" Último café: "+co+(late?". Hoy te has pasado de hora, y eso puede quitarte sueño profundo.":".");
- $("#cafList").textContent=cf.length?cf.map(c=>c.time+" "+(CAF[c.k]?CAF[c.k][0]:c.k)).join(" · "):"Sin cafés registrados hoy.";
+ const cm=cafMilk(cf);$("#cafList").textContent=cf.length?cf.map(c=>c.time+" "+(CAF[c.k]?CAF[c.k][0]:c.k)).join(" · ")+" — leche: "+cm.ml+" ml ≈ "+cm.kcal+" kcal y "+cm.prot+" g de proteína (ya cuentan en tu total del día)":"Sin cafés registrados hoy.";
+ $("#milkSel").value=profile.milk||"semi";
 }
 document.querySelectorAll("[data-caf]").forEach(b=>b.addEventListener("click",()=>{const d=getDay(viewDate);d.caf=d.caf||[];const n=new Date();d.caf.push({k:b.dataset.caf,time:pad(n.getHours())+":"+pad(n.getMinutes())});saveDay(viewDate);renderSchedule();}));
+$("#milkSel").addEventListener("change",e=>{profile.milk=e.target.value;persist("profile",profile);renderSchedule();});
 $("#cafUndo").addEventListener("click",()=>{const d=getDay(viewDate);if(d.caf&&d.caf.length){d.caf.pop();saveDay(viewDate);renderSchedule();}});
 $("#vacIn").addEventListener("change",e=>{if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){profile.vacUntil=e.target.value;persist("profile",profile);renderSchedule();}});
 
@@ -1201,7 +1211,7 @@ function renderPotential(){
   <p class="small muted" style="margin-top:6px">Antes de empezar con cualquier suplemento, si tomas medicación o tienes algún problema de salud, consúltalo con tu médico.</p></div>
  <div class="card"><h3>Tu café de especialidad, a tu favor</h3><div class="grid2 small">
   <div><ul class="clean"><li><b>Cafeína aproximada:</b> espresso 60–80 mg, doble 120–140 mg, V60 de 250 ml 120–180 mg (depende del café y de la ratio).</li><li><b>Límite:</b> 400 mg al día, que equivale a 3 dobles o 2–3 V60.</li><li><b>Corte:</b> a las 13:00 los días de trabajo y a las 15:00 los libres. Por la tarde, descafeinado de especialidad, que también los hay muy buenos.</li><li>No hace falta esperar 90 min después de levantarte: esa regla tiene poca evidencia. Tómalo cuando te siente bien.</li></ul></div>
-  <div><ul class="clean"><li><b>Café solo:</b> unas 2 kcal. Las calorías vienen de la leche: un flat white con leche entera son unas 70 kcal y un latte grande unas 150.</li><li><b>Proffee de verano:</b> espresso doble + 250 ml de bebida proteica fría da unos 25 g de proteína.</li><li><b>Pre-entreno:</b> un doble 30–45 min antes de entrenar, siempre antes de la hora de corte.</li><li>Ratio de partida para V60: 1:16 (15 g de café por 240 g de agua a 92–94 °C, en 2:30–3:00). Registra tus cafés en Hoy y VEGA vigilará tu sueño.</li></ul></div>
+  <div><ul class="clean"><li><b>Tu café con leche:</b> el café solo apenas tiene calorías; las pone la leche. Con 200 ml de leche semidesnatada son unas 90 kcal y 7 g de proteína, y con entera unas 125 kcal. Con 2–3 al día pueden ser 200–375 kcal, así que la leche semidesnatada, la desnatada o una proteica te ahorran mucho sin renunciar al café. La app suma la leche de cada café que apuntas.</li><li><b>Proffee de verano:</b> espresso doble + 250 ml de bebida proteica fría da unos 25 g de proteína.</li><li><b>Pre-entreno:</b> un doble 30–45 min antes de entrenar, siempre antes de la hora de corte.</li><li>Ratio de partida para V60: 1:16 (15 g de café por 240 g de agua a 92–94 °C, en 2:30–3:00). Registra tus cafés en Hoy y VEGA vigilará tu sueño.</li></ul></div>
  </div></div>`;
 }
 
@@ -1242,7 +1252,7 @@ function suggestions(){
  else if(isTrain&&d.h.train)out.push({c:"done",k:"Entreno",t:"Hecho. Buen trabajo",s:"Cena con proteína y a dormir pronto",a:()=>show("progreso")});
  if(!d.h.back)out.push({k:"Espalda · 8 min",t:"Protocolo de espalda guiado",s:"Curl-up, plancha lateral y bird dog",a:startBackTimer});
  const cf=d.caf||[];const mg=cf.reduce((a,c)=>a+(CAF[c.k]?CAF[c.k][1]:0),0);const co=cutoffFor(today);
- if(hm<co&&mg<400)out.push({k:"Café · "+mg+" mg",t:"Café disponible hasta las "+co,s:"Toca para apuntar un V60 (150 mg)",a:()=>{const n=new Date();d.caf=d.caf||[];d.caf.push({k:"fil",time:hmNow()});saveDay(today);renderSchedule();renderSugg();}});
+ if(hm<co&&mg<400)out.push({k:"Café · "+mg+" mg",t:"Café disponible hasta las "+co,s:"Toca para apuntar un café con leche",a:()=>{d.caf=d.caf||[];d.caf.push({k:"con",time:hmNow()});saveDay(today);renderSchedule();renderSugg();}});
  else if(hm>=co)out.push({k:"Café · "+mg+" mg",t:"Hoy ya no más cafeína",s:"Si te apetece, que sea descafeinado",a:()=>show("hoy")});
  if(!d.h.steps&&new Date().getHours()>=17)out.push({k:"Pasos",t:"Paseo con Blu",s:"Para llegar a los 8.000 pasos de hoy",a:()=>{d.h.steps=true;saveDay(today);renderHabits();renderSugg();}});
  const due=tasks.items.filter(t=>!t.done&&t.date&&t.date<=today);
@@ -1405,7 +1415,7 @@ if(profile.ai&&profile.ai.name){$("#aiName").textContent=profile.ai.name;$("#tab
     if(!remoteTasks&&tasks.items.length)persist("tasks",tasks);
    }
    Object.assign(days,remote);if(remoteMem)memory=remoteMem;if(remoteTasks)tasks=remoteTasks;
-   if(!profile.seeded2&&!(rp&&rp.seeded2))setTimeout(seedMemory,0);if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
+   if(!profile.seeded3&&!(rp&&rp.seeded3))setTimeout(seedMemory,0);if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
    lsSave();
    const active=document.activeElement;if(!(active&&active.tagName==="INPUT"))renderAll();renderChat();renderMemTasks();
    setSave("Sincronizado");

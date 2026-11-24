@@ -15,7 +15,7 @@ SOBRE MÍ
 - Trabajo de lunes a viernes de 7:00 a 15:00. Estoy de vacaciones hasta el domingo 29 de noviembre de 2026.
 - Duermo poco, como mucha comida rápida, tengo ansiedad por comer y me cuesta ser constante.
 - No tomo claras de huevo (solo huevos enteros), ni copos de avena, ni espárragos. Uso arroz congelado de Mercadona en bolsitas individuales.
-- Tomo café de especialidad todos los días con mi cafetera.
+- Tomo café de especialidad todos los días con mi cafetera, siempre con leche. Cuenta la leche dentro de mis calorías (200 ml de semidesnatada son unas 90 kcal y 7 g de proteína); mejor semidesnatada, desnatada o proteica.
 - Tengo una perra staffy que se llama Blu y la saco a pasear todos los días.
 - Tengo una WHOOP, pero ahora mismo no pago la suscripción.
 
