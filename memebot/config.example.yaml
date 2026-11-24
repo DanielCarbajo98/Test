@@ -1,0 +1,54 @@
+# Copia a config.yaml. Empieza SIEMPRE en paper.
+mode: paper            # paper | live
+quote_mint: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v   # USDC (moneda base del bot)
+quote_decimals: 6
+state_dir: state
+
+scanner:
+  interval_seconds: 30
+  max_candidates: 30
+  include_boosted: true
+  include_profiles: true
+
+filters:                       # estrategia "momentum de segunda ola"
+  min_liquidity_usd: 40000
+  max_liquidity_usd: 5000000
+  min_age_minutes: 30          # nada de comprar en el bloque de lanzamiento
+  max_age_minutes: 4320        # 72 h
+  min_volume_h1_usd: 50000
+  min_txns_h1: 300
+  min_buy_ratio_m5: 0.55
+  min_buy_ratio_h1: 0.52
+  min_change_h1: 5
+  max_change_h1: 150           # no perseguir velas parabólicas
+  min_change_m5: -3
+  max_fdv_usd: 50000000
+  min_score: 60
+  allowed_dexes: [raydium, pumpswap, meteora, orca]
+
+safety:
+  require_mint_revoked: true
+  require_freeze_revoked: true
+  max_top10_pct: 35
+  use_rugcheck: true
+  max_rugcheck_danger: 0
+  simulate_sell: true
+
+risk:
+  starting_equity_usd: 1000    # presupuesto del bot (no tu patrimonio)
+  risk_per_trade_pct: 1.0
+  max_position_pct: 5.0
+  max_pool_share_pct: 1.0
+  max_open_positions: 4
+  daily_loss_limit_pct: 5.0
+  cooldown_minutes: 240
+  slippage_bps: 300
+
+exits:
+  stop_loss_pct: 25
+  take_profits: [[100, 50], [300, 25]]   # [+% ganancia, % de la posición inicial a vender]
+  trailing_stop_pct: 30
+  trailing_activation_pct: 50
+  time_stop_minutes: 90
+  time_stop_min_gain_pct: 10
+  liquidity_drop_exit_pct: 40

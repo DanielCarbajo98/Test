@@ -1,0 +1,5 @@
+httpx>=0.27
+PyYAML>=6.0
+python-dotenv>=1.0
+solders>=0.21
+pytest>=8.0
