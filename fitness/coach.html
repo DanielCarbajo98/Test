@@ -1,40 +1,34 @@
-<title>Coach Recomposición</title>
+<title>VEGA</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: cuaderno de entrenamiento — cabecera fija con semana/fase, pestañas, tarjetas solo para lo accionable */
+/* Layout: VEGA OS — consola oscura de un único look; VEGA es la pantalla de inicio, el resto son módulos */
 :root{
-  --bg:#f3f5f8; --surface:#ffffff; --ink:#121a2b; --muted:#5b6577; --line:#dde2ea;
-  --accent:#2747d6; --accent-soft:#e6ebff; --heat:#e0582a; --heat-soft:#fde9e1;
-  --ok:#1d8a55; --ok-soft:#e2f4ea; --warn:#b7791f;
-  --hud-bg:#060c18; --hud-ink:#d4e6ff; --hud-glow:#45c4ff; --hud-dim:#2b4a72;
+  --bg:#04070d; --surface:#0a111d; --surface2:#0e1828; --ink:#e7eefb; --muted:#8a9ab6; --line:#18253a;
+  --accent:#45c4ff; --accent-soft:#0c2233; --heat:#ff8a5c; --heat-soft:#2a150e;
+  --ok:#3ddc97; --ok-soft:#0d281d; --warn:#f2b84b; --on-accent:#03121c;
+  --hud-bg:#050b16; --hud-ink:#d4e6ff; --hud-glow:#45c4ff; --hud-dim:#22405f;
   --display:"Archivo",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0d121c; --surface:#151c2b; --ink:#e8ecf4; --muted:#97a1b4; --line:#273147;
-  --accent:#7d94ff; --accent-soft:#1d2747; --heat:#ff8a5c; --heat-soft:#3a2219;
-  --ok:#4cc98a; --ok-soft:#163326; --warn:#e3a94a; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0d121c; --surface:#151c2b; --ink:#e8ecf4; --muted:#97a1b4; --line:#273147;
-  --accent:#7d94ff; --accent-soft:#1d2747; --heat:#ff8a5c; --heat-soft:#3a2219;
-  --ok:#4cc98a; --ok-soft:#163326; --warn:#e3a94a; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;background-image:radial-gradient(1200px 600px at 50% -10%,rgba(69,196,255,.10),transparent 60%),radial-gradient(800px 400px at 100% 100%,rgba(255,138,92,.05),transparent 60%);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .wrap{max-width:920px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(4,7,13,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px 8px;flex-wrap:wrap}
-.brand h1{font-family:var(--display);font-stretch:85%;font-weight:900;font-size:1.5rem;letter-spacing:-.01em;margin:0;text-transform:uppercase}
-.brand h1 span{color:var(--heat)}
+.brand h1{font-family:var(--display);font-stretch:120%;font-weight:800;font-size:1.25rem;letter-spacing:.3em;margin:0;display:flex;align-items:center;gap:10px}
+.brand h1 i{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+.brand h1 span{color:var(--muted);font-weight:500;font-size:.7rem;letter-spacing:.18em;font-family:var(--mono)}
 .phasebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.8rem}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:.78rem;white-space:nowrap}
 .pill.heat{background:var(--heat-soft);color:var(--heat)}
 .pill.ok{background:var(--ok-soft);color:var(--ok)}
 nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
 nav.tabs button{font:600 .88rem var(--body);background:none;border:0;color:var(--muted);padding:10px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
-nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--heat)}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
 button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 main{padding-block:20px 60px}
 section.view{display:flex;flex-direction:column;gap:18px}
@@ -44,7 +38,7 @@ p{margin:0}
 .muted{color:var(--muted)}
 .small{font-size:.85rem}
 .eyebrow{font:700 .72rem var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.card{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
@@ -96,13 +90,13 @@ ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .verdict{font:700 .68rem var(--body);letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;height:fit-content;white-space:nowrap}
 .verdict.no{background:var(--heat-soft);color:var(--heat)} .verdict.si{background:var(--ok-soft);color:var(--ok)} .verdict.mm{background:var(--accent-soft);color:var(--accent)}
 .alert{border:1px solid var(--heat);background:var(--heat-soft);border-radius:10px;padding:14px 16px}
-.btn{font:600 .88rem var(--body);background:var(--accent);color:#fff;border:0;border-radius:7px;padding:8px 14px;cursor:pointer}
+.btn{font:600 .88rem var(--body);background:var(--accent);color:var(--on-accent);border:0;border-radius:7px;padding:8px 14px;cursor:pointer}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
 svg text{fill:var(--muted);font:11px var(--mono)}
 .chat{display:flex;flex-direction:column;gap:10px;margin:14px 0;max-height:52vh;overflow-y:auto;padding-right:4px}
 .msg{max-width:85%;padding:10px 13px;border-radius:12px;font-size:.92rem;white-space:pre-wrap;overflow-wrap:anywhere}
-.msg.u{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:3px}
+.msg.u{align-self:flex-end;background:var(--accent);color:var(--on-accent);border-bottom-right-radius:3px}
 .msg.a{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:3px}
 .msg.a .chg{display:block;margin-top:6px;font-size:.78rem;color:var(--ok);font-weight:600}
 .composer{display:flex;gap:8px;align-items:flex-end}
@@ -168,6 +162,20 @@ a.vid:hover{text-decoration:underline}
 .tier{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
 .tier:first-child{border-top:0}
 .ref{font-size:.8rem;color:var(--muted)} .ref a{color:var(--accent)}
+.greet{font:800 1.5rem var(--display);font-stretch:105%;text-align:center;color:var(--hud-ink);text-wrap:balance}
+.gmeta{font:600 .72rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#7f9bc2;text-align:center}
+.sugg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;width:100%;margin-top:6px}
+.sg{display:flex;flex-direction:column;gap:6px;text-align:left;background:rgba(69,196,255,.06);border:1px solid var(--hud-dim);border-radius:12px;padding:12px 14px;color:var(--hud-ink);cursor:pointer;font:inherit;min-width:0}
+.sg:hover{border-color:var(--hud-glow);background:rgba(69,196,255,.1)}
+.sg .k{font:700 .66rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--hud-glow)}
+.sg.now .k{color:var(--heat)} .sg.done .k{color:var(--ok)}
+.sg b{font:700 .98rem var(--display)}
+.sg span{font-size:.82rem;color:#9fb4d3}
+.bodyg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:10px}
+.bodyg label{display:flex;flex-direction:column;gap:4px;font:600 .7rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bodyg input{font:700 1.2rem var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.recov{font:800 .72rem var(--mono);letter-spacing:.1em;padding:3px 9px;border-radius:99px}
+.recov.g{background:var(--ok-soft);color:var(--ok)} .recov.y{background:#2a2310;color:var(--warn)} .recov.r{background:var(--heat-soft);color:var(--heat)}
 .savestate{font-size:.75rem;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.habit,.ex{transition:background .15s,border-color .15s}}
 </style>
@@ -175,12 +183,12 @@ a.vid:hover{text-decoration:underline}
 <header class="top">
   <div class="wrap">
     <div class="brand">
-      <h1>Coach <span>Recomp</span></h1>
+      <h1><i aria-hidden="true"></i>VEGA <span>OS · FITNESS</span></h1>
       <div class="phasebar"><span class="pill heat" id="pWeek">Semana 1</span><span class="pill" id="pPhase">Fase 1</span><span class="savestate" id="saveState">Cargando datos…</span></div>
     </div>
     <nav class="tabs" role="tablist" aria-label="Secciones">
-      <button role="tab" data-v="hoy" aria-selected="true">Hoy</button>
-      <button role="tab" data-v="coach" aria-selected="false" id="tabAi">VEGA</button>
+      <button role="tab" data-v="coach" aria-selected="true" id="tabAi">VEGA</button>
+      <button role="tab" data-v="hoy" aria-selected="false">Hoy</button>
       <button role="tab" data-v="plan" aria-selected="false">Plan 13 semanas</button>
       <button role="tab" data-v="comida" aria-selected="false">Nutrición</button>
       <button role="tab" data-v="progreso" aria-selected="false">Progreso</button>
@@ -193,7 +201,7 @@ a.vid:hover{text-decoration:underline}
 <main class="wrap">
 
 <!-- HOY -->
-<section class="view" id="v-hoy">
+<section class="view" id="v-hoy" hidden>
   <div class="card">
     <div class="session-head">
       <div><span class="eyebrow" id="todayDate">Hoy</span><h2 id="sessTitle">Sesión</h2><p class="muted small" id="sessSub"></p></div>
@@ -253,10 +261,12 @@ a.vid:hover{text-decoration:underline}
 </section>
 
 <!-- COACH -->
-<section class="view" id="v-coach" hidden>
+<section class="view" id="v-coach">
   <div class="card">
     <div class="hud">
-      <div class="ainame" id="aiName">VEGA</div>
+      <div class="gmeta" id="greetMeta">Cargando</div>
+      <div class="greet" id="greet">Hola</div>
+      <div class="ainame" id="aiName" hidden>VEGA</div>
       <button class="orb" id="orb" type="button" data-state="idle" aria-label="Hablar con VEGA"><canvas id="vegaCv" aria-hidden="true"></canvas></button>
       <div class="state" id="hudState">En línea</div>
       <div class="sub" id="hudSub" aria-live="polite">Toca el núcleo para hablar</div>
@@ -266,6 +276,7 @@ a.vid:hover{text-decoration:underline}
         <button class="hud-btn" id="fullBtn" type="button">Modo inmersivo</button>
         <button class="hud-btn" id="setBtn" type="button" aria-expanded="false">Ajustes</button>
       </div>
+      <div class="sugg" id="sugg" aria-label="Sugerencias de VEGA"></div>
       <div class="hud-set" id="hudSet" hidden>
         <label for="aiNameIn">Nombre del asistente<input id="aiNameIn" maxlength="16" value="VEGA"></label>
         <label for="nickIn">Cómo te llama<input id="nickIn" maxlength="20" value="jefe"></label>
@@ -284,6 +295,23 @@ a.vid:hover{text-decoration:underline}
       <span class="small muted" id="coachStatus">Conectando con el coach…</span>
     </div>
   </div>
+  <div class="card">
+    <div class="session-head"><div><span class="eyebrow">WHOOP · NOOP · Atria</span><h3>Datos de tu cuerpo hoy</h3></div><span class="recov" id="recovTag" hidden></span></div>
+    <p class="small muted">Apunta los datos de tu pulsera cada mañana, o sube una captura de pantalla y VEGA los lee solo. Con ellos ajusta la intensidad del día.</p>
+    <div class="bodyg">
+      <label for="bSleep">Sueño (h)<input id="bSleep" type="number" step="0.1" inputmode="decimal" placeholder="—"></label>
+      <label for="bRec">Recuperación %<input id="bRec" type="number" inputmode="numeric" placeholder="—"></label>
+      <label for="bHrv">HRV (ms)<input id="bHrv" type="number" inputmode="numeric" placeholder="—"></label>
+      <label for="bRhr">FC reposo<input id="bRhr" type="number" inputmode="numeric" placeholder="—"></label>
+      <label for="bStrain">Esfuerzo ayer<input id="bStrain" type="number" step="0.1" inputmode="decimal" placeholder="—"></label>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <label class="btn ghost" for="bShot" style="cursor:pointer">Leer captura de pantalla</label>
+      <input id="bShot" type="file" accept="image/*" hidden>
+      <span class="small muted" id="bMsg"></span>
+    </div>
+  </div>
+
   <div class="grid2">
     <div class="card">
       <div class="session-head"><div><span class="eyebrow">Tu día a día</span><h3>Tareas y recordatorios</h3></div><span class="pill" id="taskCount">0</span></div>
@@ -683,7 +711,7 @@ function renderHabits(){
  HABITS.forEach(([k,label])=>{const on=!!day.h[k];if(on)n++;const inp=el("input",{type:"checkbox",id:"h-"+k});inp.checked=on;
   const lab=el("label",{class:"habit"+(on?" on":""),for:"h-"+k},inp,el("span",{text:label}));
   inp.addEventListener("change",()=>{day.h[k]=inp.checked;saveDay(viewDate);renderHabits();});box.append(lab);});
- $("#habitScore").textContent=n+"/6";
+ $("#habitScore").textContent=n+"/6";if(typeof renderSugg==="function"&&$("#sugg"))try{renderSugg();}catch(e){}
  renderHeat();
 }
 function score(dstr){const d=days[dstr];if(!d||!d.h)return 0;return HABITS.filter(([k])=>d.h[k]).length;}
@@ -864,6 +892,8 @@ function contextText(){
   if(dd&&dd.adj)t+=" | YA AJUSTADO: "+dd.adj.titulo;
   if(i<=0&&dd&&dd.h)t+=" | hábitos cumplidos: "+HABITS.filter(([hk])=>dd.h[hk]).map(x=>x[0]).join(",");
   lines.push(t);}
+ const bd=[];for(let i=6;i>=0;i--){const k=addDays(today,-i);const b=days[k]&&days[k].body;if(b)bd.push(k.slice(5)+": sueño "+(b.sleep??"?")+" h, recuperación "+(b.rec??"?")+"%, HRV "+(b.hrv??"?")+", FC reposo "+(b.rhr??"?")+", esfuerzo "+(b.strain??"?"));}
+ if(bd.length)lines.push("DATOS DE LA PULSERA (últimos días):\n"+bd.join("\n"));
  const ws=Object.keys(days).filter(k=>days[k].w).sort().slice(-10).map(k=>k.slice(5)+": "+days[k].w+" kg");
  if(ws.length)lines.push("PESOS RECIENTES: "+ws.join(", "));
  if(profile.weekNote&&profile.weekNote.text)lines.push("NOTA DE SEMANA ACTUAL: "+profile.weekNote.text);
@@ -875,6 +905,7 @@ function contextText(){
 const INSTR=()=>`Te llamas ${ai().name}. Eres el asistente de IA personal de este usuario para el día a día y, además, su entrenador personal y nutricionista deportivo. Personalidad: asistente de IA sofisticado, sereno y muy eficiente, con humor seco e ironía amable (nunca borde). Llamas al usuario "${ai().nick}". Hablas en español de España, con frases cortas y precisas, y le motivas sin cursilería. Te basas en la evidencia científica.
 Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos. Eres su asistente personal para absolutamente todo. Como asistente personal le ayudas con cualquier cosa del día a día: organizar el día, tareas y recordatorios, ideas, redactar mensajes, recetas, decisiones, estudio o trabajo. No tienes acceso a internet, al calendario, al correo ni al móvil: no inventes datos actuales (tiempo, noticias, horarios o precios) y, si te los pide, dile que no puedes consultarlos. Los recordatorios solo se ven cuando abre la app: díselo la primera vez que te pida uno.
 EVIDENCIA RECIENTE (úsala): HIIT es lo más eficiente contra la grasa visceral (meta-análisis 2024–2026), y desde la fase 2 puedes añadir un segundo bloque corto. Café: 400 mg a 4 h de dormir quitan unos 50 min de sueño; 100 mg apenas afectan (Gardiner 2025). Alargar el sueño reduce unas 270 kcal/día de ingesta. Hipertrofia: RIR 1–2, y cerca del fallo ayuda en hipertrofia más que en fuerza; da énfasis a la posición estirada. Proteína en déficit: más es mejor hasta unos 2,4 g/kg. Creatina: ayuda cuando duerme poco.
+DATOS DE LA PULSERA: si hay recuperación de hoy, úsala. Verde (67% o más): entreno completo, puedes apretar. Amarilla (34–66%): entreno normal con RIR 2–3. Roja (menos del 33%): versión ligera, zona 2 o movilidad. Una HRV bajando varios días o la FC en reposo subiendo indican fatiga o enfermedad.
 HÁBITOS CLAVE: tiene una perra staffy llamada Blu y la pasea a diario; usa esos paseos para sumar pasos y zona 2 y menciónala con naturalidad. toma café de especialidad a diario (orienta sobre la cafeína, la hora de corte y las calorías de la leche, sin prohibírselo). Grasa abdominal: déficit, cardio, sueño, proteína, fibra, poco alcohol y pasos. Suplementos de nivel A: creatina, cafeína y proteína.
 MEMORIA: aprendes del usuario en cada conversación. Usa siempre la MEMORIA A LARGO PLAZO para personalizar tus respuestas. Cuando te cuente algo duradero y útil (horarios, trabajo, gustos, comidas, personas importantes, objetivos, lesiones, preferencias de entreno, logros o cómo le gusta que le hables), guárdalo en "recordar" como frase corta en tercera persona. No guardes lo trivial ni lo pasajero, ni contraseñas o datos bancarios. Si algo contradice un recuerdo, pon su id en "olvidar" y guarda la versión nueva. No repitas recuerdos que ya existen.
 Reglas:
@@ -930,7 +961,7 @@ const input=INSTR()+"\n\nHORA ACTUAL: "+new Date().toTimeString().slice(0,5)+"\n
   if(out&&typeof out.nota_semana==="string"&&out.nota_semana.trim()){profile.weekNote={text:out.nota_semana.trim(),week:weekNum(today),date:today};persist("profile",profile);changed.push("nota de la semana");}
   c.m.push({r:"a",t:reply,chg:changed.length?"Plan actualizado: "+changed.join(", ")+". ":""});
   if(c.m.length>60)c.m=c.m.slice(-60);
-  persist("c-"+today,c);renderChat();renderToday();renderPlan();renderMemTasks();if(!$("#v-progreso").hidden)renderProgress();
+  persist("c-"+today,c);renderChat();renderToday();renderPlan();renderMemTasks();renderSugg();if(!$("#v-progreso").hidden)renderProgress();
   $("#coachStatus").textContent="";hud("idle");
   subType(reply);
   if($("#ttsOn").checked){if(tts)tts.speak(reply,{language:"es",voice:ai().voice}).catch(()=>{});else speakFallback(reply);}
@@ -947,7 +978,7 @@ async function initCoach(){
  $("#nightBtn").addEventListener("click",()=>{stopVoice();unlockVoice();sendCoach("[CIERRE]","Cierre del día");});
  $("#setBtn").addEventListener("click",()=>{const h=$("#hudSet");h.hidden=!h.hidden;$("#setBtn").setAttribute("aria-expanded",String(!h.hidden));});
  const a=ai();$("#aiNameIn").value=a.name;$("#nickIn").value=a.nick;$("#voiceIn").value=a.voice;$("#aiName").textContent=a.name;
- const saveAi=()=>{profile.ai={name:($("#aiNameIn").value.trim()||"VEGA").toUpperCase(),nick:$("#nickIn").value.trim()||"jefe",voice:$("#voiceIn").value};$("#aiName").textContent=profile.ai.name;$("#tabAi").textContent=profile.ai.name;persist("profile",profile);renderChat();};
+ const saveAi=()=>{profile.ai={name:($("#aiNameIn").value.trim()||"VEGA").toUpperCase(),nick:$("#nickIn").value.trim()||"jefe",voice:$("#voiceIn").value};$("#aiName").textContent=profile.ai.name;$("#tabAi").textContent=profile.ai.name;persist("profile",profile);renderChat();renderSugg();};
  ["#aiNameIn","#nickIn","#voiceIn"].forEach(q=>$(q).addEventListener("change",saveAi));
  $("#chatIn").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendCoach($("#chatIn").value);}});
  renderChat();
@@ -1144,6 +1175,53 @@ $("#shopReset").addEventListener("click",()=>{try{localStorage.removeItem(LS+"-s
 $("#shopCopy").addEventListener("click",()=>{const txt=SHOP.map(([c,its])=>c.toUpperCase()+"\n"+its.map(([n,q])=>"- "+n+": "+q).join("\n")).join("\n\n");
  navigator.clipboard.writeText(txt).then(()=>{$("#shopMsg").textContent="Lista copiada. Pégala en WhatsApp o en Notas.";}).catch(()=>{$("#shopMsg").textContent=txt;});});
 
+
+/* ---------- INICIO VEGA: saludo, sugerencias y datos del cuerpo ---------- */
+function hmNow(){const n=new Date();return pad(n.getHours())+":"+pad(n.getMinutes());}
+function renderGreet(){const h=new Date().getHours();const sal=h<6?"Buenas noches":h<13?"Buenos días":h<21?"Buenas tardes":"Buenas noches";
+ $("#greet").textContent=sal+", "+ai().nick;const d=new Date();const mode=dayMode(today);
+ $("#greetMeta").textContent=DAYN[d.getDay()]+" "+d.getDate()+" · "+({vac:"Vacaciones",work:"Día de trabajo",free:"Día libre"})[mode]+" · Semana "+weekNum(today)+" de 13";}
+function recovClass(v){return v==null||v===""?null:v>=67?"g":v>=34?"y":"r";}
+function suggestions(){
+ const out=[];const hm=hmNow();const d=getDay(today);const p=planFor(today);const sch=scheduleFor(today).filter(Boolean);
+ let cur=null,next=null;sch.forEach(x=>{if(x[0]<=hm)cur=x;else if(!next)next=x;});
+ if(cur)out.push({c:"now",k:"Ahora · "+cur[0],t:cur[1],s:next?"Después, a las "+next[0]+": "+next[1]:"Último punto del día",a:()=>show("hoy")});
+ const b=d.body||{};const rc=recovClass(b.rec);
+ if(b.rec==null&&b.sleep==null&&new Date().getHours()<14)out.push({k:"Tu cuerpo",t:"Registra el sueño y la recuperación",s:"Con la captura de WHOOP o NOOP, VEGA te ajusta el día",a:()=>{$("#bSleep").focus();$("#bSleep").scrollIntoView({block:"center",behavior:"smooth"});}});
+ else if(rc==="r")out.push({c:"now",k:"Recuperación baja",t:"Hoy, mejor suave",s:"Pide a VEGA una versión ligera del entreno",a:()=>sendCoach("Mi recuperación hoy es baja ("+b.rec+"%). Ajústame el entreno de hoy.")});
+ if(d.w==null&&new Date().getHours()<12)out.push({k:"Peso",t:"Pésate en ayunas",s:"Antes del desayuno; mira la media de la semana, no el dato de un día",a:()=>{show("hoy");setTimeout(()=>$("#wIn").focus(),50);}});
+ const isTrain=!!(p.sess||p.cardio==="hiit"||p.cardio==="long");
+ if(p.prep)out.push({k:"Preparación",t:"Día 0: déjalo todo listo",s:"Compra, batch cooking y bolsa del gimnasio",a:()=>show("hoy")});
+ else if(isTrain&&!d.h.train)out.push({c:"now",k:"Entreno",t:(d.adj&&d.adj.titulo)||p.label,s:"Ver la sesión y apuntar los kilos",a:()=>show("hoy")});
+ else if(isTrain&&d.h.train)out.push({c:"done",k:"Entreno",t:"Hecho. Buen trabajo",s:"Cena con proteína y a dormir pronto",a:()=>show("progreso")});
+ if(!d.h.back)out.push({k:"Espalda · 8 min",t:"Protocolo de espalda guiado",s:"Curl-up, plancha lateral y bird dog",a:startBackTimer});
+ const cf=d.caf||[];const mg=cf.reduce((a,c)=>a+(CAF[c.k]?CAF[c.k][1]:0),0);const co=cutoffFor(today);
+ if(hm<co&&mg<400)out.push({k:"Café · "+mg+" mg",t:"Café disponible hasta las "+co,s:"Toca para apuntar un V60 (150 mg)",a:()=>{const n=new Date();d.caf=d.caf||[];d.caf.push({k:"fil",time:hmNow()});saveDay(today);renderSchedule();renderSugg();}});
+ else if(hm>=co)out.push({k:"Café · "+mg+" mg",t:"Hoy ya no más cafeína",s:"Si te apetece, que sea descafeinado",a:()=>show("hoy")});
+ if(!d.h.steps&&new Date().getHours()>=17)out.push({k:"Pasos",t:"Paseo con Blu",s:"Para llegar a los 8.000 pasos de hoy",a:()=>{d.h.steps=true;saveDay(today);renderHabits();renderSugg();}});
+ const due=tasks.items.filter(t=>!t.done&&t.date&&t.date<=today);
+ if(due.length)out.push({c:"now",k:"Tareas",t:due.length+(due.length===1?" tarea para hoy":" tareas para hoy"),s:due.slice(0,2).map(t=>t.text).join(" · "),a:()=>$("#taskList").scrollIntoView({behavior:"smooth"})});
+ const ch=chats[today];const hadBrief=ch&&ch.m.some(m=>m.t==="Informe del día");
+ if(!hadBrief&&new Date().getHours()<13)out.push({k:"VEGA",t:"Escucha el informe del día",s:"Tu misión de hoy en 30 segundos",a:()=>$("#briefBtn").click()});
+ if(new Date().getHours()>=20)out.push({k:"VEGA",t:"Cierre del día",s:"Repasa hábitos y prepara mañana",a:()=>$("#nightBtn").click()});
+ return out.slice(0,6);}
+function renderSugg(){const box=$("#sugg");if(!box)return;box.textContent="";renderGreet();
+ suggestions().forEach(x=>{const b=el("button",{class:"sg"+(x.c?" "+x.c:""),type:"button"},el("div",{class:"k",text:x.k}),el("b",{text:x.t}),x.s?el("span",{text:x.s}):"");b.addEventListener("click",x.a);box.append(b);});
+ const bd=getDay(today).body||{};const tag=$("#recovTag");const rc=recovClass(bd.rec);tag.hidden=!rc;if(rc){tag.className="recov "+rc;tag.textContent=(rc==="g"?"Verde":rc==="y"?"Amarilla":"Roja")+" · "+bd.rec+"%";}
+ const map={bSleep:"sleep",bRec:"rec",bHrv:"hrv",bRhr:"rhr",bStrain:"strain"};for(const id in map){const e=$("#"+id);if(document.activeElement!==e)e.value=bd[map[id]]??"";}}
+["bSleep","bRec","bHrv","bRhr","bStrain"].forEach(id=>$("#"+id).addEventListener("change",e=>{const map={bSleep:"sleep",bRec:"rec",bHrv:"hrv",bRhr:"rhr",bStrain:"strain"};const d=getDay(today);d.body=d.body||{};const v=e.target.value;d.body[map[id]]=v===""?null:Number(v);
+ if(map[id]==="sleep"&&v!=="")d.h.sleep=Number(v)>=7;saveDay(today);renderSugg();if(viewDate===today)renderHabits();}));
+$("#bShot").addEventListener("change",async e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;const msg=$("#bMsg");
+ if(!sampleFn){msg.textContent="VEGA necesita la página abierta en claude.ai con tu sesión iniciada.";return;}
+ try{const lim=sampleFn.limits?await sampleFn.limits():{images:true};if(lim&&lim.images===false){msg.textContent="En esta vista VEGA no puede leer imágenes. Apunta los datos a mano.";return;}}catch(_){}
+ msg.textContent="VEGA está leyendo la captura…";hud("thinking","Leyendo datos");
+ try{const o=await sampleFn.json('Es una captura de una app de pulsera de actividad (WHOOP, NOOP, Atria u otra). Extrae los datos de HOY y responde SOLO con JSON: {"sueno_h": número de horas dormidas o null, "recuperacion": 0-100 o null, "hrv": ms o null, "fc_reposo": lpm o null, "esfuerzo": número o null}. No inventes: si un dato no aparece, null.',{images:[f],cache:false});
+  const d=getDay(today);d.body=d.body||{};const num=x=>typeof x==="number"&&isFinite(x)?x:null;const got=[];
+  [["sueno_h","sleep"],["recuperacion","rec"],["hrv","hrv"],["fc_reposo","rhr"],["esfuerzo","strain"]].forEach(([a,b])=>{const v=num(o&&o[a]);if(v!=null){d.body[b]=v;got.push(b);}});
+  if(d.body.sleep!=null)d.h.sleep=d.body.sleep>=7;saveDay(today);renderSugg();if(viewDate===today)renderHabits();
+  msg.textContent=got.length?"Datos leídos. Revísalos por si algo no cuadra.":"No he encontrado datos en la imagen. Prueba con otra captura.";hud("idle");
+ }catch(err){msg.textContent=err&&err.code==="not_granted"?"No has dado permiso a VEGA.":"No he podido leer la imagen. Prueba de nuevo o apúntalos a mano.";hud("idle");}});
+
 /* ---------- MITOS ---------- */
 const MYTHS=[
  ["si","Comer proteína alta (unos 2 g/kg) en déficit","Conserva el músculo y es el macronutriente que más sacia."],
@@ -1167,10 +1245,10 @@ function show(v){tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
 $("#goCoach").addEventListener("click",()=>show("coach"));
 
-function renderAll(){buildDayPicker();renderToday();renderSchedule();renderPlan();loadNut();renderMacros();renderProgress();renderMemTasks();}
+function renderAll(){buildDayPicker();renderToday();renderSchedule();renderSugg();renderPlan();loadNut();renderMacros();renderProgress();renderMemTasks();}
 
 /* ---------- ARRANQUE ---------- */
-lsLoad();renderMyths();renderShop();renderBack();renderPotential();renderAll();setInterval(()=>{if(viewDate===today)renderSchedule();},60000);
+lsLoad();renderMyths();renderShop();renderBack();renderPotential();renderAll();setInterval(()=>{if(viewDate===today)renderSchedule();renderSugg();},60000);
 try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t))show(t);}catch(e){}
 if(profile.ai&&profile.ai.name){$("#aiName").textContent=profile.ai.name;$("#tabAi").textContent=profile.ai.name;}
 
