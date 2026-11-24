@@ -13,6 +13,15 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 systemctl enable --now docker >/dev/null 2>&1 || true
 
+# Servidores pequeños (p. ej. Oracle VM.Standard.E2.1.Micro, 1 GB): añadir 4 GB de memoria de intercambio
+MEM_MB=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)
+if [ "$MEM_MB" -lt 3000 ] && ! swapon --show | grep -q .; then
+  echo -e "${B}      Poca memoria (${MEM_MB} MB): creando 4 GB de swap${X}"
+  fallocate -l 4G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=4096
+  chmod 600 /swapfile && mkswap /swapfile >/dev/null && swapon /swapfile
+  grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+
 echo -e "${B}[2/5] Preparando carpetas${X}"
 mkdir -p state data data_launches
 [ -f config.yaml ] || cp config.50eur.yaml config.yaml
