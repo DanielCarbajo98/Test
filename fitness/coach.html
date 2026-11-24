@@ -176,6 +176,21 @@ a.vid:hover{text-decoration:underline}
 .bodyg input{font:700 1.2rem var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
 .recov{font:800 .72rem var(--mono);letter-spacing:.1em;padding:3px 9px;border-radius:99px}
 .recov.g{background:var(--ok-soft);color:var(--ok)} .recov.y{background:#2a2310;color:var(--warn)} .recov.r{background:var(--heat-soft);color:var(--heat)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px}
+.bdg{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px;background:var(--bg);min-width:0}
+.bdg .ico{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:800 .8rem var(--mono);background:var(--line);color:var(--muted)}
+.bdg b{font:700 .9rem var(--display)} .bdg span{font-size:.76rem;color:var(--muted)}
+.bdg.on{border-color:color-mix(in srgb,var(--ok) 55%,var(--line));background:var(--ok-soft)}
+.bdg.on .ico{background:var(--ok);color:var(--on-accent);box-shadow:0 0 14px color-mix(in srgb,var(--ok) 60%,transparent)}
+.bdg .prog{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:4px}.bdg .prog i{display:block;height:100%;background:var(--accent)}
+details.rec{border-top:1px solid var(--line);padding:10px 0}
+details.rec:first-child{border-top:0}
+details.rec summary{cursor:pointer;display:flex;flex-direction:column;gap:2px;list-style:none}
+details.rec summary::-webkit-details-marker{display:none}
+details.rec summary b{font:700 1rem var(--display)}
+details.rec summary span{font:600 .76rem var(--mono);color:var(--accent)}
+details.rec .rb{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:10px;font-size:.88rem}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 20px);z-index:70;background:var(--surface2);border:1px solid var(--ok);color:var(--ink);padding:12px 18px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);font-weight:600;max-width:calc(100vw - 32px)}
 .savestate{font-size:.75rem;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.habit,.ex{transition:background .15s,border-color .15s}}
 </style>
@@ -205,9 +220,10 @@ a.vid:hover{text-decoration:underline}
   <div class="card">
     <div class="session-head">
       <div><span class="eyebrow" id="todayDate">Hoy</span><h2 id="sessTitle">Sesión</h2><p class="muted small" id="sessSub"></p></div>
-      <button class="btn ghost" id="goCoach" type="button">Hablar con el asistente</button>
+      <button class="btn ghost" id="goCoach" type="button">Hablar con VEGA</button>
       <label class="lbl" for="dayPick">Ver otro día<select class="f" id="dayPick" style="width:auto"></select></label>
     </div>
+    <div id="homeBox" class="row" style="margin-top:10px"></div>
     <div id="weekNoteHoy" class="note" hidden></div>
     <div id="adjBox" hidden></div>
     <div id="warmup" class="small" style="margin-top:12px"></div>
@@ -272,6 +288,7 @@ a.vid:hover{text-decoration:underline}
       <div class="sub" id="hudSub" aria-live="polite">Toca el núcleo para hablar</div>
       <div class="hud-actions">
         <button class="hud-btn" id="briefBtn" type="button">Informe del día</button>
+        <button class="hud-btn" id="weekBtn" type="button">Resumen semanal</button>
         <button class="hud-btn" id="nightBtn" type="button">Cierre del día</button>
         <button class="hud-btn" id="fullBtn" type="button">Modo inmersivo</button>
         <button class="hud-btn" id="setBtn" type="button" aria-expanded="false">Ajustes</button>
@@ -389,6 +406,11 @@ a.vid:hover{text-decoration:underline}
   </div>
 
   <div class="card">
+    <div class="session-head"><div><span class="eyebrow">Con lo de tu lista de la compra</span><h3>Recetas fáciles</h3></div></div>
+    <div id="recipes" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card">
     <h3>Menú tipo (~2.250 kcal · ~165 g de proteína)</h3>
     <div class="tablewrap"><table>
       <thead><tr><th>Comida</th><th>Opción A</th><th>Opción B</th><th class="num">kcal / prot</th></tr></thead>
@@ -453,6 +475,10 @@ a.vid:hover{text-decoration:underline}
 <!-- PROGRESO -->
 <section class="view" id="v-progreso" hidden>
   <div class="grid3" id="progStats"></div>
+  <div class="card">
+    <div class="session-head"><div><span class="eyebrow">Constancia</span><h3>Logros</h3></div><span class="pill ok" id="badgeCount">0</span></div>
+    <div class="badges" id="badges"></div>
+  </div>
   <div class="card">
     <div class="session-head"><div><span class="eyebrow">Peso</span><h3>Diario y media de 7 días</h3></div></div>
     <div id="chart" style="margin-top:6px"></div>
@@ -654,8 +680,9 @@ function renderToday(){
  $("#pWeek").textContent=pre?"Empiezas mañana":"Semana "+weekNum(today)+" de 13"+(cycleNum(today)>1?" · ciclo "+cycleNum(today):"");
  $("#pPhase").textContent="Fase "+phaseOf(weekNum(today)).n+": "+phaseOf(weekNum(today)).name;
  $("#todayDate").textContent=DAYN[d.getDay()]+" "+d.getDate()+"/"+(d.getMonth()+1);
- const sess=plan.sess?S[plan.sess]:null;
- $("#sessTitle").textContent=plan.label;
+ const sess=sessKey(plan,getDay(viewDate))?S[sessKey(plan,getDay(viewDate))]:null;
+ const hb=$("#homeBox");hb.textContent="";if(plan.sess&&!getDay(viewDate).adj){const isH=!!getDay(viewDate).home;const tb=el("button",{class:"btn ghost",type:"button",text:isH?"Volver a la sesión de gimnasio":"Hoy entreno en casa"});tb.addEventListener("click",()=>{const dd=getDay(viewDate);dd.home=!isH;saveDay(viewDate);renderToday();renderSugg();});hb.append(tb);if(isH)hb.append(el("span",{class:"small muted",text:"Versión en casa: solo necesitas una mochila con peso, una silla y una mesa firme."}));}
+ $("#sessTitle").textContent=sess&&getDay(viewDate).home?sess.title+(plan.cardio==="z2"?" + Z2":""):plan.label;
  $("#sessSub").textContent=sess?(ph.name+" · deja "+ph.rir+" reps en reserva · descanso "+ph.rest):"";
  const day=getDay(viewDate);
  const wn=$("#weekNoteHoy");const note=profile.weekNote;wn.hidden=!(note&&note.text);if(note&&note.text){wn.textContent="";wn.append(el("b",{text:"Nota del coach para la semana: "}),document.createTextNode(note.text));}
@@ -704,14 +731,14 @@ function renderToday(){
  const w=$("#wIn"),ci=$("#cIn");w.value=day.w??"";ci.value=day.waist??"";
  renderHabits();
 }
-function autoTrain(day){const plan=planFor(viewDate);if(!plan.sess)return;const ids=S[plan.sess].ex.map(e=>e[0]);if(ids.every(i=>day.ex[i]&&day.ex[i].done))day.h.train=true;}
+function autoTrain(day){const plan=planFor(viewDate);const sk=sessKey(plan,day);if(!sk)return;const ids=S[sk].ex.map(e=>e[0]);if(ids.every(i=>day.ex[i]&&day.ex[i].done))day.h.train=true;}
 function lastLift(id,before){const ks=Object.keys(days).filter(k=>k<before&&days[k].ex&&days[k].ex[id]&&days[k].ex[id].kg!=null).sort();if(!ks.length)return"";const s=days[ks[ks.length-1]].ex[id];return s.kg+" kg"+(s.reps?" × "+s.reps:"");}
 function renderHabits(){
  const day=getDay(viewDate);const box=$("#habits");box.textContent="";let n=0;
  HABITS.forEach(([k,label])=>{const on=!!day.h[k];if(on)n++;const inp=el("input",{type:"checkbox",id:"h-"+k});inp.checked=on;
   const lab=el("label",{class:"habit"+(on?" on":""),for:"h-"+k},inp,el("span",{text:label}));
   inp.addEventListener("change",()=>{day.h[k]=inp.checked;saveDay(viewDate);renderHabits();});box.append(lab);});
- $("#habitScore").textContent=n+"/6";if(typeof renderSugg==="function"&&$("#sugg"))try{renderSugg();}catch(e){}
+ $("#habitScore").textContent=n+"/6";try{renderBadges();}catch(e){}if(typeof renderSugg==="function"&&$("#sugg"))try{renderSugg();}catch(e){}
  renderHeat();
 }
 function score(dstr){const d=days[dstr];if(!d||!d.h)return 0;return HABITS.filter(([k])=>d.h[k]).length;}
@@ -897,6 +924,7 @@ function contextText(){
  const ws=Object.keys(days).filter(k=>days[k].w).sort().slice(-10).map(k=>k.slice(5)+": "+days[k].w+" kg");
  if(ws.length)lines.push("PESOS RECIENTES: "+ws.join(", "));
  if(profile.weekNote&&profile.weekNote.text)lines.push("NOTA DE SEMANA ACTUAL: "+profile.weekNote.text);
+ lines.push("ESTADÍSTICAS DE LA SEMANA:\n"+weekStatsText());
  lines.push("MEMORIA A LARGO PLAZO (lo que sabes del usuario; [id] texto):\n"+(memory.items.length?memory.items.map(m=>"["+m.id+"] "+m.t).join("\n"):"(vacía)"));
  const pend=tasks.items.filter(t=>!t.done).sort(sortTasks);
  lines.push("TAREAS PENDIENTES ([id] texto · cuándo):\n"+(pend.length?pend.map(t=>"["+t.id+"] "+t.text+(t.date||t.time?" · "+(t.date||"")+" "+(t.time||""):"")).join("\n"):"(ninguna)"));
@@ -906,6 +934,7 @@ const INSTR=()=>`Te llamas ${ai().name}. Eres el asistente de IA personal de est
 Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos. Eres su asistente personal para absolutamente todo. Como asistente personal le ayudas con cualquier cosa del día a día: organizar el día, tareas y recordatorios, ideas, redactar mensajes, recetas, decisiones, estudio o trabajo. No tienes acceso a internet, al calendario, al correo ni al móvil: no inventes datos actuales (tiempo, noticias, horarios o precios) y, si te los pide, dile que no puedes consultarlos. Los recordatorios solo se ven cuando abre la app: díselo la primera vez que te pida uno.
 EVIDENCIA RECIENTE (úsala): HIIT es lo más eficiente contra la grasa visceral (meta-análisis 2024–2026), y desde la fase 2 puedes añadir un segundo bloque corto. Café: 400 mg a 4 h de dormir quitan unos 50 min de sueño; 100 mg apenas afectan (Gardiner 2025). Alargar el sueño reduce unas 270 kcal/día de ingesta. Hipertrofia: RIR 1–2, y cerca del fallo ayuda en hipertrofia más que en fuerza; da énfasis a la posición estirada. Proteína en déficit: más es mejor hasta unos 2,4 g/kg. Creatina: ayuda cuando duerme poco.
 DATOS DE LA PULSERA: si hay recuperación de hoy, úsala. Verde (67% o más): entreno completo, puedes apretar. Amarilla (34–66%): entreno normal con RIR 2–3. Roja (menos del 33%): versión ligera, zona 2 o movilidad. Una HRV bajando varios días o la FC en reposo subiendo indican fatiga o enfermedad.
+RECETAS DE LA APP (recomiéndalas por su nombre cuando pregunte qué comer): Bowl de pollo teriyaki, Smash burger casera, Salmón con patata y brócoli, Merluza en papillote, Revuelto de 3 huevos con pavo, Salteado de ternera y verduras, Tiramisú proteico de café, Proffee helado. Si un día no va al gimnasio, el botón "Hoy entreno en casa" de la pestaña Hoy cambia la sesión a la versión en casa (mochila, silla y mesa).
 HÁBITOS CLAVE: tiene una perra staffy llamada Blu y la pasea a diario; usa esos paseos para sumar pasos y zona 2 y menciónala con naturalidad. toma café de especialidad a diario (orienta sobre la cafeína, la hora de corte y las calorías de la leche, sin prohibírselo). Grasa abdominal: déficit, cardio, sueño, proteína, fibra, poco alcohol y pasos. Suplementos de nivel A: creatina, cafeína y proteína.
 MEMORIA: aprendes del usuario en cada conversación. Usa siempre la MEMORIA A LARGO PLAZO para personalizar tus respuestas. Cuando te cuente algo duradero y útil (horarios, trabajo, gustos, comidas, personas importantes, objetivos, lesiones, preferencias de entreno, logros o cómo le gusta que le hables), guárdalo en "recordar" como frase corta en tercera persona. No guardes lo trivial ni lo pasajero, ni contraseñas o datos bancarios. Si algo contradice un recuerdo, pon su id en "olvidar" y guarda la versión nueva. No repitas recuerdos que ya existen.
 Reglas:
@@ -922,6 +951,7 @@ Responde SOLO con JSON válido con esta forma exacta:
 "registrar": si el usuario te dice datos (peso en kg, cintura en cm, o que ha cumplido un hábito), apúntalos. En "habitos" usa solo estas claves con true o false: train (entreno hecho), prot (proteína ≥160 g), steps (8.000+ pasos), sleep (durmió 7 h o más; si dice que durmió menos, false), food (sin comida basura no planificada), back (protocolo de espalda). La fecha es la de hoy salvo que diga "ayer". Si no hay datos, "registrar" es null. Confirma brevemente en la respuesta lo que has apuntado.
 "tareas_nuevas": tareas o recordatorios que te pida (resuelve las fechas relativas a partir de la fecha de hoy); si no hay, lista vacía. "tareas_hechas": ids de tareas que diga que ya ha hecho.
 Si el mensaje es [INFORME]: da el informe de la mañana. Saluda según la hora, di qué sesión toca hoy y su objetivo, las tareas pendientes de hoy si las hay, un recordatorio de comida (calorías y proteína) y uno de hábitos según los datos recientes, y cierra con una frase de ánimo. Si hoy es el día 0, explica la preparación y qué pasará mañana.
+Si el mensaje es [SEMANAL]: haz el resumen semanal usando ESTADÍSTICAS DE LA SEMANA. Di qué ha ido bien con datos concretos, cuál es el punto a mejorar (solo uno, el de más impacto) y el plan de la semana que viene. Si hace falta, ajusta las calorías: si la media de peso no baja tras 2 semanas, recomienda restar 150 kcal. Puedes usar hasta 170 palabras y rellenar "nota_semana" con el foco de la semana.
 Si el mensaje es [CIERRE]: haz el cierre del día. Repasa qué hábitos constan como cumplidos y las tareas de hoy sin terminar, pregunta por los que faltan, recuerda la hora de dormir y adelanta qué toca mañana.`;
 async function sendCoach(text,label){
  text=(text||"").trim();if(!text||busy)return;
@@ -975,6 +1005,7 @@ async function initCoach(){
  const chips=$("#chips");CHIPS.forEach(t=>{const b=el("button",{type:"button",text:t});b.addEventListener("click",()=>sendCoach(t));chips.append(b);});
  $("#sendBtn").addEventListener("click",()=>{unlockVoice();sendCoach($("#chatIn").value);});
  $("#briefBtn").addEventListener("click",()=>{stopVoice();unlockVoice();sendCoach("[INFORME]","Informe del día");});
+ $("#weekBtn").addEventListener("click",()=>{stopVoice();unlockVoice();sendCoach("[SEMANAL]","Resumen semanal");});
  $("#nightBtn").addEventListener("click",()=>{stopVoice();unlockVoice();sendCoach("[CIERRE]","Cierre del día");});
  $("#setBtn").addEventListener("click",()=>{const h=$("#hudSet");h.hidden=!h.hidden;$("#setBtn").setAttribute("aria-expanded",String(!h.hidden));});
  const a=ai();$("#aiNameIn").value=a.name;$("#nickIn").value=a.nick;$("#voiceIn").value=a.voice;$("#aiName").textContent=a.name;
@@ -1203,6 +1234,7 @@ function suggestions(){
  if(due.length)out.push({c:"now",k:"Tareas",t:due.length+(due.length===1?" tarea para hoy":" tareas para hoy"),s:due.slice(0,2).map(t=>t.text).join(" · "),a:()=>$("#taskList").scrollIntoView({behavior:"smooth"})});
  const ch=chats[today];const hadBrief=ch&&ch.m.some(m=>m.t==="Informe del día");
  if(!hadBrief&&new Date().getHours()<13)out.push({k:"VEGA",t:"Escucha el informe del día",s:"Tu misión de hoy en 30 segundos",a:()=>$("#briefBtn").click()});
+ {const x=dayDiff(startDate(),today);const lastDay=x>=0&&x%7===6;const hadW=ch&&ch.m.some(m=>m.t==="Resumen semanal");if((lastDay||new Date().getDay()===0)&&!hadW)out.push({c:"now",k:"VEGA · semana",t:"Resumen semanal",s:"Qué ha ido bien, qué ajustar y el plan de la semana que viene",a:()=>$("#weekBtn").click()});}
  if(new Date().getHours()>=20)out.push({k:"VEGA",t:"Cierre del día",s:"Repasa hábitos y prepara mañana",a:()=>$("#nightBtn").click()});
  return out.slice(0,6);}
 function renderSugg(){const box=$("#sugg");if(!box)return;box.textContent="";renderGreet();
@@ -1221,6 +1253,90 @@ $("#bShot").addEventListener("change",async e=>{const f=e.target.files&&e.target
   if(d.body.sleep!=null)d.h.sleep=d.body.sleep>=7;saveDay(today);renderSugg();if(viewDate===today)renderHabits();
   msg.textContent=got.length?"Datos leídos. Revísalos por si algo no cuadra.":"No he encontrado datos en la imagen. Prueba con otra captura.";hud("idle");
  }catch(err){msg.textContent=err&&err.code==="not_granted"?"No has dado permiso a VEGA.":"No he podido leer la imagen. Prueba de nuevo o apúntalos a mano.";hud("idle");}});
+
+
+/* ---------- RUTINA EN CASA ---------- */
+S.casaT={title:"Torso en casa",tag:"f",ex:[
+ ["cT1","Flexiones (inclinadas en mesa si no llegas a 8)","8-15","Cuerpo en bloque y abdomen firme. Cuando hagas 15, pon los pies elevados."],
+ ["cT2","Remo invertido bajo una mesa firme (o remo con mochila)","8-12","Tira el pecho hacia el borde de la mesa. Comprueba antes que aguanta tu peso."],
+ ["cT3","Flexiones en pica (pike push-ups)","6-10","Cadera alta y cabeza hacia el suelo, entre las manos. Trabaja los hombros."],
+ ["cT4","Remo a una mano con mochila cargada","10-12/brazo","Apoya una mano en una silla y mantén la espalda neutra. Mete libros o botellas en la mochila."],
+ ["cT5","Fondos en silla con las rodillas dobladas","8-12","Recorrido corto si te molestan los hombros."],
+ ["cT6","Plancha frontal + dead bug","30 s + 8/lado","Core sin cargar la lumbar."]]};
+S.casaP={title:"Pierna en casa",tag:"f",ex:[
+ ["cP1","Sentadilla búlgara con el pie trasero en el sofá","8-12/pierna","El ejercicio rey en casa. Lleva la mochila en el pecho para darle más carga."],
+ ["cP2","Sentadilla goblet con mochila cargada","12-15","Baja controlando en 3 segundos y sube fuerte."],
+ ["cP3","Puente de glúteo a una pierna","10-12/lado","Pausa de 2 segundos arriba."],
+ ["cP4","Peso muerto rumano a una pierna (sin peso o con mochila)","8-10/lado","Cadera atrás y espalda neutra. Agárrate a la pared si pierdes el equilibrio."],
+ ["cP5","Gemelos a una pierna en un escalón","12-15/lado","Estira bien abajo y haz pausa arriba."],
+ ["cP6","Bird dog + plancha lateral","8 + 20 s/lado",""]]};
+const HOME_MAP={torsoA:"casaT",torsoB:"casaT",piernaA:"casaP",piernaB:"casaP"};
+function sessKey(plan,day){if(!plan||!plan.sess)return null;return day&&day.home?HOME_MAP[plan.sess]:plan.sess;}
+
+/* ---------- RECETAS ---------- */
+const RECIPES=[
+ {n:"Bowl de pollo teriyaki",t:"15 min",m:"~620 kcal · 50 g proteína",ing:["180 g de pechuga de pollo en dados","1 bolsita de arroz congelado","200 g de verdura congelada para saltear","2 cucharadas de salsa de soja + 1 cucharadita de miel","Ajo en polvo, jengibre y sésamo (opcional)"],st:["Dora el pollo en una sartén con unas gotas de aceite, unos 6–7 min.","Añade la verdura congelada y saltea 4 min a fuego fuerte.","Mezcla la soja con la miel, échala y deja que reduzca 1 min.","Calienta el arroz en el microondas según la bolsa y sírvelo todo en un bol."]},
+ {n:"Smash burger casera",t:"12 min",m:"~560 kcal · 42 g proteína",ing:["150 g de ternera picada al 5%","1 pan de hamburguesa integral","Lechuga, tomate y cebolla","Mostaza o kétchup sin azúcar","1 loncha de queso light (opcional)"],st:["Haz 2 bolas de 75 g y aplástalas fuerte sobre la sartén muy caliente.","2 min por lado con sal y pimienta. Pon el queso encima al dar la vuelta.","Tuesta el pan y monta la hamburguesa con la verdura.","Acompáñala con ensalada de bolsa en lugar de patatas fritas."]},
+ {n:"Salmón con patata y brócoli",t:"25 min (horno o airfryer)",m:"~650 kcal · 42 g proteína",ing:["200 g de lomo de salmón","300 g de patata","250 g de brócoli","1 cucharada de aceite de oliva","Limón, sal, pimentón y eneldo"],st:["Corta la patata en gajos, alíñala con media cucharada de aceite y pimentón y hornéala 10 min a 200 °C.","Añade el brócoli y el salmón con sal, limón y el resto del aceite.","Hornea 12–14 min más, hasta que el salmón se separe en láminas."]},
+ {n:"Merluza en papillote",t:"20 min",m:"~430 kcal · 40 g proteína",ing:["200 g de merluza","250 g de patata en rodajas finas","Calabacín y pimiento en tiras","1 cucharadita de aceite","Ajo, perejil y limón"],st:["Pon la patata 5 min en el microondas con un poco de agua.","Sobre papel de horno coloca la patata, la verdura y la merluza, y alíñalo todo.","Cierra el paquete y hornéalo 15 min a 200 °C."]},
+ {n:"Revuelto de 3 huevos con pavo",t:"8 min",m:"~450 kcal · 38 g proteína",ing:["3 huevos","60 g de pavo en lonchas en tiras","1 tomate","2 tostadas de pan integral"],st:["Saltea el pavo 1 min en una sartén antiadherente.","Añade los huevos batidos y remueve a fuego medio-bajo hasta que cuajen jugosos.","Sírvelo con las tostadas y el tomate rallado."]},
+ {n:"Salteado de ternera y verduras",t:"15 min",m:"~600 kcal · 45 g proteína",ing:["150 g de ternera picada al 5%","1 bolsita de arroz congelado","Pimiento y calabacín, o verdura congelada","Soja, pimentón y comino"],st:["Dora la carne desmenuzándola, unos 5 min.","Añade la verdura y las especias y saltea 5 min.","Mezcla con el arroz caliente. Si quieres más proteína, añade 1 huevo al final."]},
+ {n:"Tiramisú proteico de café",t:"5 min",m:"~220 kcal · 26 g proteína",ing:["250 g de queso batido 0%","1 espresso frío (de tu cafetera)","1 cucharadita de cacao puro","Edulcorante al gusto","2 tortitas de arroz o 1 galleta (opcional)"],st:["Mezcla el queso batido con el edulcorante.","Moja las tortitas en el espresso y ponlas en la base de un vaso.","Cubre con el queso batido y espolvorea el cacao. Si es por la tarde, usa descafeinado."]},
+ {n:"Proffee helado",t:"2 min",m:"~180 kcal · 25 g proteína",ing:["Espresso doble","250 ml de batido proteico o de leche con proteína","Hielo"],st:["Llena un vaso de hielo y añade el batido.","Echa el espresso por encima. Solo antes de tu hora de corte de café."]}
+];
+function renderRecipes(){const box=$("#recipes");box.textContent="";RECIPES.forEach(rc=>{const d=el("details",{class:"rec"});
+ const ul=el("ul",{class:"clean"});rc.ing.forEach(i=>ul.append(el("li",{text:i})));const ol=el("ol",{class:"steps"});rc.st.forEach(i=>ol.append(el("li",{text:i})));
+ d.append(el("summary",{},el("b",{text:rc.n}),el("span",{text:rc.t+" · "+rc.m})),el("div",{class:"rb"},el("div",{},el("span",{class:"eyebrow",text:"Ingredientes"}),ul),el("div",{},el("span",{class:"eyebrow",text:"Pasos"}),ol)));box.append(d);});}
+
+/* ---------- LOGROS ---------- */
+function stats(){const ks=Object.keys(days).sort();const trainDays=ks.filter(k=>days[k].h&&days[k].h.train);const backDays=ks.filter(k=>days[k].h&&days[k].h.back);
+ let best=0,cur=0,prev=null;ks.forEach(k=>{if(score(k)>=4){cur=prev&&dayDiff(prev,k)===1?cur+1:1;prev=k;best=Math.max(best,cur);}});
+ let sleepRun=0,sr=0,pk=null;ks.forEach(k=>{const b=days[k].body;const ok=(days[k].h&&days[k].h.sleep)||(b&&b.sleep>=7);if(ok){sr=pk&&dayDiff(pk,k)===1?sr+1:1;pk=k;sleepRun=Math.max(sleepRun,sr);}});
+ const ws=ks.filter(k=>days[k].w).map(k=>+days[k].w);const first=ws.length?ws[0]:null;const last7=ws.slice(-7);const avg=last7.length?last7.reduce((a,b)=>a+b,0)/last7.length:null;const lost=first!=null&&avg!=null?first-avg:0;
+ const wa=ks.filter(k=>days[k].waist).map(k=>+days[k].waist);const waistLost=wa.length>1?wa[0]-wa[wa.length-1]:0;
+ const perfect=ks.filter(k=>score(k)===6).length;
+ let weekFull=0;for(let i=0;i<20;i++){const st=addDays(startDate(),i*7);if(st>today)break;let n=0;for(let j=0;j<7;j++){const k=addDays(st,j);if(days[k]&&days[k].h&&days[k].h.train)n++;}weekFull=Math.max(weekFull,n);}
+ const cafOk=ks.filter(k=>{const c=days[k].caf;return c&&c.length&&!c.some(x=>x.time>cutoffFor(k));}).length;
+ const lifts=ks.filter(k=>days[k].ex&&Object.values(days[k].ex).some(e=>e.kg!=null)).length;
+ return{train:trainDays.length,back:backDays.length,best,sleepRun,lost,waistLost,perfect,weekFull,cafOk,lifts};}
+const BADGES=[
+ ["first","1","Primer entreno","Completa tu primera sesión",s=>[s.train,1]],
+ ["t10","10","10 entrenos","Diez sesiones hechas",s=>[s.train,10]],
+ ["t25","25","25 entrenos","Ya es un hábito",s=>[s.train,25]],
+ ["t50","50","50 entrenos","Otra liga",s=>[s.train,50]],
+ ["s7","7d","Racha de 7 días","7 días seguidos con 4 hábitos o más",s=>[s.best,7]],
+ ["s30","30d","Racha de 30 días","Un mes sin fallar",s=>[s.best,30]],
+ ["wk","5/7","Semana completa","5 entrenos en una semana del plan",s=>[s.weekFull,5]],
+ ["perf","6/6","Día perfecto","Los 6 hábitos en un día",s=>[s.perfect,1]],
+ ["back","B10","Espalda de acero","10 protocolos de espalda",s=>[s.back,10]],
+ ["sleep","Zz","Dormilón pro","7 noches seguidas de 7 h o más",s=>[s.sleepRun,7]],
+ ["kg1","-1","Primer kilo","−1 kg en la media semanal",s=>[s.lost,1]],
+ ["kg3","-3","−3 kg","Se nota en la ropa",s=>[s.lost,3]],
+ ["kg5","-5","−5 kg","Cambio visible",s=>[s.lost,5]],
+ ["cin","-3c","−3 cm de cintura","La tripa baja",s=>[s.waistLost,3]],
+ ["caf","☕7","Barista sensato","7 días con el café antes de la hora de corte",s=>[s.cafOk,7]],
+ ["log","LOG","Cuaderno al día","Apunta los kilos en 10 sesiones",s=>[s.lifts,10]]
+];
+function toast(t){const e=el("div",{class:"toast",role:"status",text:t});document.body.append(e);setTimeout(()=>e.remove(),4200);}
+function renderBadges(){const st=stats();const box=$("#badges");if(!box)return;box.textContent="";let n=0;const got=profile.badges||{};let fresh=[];
+ BADGES.forEach(([id,ico,name,desc,f])=>{const [v,goal]=f(st);const on=v>=goal;if(on){n++;if(!got[id]){got[id]=today;fresh.push(name);}}
+  box.append(el("div",{class:"bdg"+(on?" on":"")},el("div",{class:"ico",text:ico}),el("b",{text:name}),el("span",{text:on?"Conseguido "+(got[id]||"").slice(8)+"/"+(got[id]||"").slice(5,7):desc}),on?"":el("div",{class:"prog"},(()=>{const i=el("i");i.style.width=Math.max(0,Math.min(100,v/goal*100))+"%";return i;})())));});
+ $("#badgeCount").textContent=n+" de "+BADGES.length;
+ if(fresh.length){profile.badges=got;persist("profile",profile);if(profile.badgesInit)toast("Logro desbloqueado: "+fresh.join(", "));}
+ if(!profile.badgesInit){profile.badgesInit=true;profile.badges=got;persist("profile",profile);}}
+
+/* ---------- RESUMEN SEMANAL ---------- */
+function weekStatsText(){const L=[];const end=today;let tr=0,hs=0,cafs=0,cafN=0;const ws=[],sl=[],rc=[];
+ for(let i=6;i>=0;i--){const k=addDays(end,-i);const d=days[k];if(!d)continue;if(d.h&&d.h.train)tr++;hs+=score(k);if(d.w)ws.push(+d.w);if(d.caf){cafs+=d.caf.reduce((a,c)=>a+(CAF[c.k]?CAF[c.k][1]:0),0);cafN++;}if(d.body){if(d.body.sleep!=null)sl.push(d.body.sleep);if(d.body.rec!=null)rc.push(d.body.rec);}}
+ const pw=[];for(let i=13;i>=7;i--){const d=days[addDays(end,-i)];if(d&&d.w)pw.push(+d.w);}
+ const av=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):"sin datos";
+ L.push("Entrenos últimos 7 días: "+tr+" (objetivo: 5 de pesas y cardio + 1 cardio largo)");
+ L.push("Cumplimiento de hábitos: "+Math.round(hs/42*100)+"%");
+ L.push("Peso medio esta semana: "+av(ws)+" kg; semana anterior: "+av(pw)+" kg");
+ L.push("Sueño medio (pulsera): "+av(sl)+" h; recuperación media: "+av(rc)+"%");
+ L.push("Cafeína media en los días registrados: "+(cafN?Math.round(cafs/cafN):"sin datos")+" mg");
+ const st=stats();L.push("Logros: racha máxima "+st.best+" días, entrenos totales "+st.train+", kilos perdidos (media) "+st.lost.toFixed(1));
+ return L.join("\n");}
 
 /* ---------- MITOS ---------- */
 const MYTHS=[
@@ -1241,14 +1357,14 @@ function renderMyths(){const b=$("#myths");MYTHS.forEach(([v,t,d])=>b.append(el(
 
 /* ---------- TABS ---------- */
 const tabs=[...document.querySelectorAll("nav.tabs button")];
-function show(v){tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset.v===v)));document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);if(v==="progreso")renderProgress();if(v==="plan")renderPlan();if(v==="coach")renderChat();try{localStorage.setItem(LS+"-tab",v);}catch(e){}}
+function show(v){tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset.v===v)));document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);if(v==="progreso"){renderProgress();renderBadges();}if(v==="plan")renderPlan();if(v==="coach")renderChat();try{localStorage.setItem(LS+"-tab",v);}catch(e){}}
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
 $("#goCoach").addEventListener("click",()=>show("coach"));
 
-function renderAll(){buildDayPicker();renderToday();renderSchedule();renderSugg();renderPlan();loadNut();renderMacros();renderProgress();renderMemTasks();}
+function renderAll(){buildDayPicker();renderToday();renderSchedule();renderSugg();renderBadges();renderPlan();loadNut();renderMacros();renderProgress();renderMemTasks();}
 
 /* ---------- ARRANQUE ---------- */
-lsLoad();renderMyths();renderShop();renderBack();renderPotential();renderAll();setInterval(()=>{if(viewDate===today)renderSchedule();renderSugg();},60000);
+lsLoad();renderMyths();renderShop();renderRecipes();renderBack();renderPotential();renderAll();setInterval(()=>{if(viewDate===today)renderSchedule();renderSugg();},60000);
 try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t))show(t);}catch(e){}
 if(profile.ai&&profile.ai.name){$("#aiName").textContent=profile.ai.name;$("#tabAi").textContent=profile.ai.name;}
 
