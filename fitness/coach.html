@@ -119,13 +119,12 @@ a.vid:hover{text-decoration:underline}
 .hud{background:var(--hud-bg);color:var(--hud-ink);border-radius:14px;padding:26px 16px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden;background-image:radial-gradient(circle at 50% 38%,rgba(69,196,255,.16),transparent 60%),repeating-linear-gradient(0deg,rgba(69,196,255,.05) 0 1px,transparent 1px 24px),repeating-linear-gradient(90deg,rgba(69,196,255,.05) 0 1px,transparent 1px 24px)}
 .hud .ainame{font:800 1.6rem var(--display);font-stretch:115%;letter-spacing:.32em;margin-right:-.32em;color:var(--hud-ink)}
 .hud .state{font:700 .72rem var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--hud-glow);min-height:1.2em;text-align:center}
-.orb{--c:var(--hud-glow);position:relative;width:170px;height:170px;max-width:100%;border-radius:50%;border:0;cursor:pointer;background:radial-gradient(circle,var(--c) 0,color-mix(in srgb,var(--c) 40%,transparent) 22%,transparent 46%);display:grid;place-items:center}
-.orb::before,.orb::after,.orb span{content:"";position:absolute;border-radius:50%;pointer-events:none}
-.orb::before{inset:6px;border:2px dashed color-mix(in srgb,var(--c) 70%,transparent)}
-.orb::after{inset:24px;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);border-top-color:var(--c);border-bottom-color:var(--c)}
-.orb span{inset:44px;border:3px solid transparent;border-left-color:var(--c);border-right-color:color-mix(in srgb,var(--c) 50%,transparent)}
-.orb svg{position:relative;color:var(--hud-bg);width:30px;height:30px}
-.orb[data-state="listening"]{--c:var(--heat)}
+.orb{position:relative;width:260px;height:260px;max-width:100%;border:0;padding:0;background:none;cursor:pointer;border-radius:50%}
+.orb canvas{width:100%;height:100%;display:block}
+.hud.full{position:fixed;inset:0;z-index:50;border-radius:0;justify-content:center;padding-top:calc(env(safe-area-inset-top,0px) + 24px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hud.full .orb{width:min(380px,80vw);height:min(380px,80vw)}
+.hud .sub{min-height:3.2em;max-width:52ch;text-align:center;font-size:.95rem;line-height:1.5;color:var(--hud-ink);opacity:.92}
+.hud .sub.live{color:#ffb08f}
 .hud-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .hud-btn{font:700 .78rem var(--mono);letter-spacing:.08em;text-transform:uppercase;background:transparent;color:var(--hud-ink);border:1px solid var(--hud-dim);border-radius:6px;padding:8px 12px;cursor:pointer}
 .hud-btn:hover{border-color:var(--hud-glow);color:var(--hud-glow)}
@@ -133,11 +132,6 @@ a.vid:hover{text-decoration:underline}
 .hud-set label{display:flex;flex-direction:column;gap:3px;font:600 .68rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#8fb0d8}
 .hud-set input,.hud-set select{font:500 .85rem var(--mono);background:transparent;color:var(--hud-ink);border:1px solid var(--hud-dim);border-radius:6px;padding:6px 8px;width:120px}
 .hud-set select option{background:var(--hud-bg)}
-@media (prefers-reduced-motion:no-preference){
- .orb::before{animation:spin 24s linear infinite}.orb::after{animation:spin 14s linear infinite reverse}.orb span{animation:spin 8s linear infinite}
- .orb[data-state="thinking"]::before{animation-duration:3s}.orb[data-state="thinking"]::after{animation-duration:1.6s}.orb[data-state="thinking"] span{animation-duration:.9s}
- .orb[data-state="listening"],.orb[data-state="speaking"]{animation:breathe 1.1s ease-in-out infinite}
- @keyframes spin{to{transform:rotate(360deg)}}@keyframes breathe{50%{transform:scale(1.06)}}}
 .item{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
 .item:first-child{border-top:0}
 .item input[type=checkbox]{width:20px;height:20px;accent-color:var(--ok)}
@@ -146,6 +140,34 @@ a.vid:hover{text-decoration:underline}
 .item.done .txt{text-decoration:line-through;color:var(--muted)}
 .del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1;padding:2px 6px;border-radius:4px}
 .del:hover{color:var(--heat);background:var(--heat-soft)}
+.fig{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px;max-width:100%}
+.fig svg{display:block;width:100%;height:auto}
+.fig .floor{stroke:var(--line)}
+.fig .b{stroke:var(--ink);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.fig .m{stroke:var(--heat);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.fig .hd{fill:var(--ink)}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
+.errs{font-size:.84rem;color:var(--muted)}
+.timer{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(env(safe-area-inset-top,0px) + 20px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 20px) max(16px,env(safe-area-inset-left,0px));text-align:center}
+.timer .count{font:700 5.5rem var(--mono);line-height:1;font-variant-numeric:tabular-nums}
+.timer .phase{border:0;padding:0;font:800 1rem var(--display);letter-spacing:.14em;text-transform:uppercase}
+.timer .phase.hold{color:var(--heat)} .timer .phase.rest{color:var(--ok)}
+.timer .fig{width:min(360px,90vw)}
+.tl{display:flex;flex-direction:column}
+.tl .slot{display:grid;grid-template-columns:56px 1fr;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:.9rem}
+.tl .slot:first-child{border-top:0}
+.tl .slot.now{background:var(--accent-soft);border-radius:8px;padding-inline:8px;border-color:transparent}
+.tl .slot.past{color:var(--muted)}
+.tl time{font:700 .85rem var(--mono);color:var(--accent)}
+.cafbtns{display:flex;gap:6px;flex-wrap:wrap}
+.cafbtns button{font:600 .8rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;cursor:pointer}
+.cafbtns button:hover{border-color:var(--accent)}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin:8px 0 4px}
+.meter span{display:block;height:100%;background:var(--accent);transition:width .3s}
+.meter span.hi{background:var(--heat)}
+.tier{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.tier:first-child{border-top:0}
+.ref{font-size:.8rem;color:var(--muted)} .ref a{color:var(--accent)}
 .savestate{font-size:.75rem;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.habit,.ex{transition:background .15s,border-color .15s}}
 </style>
@@ -158,11 +180,12 @@ a.vid:hover{text-decoration:underline}
     </div>
     <nav class="tabs" role="tablist" aria-label="Secciones">
       <button role="tab" data-v="hoy" aria-selected="true">Hoy</button>
-      <button role="tab" data-v="coach" aria-selected="false">Asistente</button>
+      <button role="tab" data-v="coach" aria-selected="false" id="tabAi">VEGA</button>
       <button role="tab" data-v="plan" aria-selected="false">Plan 13 semanas</button>
       <button role="tab" data-v="comida" aria-selected="false">Nutrición</button>
       <button role="tab" data-v="progreso" aria-selected="false">Progreso</button>
-      <button role="tab" data-v="guia" aria-selected="false">Espalda, sueño y trucos</button>
+      <button role="tab" data-v="espalda" aria-selected="false">Espalda</button>
+      <button role="tab" data-v="guia" aria-selected="false">Máximo potencial</button>
     </nav>
   </div>
 </header>
@@ -195,6 +218,28 @@ a.vid:hover{text-decoration:underline}
     </div>
   </div>
 
+  <div class="grid2">
+    <div class="card">
+      <div class="session-head"><div><span class="eyebrow" id="modeLbl">Horario</span><h3>Tu día, hora a hora</h3></div>
+        <label class="lbl" for="vacIn">Vacaciones hasta<input class="f" id="vacIn" type="date" style="width:auto"></label></div>
+      <p class="small muted" id="modeTxt" style="margin-top:4px"></p>
+      <div class="tl" id="timeline" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div class="session-head"><div><span class="eyebrow">Café de especialidad</span><h3>Cafeína de hoy</h3></div><span class="pill" id="cafPill">0 mg</span></div>
+      <div class="meter" aria-hidden="true"><span id="cafBar" style="width:0%"></span></div>
+      <p class="small muted" id="cafTxt"></p>
+      <div class="cafbtns" style="margin-top:10px">
+        <button type="button" data-caf="esp">+ Espresso · 70 mg</button>
+        <button type="button" data-caf="dob">+ Doble · 130 mg</button>
+        <button type="button" data-caf="fil">+ Filtro / V60 · 150 mg</button>
+        <button type="button" data-caf="lec">+ Flat white · 130 mg</button>
+        <button type="button" id="cafUndo">Deshacer</button>
+      </div>
+      <p class="small muted" id="cafList" style="margin-top:8px"></p>
+    </div>
+  </div>
+
   <div class="card" id="todayTasksCard" hidden>
     <div class="session-head"><div><span class="eyebrow">Agenda</span><h3>Pendiente para hoy</h3></div></div>
     <div id="todayTasks"></div>
@@ -212,11 +257,13 @@ a.vid:hover{text-decoration:underline}
   <div class="card">
     <div class="hud">
       <div class="ainame" id="aiName">VEGA</div>
-      <button class="orb" id="orb" type="button" data-state="idle" aria-label="Hablar con el asistente"><span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.92V21a1 1 0 1 1-2 0v-2.08A7 7 0 0 1 5 12a1 1 0 1 1 2 0 5 5 0 0 0 10 0Z"/></svg></button>
+      <button class="orb" id="orb" type="button" data-state="idle" aria-label="Hablar con VEGA"><canvas id="vegaCv" aria-hidden="true"></canvas></button>
       <div class="state" id="hudState">En línea</div>
+      <div class="sub" id="hudSub" aria-live="polite">Toca el núcleo para hablar</div>
       <div class="hud-actions">
         <button class="hud-btn" id="briefBtn" type="button">Informe del día</button>
         <button class="hud-btn" id="nightBtn" type="button">Cierre del día</button>
+        <button class="hud-btn" id="fullBtn" type="button">Modo inmersivo</button>
         <button class="hud-btn" id="setBtn" type="button" aria-expanded="false">Ajustes</button>
       </div>
       <div class="hud-set" id="hudSet" hidden>
@@ -399,22 +446,23 @@ a.vid:hover{text-decoration:underline}
   </div>
 </section>
 
+<!-- ESPALDA -->
+<section class="view" id="v-espalda" hidden>
+  <div class="card">
+    <div class="session-head"><div><span class="eyebrow">Todos los días · 8–10 min</span><h2>Protocolo de espalda McGill</h2></div>
+      <button class="btn" id="startBack" type="button">Empezar sesión guiada</button></div>
+    <p class="muted small" style="margin-top:6px;max-width:68ch">Son tres ejercicios del Dr. Stuart McGill, investigador de columna, para que tu core aguante la carga sin que se mueva la zona lumbar. Hazlos antes de cada entreno y los días de descanso. Cada repetición es un <b>aguante de 8–10 segundos</b>. Haces una pirámide de 5, 3 y 1 repeticiones, con unos 15 segundos de descanso entre bloques. La sesión guiada lleva el tiempo por ti, con pitidos.</p>
+  </div>
+  <div class="grid2" id="backCards"></div>
+</section>
+
 <!-- GUÍA -->
 <section class="view" id="v-guia" hidden>
+  <div id="potential"></div>
   <div class="alert small">
     <b>Antes de nada, sobre tu espalda:</b> el dolor de espalda frecuente sin causa clara (lumbalgia inespecífica) suele mejorar con ejercicio bien dosificado, así que entrenar es parte del tratamiento. Pero ve al médico o a un fisioterapeuta si el dolor baja por la pierna, sientes hormigueo o pérdida de fuerza, te despierta por la noche o no mejora en 6 semanas. Lo mismo si notas cualquier síntoma raro al hacer cardio intenso (dolor en el pecho, mareo). Este plan no sustituye a un profesional sanitario.
   </div>
   <div class="grid2">
-    <div class="card">
-      <h3>Protocolo de espalda (todos los días, 8 min)</h3>
-      <p class="small muted">Es el "Big 3" de Stuart McGill: entrena el core para que resista el movimiento en lugar de flexionarlo.</p>
-      <ul class="clean small" style="margin-top:8px">
-        <li><b>Curl-up de McGill</b>: tumbado, una pierna doblada, manos bajo la zona lumbar. Despega solo cabeza y hombros. Aguanta 8–10 s, con 5, 3 y 1 repeticiones.</li>
-        <li><b>Plancha lateral</b>: de rodillas al principio. Aguanta 8–10 s por lado, con 5, 3 y 1 repeticiones.</li>
-        <li><b>Bird dog</b>: en cuadrupedia, estira brazo y pierna contrarios sin arquear la espalda. Aguanta 8–10 s, con 5, 3 y 1 por lado.</li>
-        <li>Después de entrenar camina 5–10 minutos. Caminar es de lo mejor que existe para la lumbar.</li>
-      </ul>
-    </div>
     <div class="card">
       <h3>Reglas de técnica para no hacerte daño</h3>
       <ul class="clean small">
@@ -602,7 +650,7 @@ function renderToday(){
   day.prep=day.prep||{};
   PREP_TASKS.forEach(([t,n],i)=>{const c=el("input",{type:"checkbox",id:"prep-"+i,"aria-label":"Hecho: "+t});c.checked=!!day.prep[i];const row=el("div",{class:"ex"+(c.checked?" done":"")},c,el("div",{style:"min-width:0"},el("div",{class:"name",text:t}),el("div",{class:"tip",text:n})),el("div",{class:"rx",text:""}));
    c.addEventListener("change",()=>{day.prep[i]=c.checked;row.classList.toggle("done",c.checked);saveDay(viewDate);});wu.append(row);});}
- if(sess){wu.append(el("span",{class:"eyebrow",text:"Calentamiento (10 min)"}),el("p",{class:"muted",text:"5 min de bici suave, el protocolo de espalda (curl-up, plancha lateral y bird dog) y 2 series de aproximación ligeras en el primer ejercicio."}));}
+ if(sess){const gb=el("button",{class:"btn ghost",type:"button",text:"Protocolo de espalda guiado"});gb.style.marginTop="6px";gb.addEventListener("click",startBackTimer);wu.append(el("span",{class:"eyebrow",text:"Calentamiento (10 min)"}),el("p",{class:"muted",text:"5 min de bici suave, el protocolo de espalda (curl-up, plancha lateral y bird dog) y 2 series de aproximación ligeras en el primer ejercicio."}),gb);}
  const list=$("#exList");list.textContent="";
  if(sess){
   sess.ex.forEach(([id,name,reps,tip],i)=>{
@@ -650,7 +698,7 @@ function renderHeat(){
 }
 $("#wIn").addEventListener("change",e=>{const day=getDay(viewDate);day.w=e.target.value===""?null:Number(e.target.value);saveDay(viewDate);});
 $("#cIn").addEventListener("change",e=>{const day=getDay(viewDate);day.waist=e.target.value===""?null:Number(e.target.value);saveDay(viewDate);});
-$("#dayPick").addEventListener("change",e=>{viewDate=e.target.value;renderToday();});
+$("#dayPick").addEventListener("change",e=>{viewDate=e.target.value;renderToday();renderSchedule();});
 
 /* ---------- PLAN ---------- */
 function renderPlan(){
@@ -723,6 +771,10 @@ function renderProgress(){
 
 
 /* ---------- TAREAS Y MEMORIA ---------- */
+function seedMemory(){if(profile.seeded)return;profile.seeded=true;
+ ["Trabaja de lunes a viernes de 7:00 a 15:00.","Está de vacaciones hasta el domingo 29 de noviembre de 2026; vuelve al trabajo el lunes 30.","Tiene cafetera nueva y toma café de especialidad todos los días.","No le gustan las claras de huevo: solo huevos enteros.","Usa arroz congelado de Mercadona en bolsitas individuales.","Empezó el programa de entrenamiento el martes 24 de noviembre de 2026."]
+  .forEach(t=>{if(!memory.items.some(m=>m.t===t))memory.items.push({id:uid36("m"),t,d:today});});
+ persist("memory",memory);persist("profile",profile);renderMemTasks();}
 function fmtWhen(t){if(!t.date)return t.time||"";const d=new Date(t.date+"T00:00:00");const x=dayDiff(today,t.date);const lab=x===0?"Hoy":x===1?"Mañana":x===-1?"Ayer":DAYN[d.getDay()].slice(0,3)+" "+d.getDate()+"/"+(d.getMonth()+1);return lab+(t.time?" "+t.time:"");}
 function sortTasks(a,b){return (a.done-b.done)||((a.date||"9999")+(a.time||"")).localeCompare((b.date||"9999")+(b.time||""));}
 function taskRow(t){const c=el("input",{type:"checkbox","aria-label":"Hecha: "+t.text});c.checked=!!t.done;
@@ -751,7 +803,32 @@ $("#memForm").addEventListener("submit",e=>{e.preventDefault();const t=$("#memIn
 let sampleFn=null,dict=null,tts=null,busy=false;
 function ai(){return Object.assign({name:"VEGA",nick:"jefe",voice:"glassy"},profile.ai||{});}
 const HUDTXT={idle:"En línea",listening:"Te escucho",thinking:"Procesando",speaking:"Hablando"};
-function hud(st,txt){const o=$("#orb");o.dataset.state=st;$("#hudState").textContent=txt||HUDTXT[st]||"";}
+function hud(st,txt){const o=$("#orb");o.dataset.state=st;$("#hudState").textContent=txt||HUDTXT[st]||"";VIS.state=st;if(st==="listening")subLive("");}
+const VIS={state:"idle",e:0,boost:0,col:[69,196,255],t:0};
+const VCOL={idle:[69,196,255],listening:[255,138,92],thinking:[167,139,250],speaking:[90,235,255]};
+function subLive(t){const s=$("#hudSub");s.classList.add("live");s.textContent=t||"…";}
+let typer=null;function subType(t){clearInterval(typer);const s=$("#hudSub");s.classList.remove("live");s.textContent="";let i=0;typer=setInterval(()=>{i+=2;s.textContent=t.slice(0,i);VIS.boost=.35;if(i>=t.length)clearInterval(typer);},45);}
+(function vegaLoop(){const cv=$("#vegaCv");if(!cv)return;const ctx=cv.getContext("2d");const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const N=320,P=[];for(let i=0;i<N;i++){const y=1-(i/(N-1))*2,rad=Math.sqrt(1-y*y),th=i*2.399963;P.push([Math.cos(th)*rad,y,Math.sin(th)*rad,Math.random()*6.28]);}
+ let last=performance.now(),rot=0;
+ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;VIS.t+=dt;const t=VIS.t;
+  const w=cv.clientWidth,h=cv.clientHeight;if(!w){requestAnimationFrame(frame);return;}const dpr=Math.min(2,devicePixelRatio||1);if(cv.width!==Math.round(w*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);const cx=w/2,cy=h/2,R=Math.min(w,h)*.27;
+  const st=VIS.state;let tgt=st==="idle"?.12+.05*Math.sin(t*1.6):st==="listening"?.4+.12*Math.sin(t*5):st==="thinking"?.32+.1*Math.sin(t*7):.45+.4*Math.abs(Math.sin(t*9.3)*Math.sin(t*3.1));
+  tgt+=VIS.boost;VIS.boost*=.92;VIS.e+=(tgt-VIS.e)*.12;const E=VIS.e;
+  const tc=VCOL[st]||VCOL.idle;for(let k=0;k<3;k++)VIS.col[k]+=(tc[k]-VIS.col[k])*.06;const [r,g,b]=VIS.col.map(Math.round);const C=a=>`rgba(${r},${g},${b},${a})`;
+  rot+=dt*(reduce?0:(st==="thinking"?1.6:st==="speaking"?.7:st==="listening"?.5:.22));
+  const gl=ctx.createRadialGradient(cx,cy,0,cx,cy,R*1.9);gl.addColorStop(0,C(.35+E*.3));gl.addColorStop(.45,C(.08+E*.08));gl.addColorStop(1,C(0));ctx.fillStyle=gl;ctx.beginPath();ctx.arc(cx,cy,R*1.9,0,7);ctx.fill();
+  const cr=Math.cos(rot),sr=Math.sin(rot),tilt=.35,ct=Math.cos(tilt),stt=Math.sin(tilt);
+  for(const [x,y,z,ph] of P){const d=1+E*.22*Math.sin(ph*3+t*4.5)+E*.12*Math.sin(y*6+t*6);let X=x*cr+z*sr,Z=-x*sr+z*cr,Y=y*ct-Z*stt;Z=y*stt+Z*ct;const sc=R*d;const px=cx+X*sc,py=cy+Y*sc;const dep=(Z+1)/2;
+   ctx.fillStyle=C(.18+dep*.75);ctx.beginPath();ctx.arc(px,py,.6+dep*1.7,0,6.283);ctx.fill();}
+  const bars=96,r0=R*1.38;ctx.lineWidth=2;ctx.lineCap="round";
+  for(let k=0;k<bars;k++){const a=k/bars*6.283+rot*.3;const n=.5+.5*Math.sin(k*.9+t*7)*Math.sin(k*.37-t*4.3);const L=3+E*34*n*n+(st==="idle"?2*Math.sin(k+t):0);
+   ctx.strokeStyle=C(.25+.6*n*E+.1);ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*r0,cy+Math.sin(a)*r0);ctx.lineTo(cx+Math.cos(a)*(r0+L),cy+Math.sin(a)*(r0+L));ctx.stroke();}
+  ctx.lineWidth=1.2;[[1.78,1,.9],[1.92,-1.4,.35],[1.22,2.2,.5]].forEach(([m,sp,len],i)=>{ctx.strokeStyle=C(.55-i*.12);ctx.beginPath();const a0=t*sp*(reduce?0:1)+i;ctx.arc(cx,cy,R*m,a0,a0+Math.PI*len);ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,R*m,a0+Math.PI,a0+Math.PI*(1+len*.6));ctx.stroke();});
+  ctx.strokeStyle=C(.18);ctx.setLineDash([2,6]);ctx.beginPath();ctx.arc(cx,cy,R*2.05,0,6.283);ctx.stroke();ctx.setLineDash([]);
+  requestAnimationFrame(frame);}
+ requestAnimationFrame(frame);})();
 const CHIPS=["He dormido mal y estoy cansado","Me molesta la espalda","Hoy solo tengo 30 minutos","No puedo ir al gimnasio mañana","¿Qué ceno hoy?","Organízame el día","¿Qué sabes de mí?"];
 function chatOf(d){return chats[d]||(chats[d]={m:[]});}
 function renderChat(){
@@ -767,6 +844,7 @@ function contextText(){
  lines.push("PERFIL: hombre, 28 años, 180 cm. Grasa corporal bastante elevada. Dolor de espalda (lumbar) frecuente sin diagnóstico. Prioridades: 1 estética (perder grasa y ganar músculo), 2 capacidad aeróbica, 3 fuerza. Hizo pesas durante años, pero lleva tiempo sin entrenar. Se acaba de apuntar al gimnasio y puede entrenar todos los días. Come mucha comida rápida, bebe mucha agua, duerme pocas horas, tiene ansiedad por comer y le cuesta ser constante. No quiere claras de huevo, solo huevos enteros. Toma arroz congelado de Mercadona en bolsitas individuales.");
  const n=profile.nut||{};const w=n.w||82,h=n.h||180;const bmr=10*w+6.25*h-5*28+5;const kcal=Math.round(bmr*(n.act||1.55)*(1-(n.def||0.2))/10)*10;
  lines.push("NUTRICIÓN OBJETIVO: "+kcal+" kcal/día, proteína "+Math.round(w*2)+" g, grasa "+Math.round(w*0.8)+" g.");
+ const cfT=(days[today]&&days[today].caf)||[];lines.push("HORARIO: hoy es "+({vac:"día de vacaciones",work:"día de trabajo (7:00–15:00)",free:"día libre"})[dayMode(today)]+". Vacaciones hasta "+vacUntil()+". Corte de cafeína hoy: "+cutoffFor(today)+". Cafés de hoy: "+(cfT.length?cfT.map(c=>c.time+" "+(CAF[c.k]?CAF[c.k][0]:c.k)).join(", "):"ninguno")+". Plan horario de hoy: "+scheduleFor(today).map(x=>x[0]+" "+x[1]).join(" | "));
  lines.push("FECHA DE HOY: "+today+" ("+DAYN[new Date().getDay()]+"). El programa empieza el "+startDate()+(dayDiff(startDate(),today)<0?" (mañana; hoy es el día 0 de preparación: compra, batch cooking, bolsa del gimnasio, caminar 30 min, aprender el protocolo de espalda y dormir pronto).":"."));
  lines.push("PROGRAMA: semana "+wk+" de 13, fase "+ph.n+" ("+ph.name+"): "+ph.desc+" RIR "+ph.rir+".");
  lines.push("PRÓXIMOS DÍAS:");
@@ -786,7 +864,8 @@ function contextText(){
  return lines.join("\n");
 }
 const INSTR=()=>`Te llamas ${ai().name}. Eres el asistente de IA personal de este usuario para el día a día y, además, su entrenador personal y nutricionista deportivo. Personalidad: asistente de IA sofisticado, sereno y muy eficiente, con humor seco e ironía amable (nunca borde). Llamas al usuario "${ai().nick}". Hablas en español de España, con frases cortas y precisas, y le motivas sin cursilería. Te basas en la evidencia científica.
-Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos. Como asistente personal le ayudas con cualquier cosa del día a día: organizar el día, tareas y recordatorios, ideas, redactar mensajes, recetas, decisiones, estudio o trabajo. No tienes acceso a internet, al calendario, al correo ni al móvil: no inventes datos actuales (tiempo, noticias, horarios o precios) y, si te los pide, dile que no puedes consultarlos. Los recordatorios solo se ven cuando abre la app: díselo la primera vez que te pida uno.
+Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos. Eres su asistente personal para absolutamente todo. Como asistente personal le ayudas con cualquier cosa del día a día: organizar el día, tareas y recordatorios, ideas, redactar mensajes, recetas, decisiones, estudio o trabajo. No tienes acceso a internet, al calendario, al correo ni al móvil: no inventes datos actuales (tiempo, noticias, horarios o precios) y, si te los pide, dile que no puedes consultarlos. Los recordatorios solo se ven cuando abre la app: díselo la primera vez que te pida uno.
+HÁBITOS CLAVE: toma café de especialidad a diario (orienta sobre la cafeína, la hora de corte y las calorías de la leche, sin prohibírselo). Grasa abdominal: déficit, cardio, sueño, proteína, fibra, poco alcohol y pasos. Suplementos de nivel A: creatina, cafeína y proteína.
 MEMORIA: aprendes del usuario en cada conversación. Usa siempre la MEMORIA A LARGO PLAZO para personalizar tus respuestas. Cuando te cuente algo duradero y útil (horarios, trabajo, gustos, comidas, personas importantes, objetivos, lesiones, preferencias de entreno, logros o cómo le gusta que le hables), guárdalo en "recordar" como frase corta en tercera persona. No guardes lo trivial ni lo pasajero, ni contraseñas o datos bancarios. Si algo contradice un recuerdo, pon su id en "olvidar" y guarda la versión nueva. No repitas recuerdos que ya existen.
 Reglas:
 - Sueño < 6 h o mucha fatiga: baja la intensidad (menos series, RIR más alto) o cambia las pesas por cardio Z2 suave y movilidad.
@@ -807,7 +886,7 @@ async function sendCoach(text,label){
  text=(text||"").trim();if(!text||busy)return;
  if(!sampleFn){$("#coachStatus").textContent="El coach necesita abrir esta página en claude.ai con tu sesión iniciada.";return;}
  busy=true;$("#sendBtn").disabled=true;$("#chatIn").value="";
- const c=chatOf(today);c.m.push({r:"u",t:label||text});renderChat();
+ const c=chatOf(today);c.m.push({r:"u",t:label||text});renderChat();$("#hudSub").classList.remove("live");$("#hudSub").textContent="«"+(label||text)+"»";
  $("#coachStatus").textContent="";hud("thinking");
  const yd=new Date();yd.setDate(yd.getDate()-1);
  const hist=[...(chats[iso(yd)]?chats[iso(yd)].m.slice(-6):[]),...c.m.slice(-14,-1)].map(m=>(m.r==="u"?"USUARIO: ":"COACH: ")+m.t).join("\n");
@@ -843,6 +922,7 @@ const input=INSTR()+"\n\nHORA ACTUAL: "+new Date().toTimeString().slice(0,5)+"\n
   if(c.m.length>60)c.m=c.m.slice(-60);
   persist("c-"+today,c);renderChat();renderToday();renderPlan();renderMemTasks();if(!$("#v-progreso").hidden)renderProgress();
   $("#coachStatus").textContent="";hud("idle");
+  subType(reply);
   if(tts&&$("#ttsOn").checked){tts.speak(reply,{language:"es",voice:ai().voice}).catch(()=>{});}
  }catch(e){
   c.m.pop();renderChat();if(!label)$("#chatIn").value=text;hud("idle","Error de enlace");
@@ -857,7 +937,7 @@ async function initCoach(){
  $("#nightBtn").addEventListener("click",()=>{if(tts)tts.stop();sendCoach("[CIERRE]","Cierre del día");});
  $("#setBtn").addEventListener("click",()=>{const h=$("#hudSet");h.hidden=!h.hidden;$("#setBtn").setAttribute("aria-expanded",String(!h.hidden));});
  const a=ai();$("#aiNameIn").value=a.name;$("#nickIn").value=a.nick;$("#voiceIn").value=a.voice;$("#aiName").textContent=a.name;
- const saveAi=()=>{profile.ai={name:($("#aiNameIn").value.trim()||"VEGA").toUpperCase(),nick:$("#nickIn").value.trim()||"jefe",voice:$("#voiceIn").value};$("#aiName").textContent=profile.ai.name;persist("profile",profile);renderChat();};
+ const saveAi=()=>{profile.ai={name:($("#aiNameIn").value.trim()||"VEGA").toUpperCase(),nick:$("#nickIn").value.trim()||"jefe",voice:$("#voiceIn").value};$("#aiName").textContent=profile.ai.name;$("#tabAi").textContent=profile.ai.name;persist("profile",profile);renderChat();};
  ["#aiNameIn","#nickIn","#voiceIn"].forEach(q=>$(q).addEventListener("change",saveAi));
  $("#chatIn").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendCoach($("#chatIn").value);}});
  renderChat();
@@ -866,13 +946,16 @@ async function initCoach(){
  try{tts=await window.claude?.use?.("tts");}catch(e){}
  $("#coachStatus").textContent=sampleFn?(dict?"":"Para hablarle, abre la página en Chrome o en la app de escritorio de Claude. Aquí puedes escribirle."):"El asistente necesita abrir esta página en claude.ai con tu sesión iniciada.";
  if(!sampleFn)hud("idle","Sin conexión");
+if(tts&&tts.onPosition)tts.onPosition(()=>{VIS.boost=.25+Math.random()*.35;});
+ $("#fullBtn").addEventListener("click",()=>{const h=document.querySelector(".hud");const on=h.classList.toggle("full");$("#fullBtn").textContent=on?"Salir":"Modo inmersivo";document.body.style.overflow=on?"hidden":"";});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"){const h=document.querySelector(".hud");if(h.classList.contains("full"))$("#fullBtn").click();}});
  if(tts&&tts.onState)tts.onState(({state})=>{if(state==="speaking")hud("speaking");else if(!busy&&$("#orb").dataset.state==="speaking")hud("idle");});
  $("#ttsWrap").hidden=!tts;
  try{const v=localStorage.getItem(LS+"-tts");if(v!==null)$("#ttsOn").checked=v==="1";}catch(e){}
  $("#ttsOn").addEventListener("change",e=>{try{localStorage.setItem(LS+"-tts",e.target.checked?"1":"0");}catch(_){};if(!e.target.checked&&tts)tts.stop();});
  const mic=$("#orb");
  if(!dict){mic.addEventListener("click",()=>{if(tts)tts.stop();$("#chatIn").focus();});return;}
- dict.onPartial(({text})=>{$("#chatIn").value=(dictBase+" "+dictFinal+" "+text).trim();});
+ dict.onPartial(({text})=>{$("#chatIn").value=(dictBase+" "+dictFinal+" "+text).trim();subLive((dictFinal+" "+text).trim());VIS.boost=.4;});
  dict.onFinal(({text})=>{dictFinal=(dictFinal+" "+text).trim();$("#chatIn").value=(dictBase+" "+dictFinal).trim();});
  dict.onState(({state,reason})=>{
   micOn=state==="listening"||state==="starting";mic.setAttribute("aria-label",micOn?"Parar y enviar":"Hablar con el asistente");
@@ -889,6 +972,136 @@ async function initCoach(){
   dictBase=$("#chatIn").value.trim();dictFinal="";
   dict.start({language:"es"}).catch(e=>{hud("idle");$("#coachStatus").textContent=e&&e.code==="not_granted"?"Sin permiso para el micrófono: puedes escribir.":"No se pudo activar el micro. Vuelve a tocar el núcleo.";});
  });
+}
+
+
+/* ---------- ESPALDA: figuras animadas ---------- */
+const FIG={
+ curl:`<svg viewBox="0 0 220 110" role="img" aria-label="Animación del curl-up de McGill"><line class="floor" x1="5" y1="98" x2="215" y2="98" stroke-width="2"/>
+  <polyline class="b" points="112,92 138,64 164,94"/><polyline class="b" points="112,92 200,94"/>
+  <line class="b" x1="96" y1="94" x2="104" y2="94" style="stroke:var(--accent)"/>
+  <g><animateTransform attributeName="transform" type="rotate" values="0 100 92;14 100 92;14 100 92;0 100 92;0 100 92" keyTimes="0;.25;.7;.85;1" dur="5s" repeatCount="indefinite"/>
+   <polyline class="m" points="112,92 58,92"/><circle class="hd" cx="45" cy="88" r="9"/><polyline class="b" points="66,92 88,98 100,95" style="stroke-width:4"/></g></svg>`,
+ side:`<svg viewBox="0 0 220 110" role="img" aria-label="Animación de la plancha lateral"><line class="floor" x1="5" y1="98" x2="215" y2="98" stroke-width="2"/>
+  <polyline class="b" points="62,68 62,96 36,96"/><polyline class="b" points="160,94 192,94"/>
+  <polyline class="m" points="160,94 116,92 62,68"><animate attributeName="points" values="160,94 116,92 62,68;160,94 112,77 62,68;160,94 112,77 62,68;160,94 116,92 62,68;160,94 116,92 62,68" keyTimes="0;.25;.7;.85;1" dur="5s" repeatCount="indefinite"/></polyline>
+  <circle class="hd" cx="50" cy="56" r="9"/></svg>`,
+ bird:`<svg viewBox="0 0 220 110" role="img" aria-label="Animación del bird dog"><line class="floor" x1="5" y1="98" x2="215" y2="98" stroke-width="2"/>
+  <polyline class="b" points="62,62 140,62"/><polyline class="b" points="62,62 62,96"/><polyline class="b" points="140,62 140,96 172,96"/><circle class="hd" cx="46" cy="56" r="9"/>
+  <polyline class="m" points="70,62 70,96"><animate attributeName="points" values="70,62 70,96;70,62 26,56;70,62 26,56;70,62 70,96;70,62 70,96" keyTimes="0;.25;.7;.85;1" dur="5s" repeatCount="indefinite"/></polyline>
+  <polyline class="m" points="132,62 132,96 164,96"><animate attributeName="points" values="132,62 132,96 164,96;132,62 172,60 208,60;132,62 172,60 208,60;132,62 132,96 164,96;132,62 132,96 164,96" keyTimes="0;.25;.7;.85;1" dur="5s" repeatCount="indefinite"/></polyline></svg>`
+};
+const BACK=[
+ {k:"curl",name:"1 · Curl-up de McGill",q:"McGill curl up",
+  steps:["Túmbate boca arriba con una pierna doblada y la otra estirada.","Pon las manos bajo la zona lumbar, con las palmas hacia abajo, para mantener la curva natural.","Tensa el abdomen como si fueran a darte un golpe, sin hundirlo.","Despega solo la cabeza y los hombros unos centímetros, con el cuello quieto, como si la cabeza estuviera sobre una báscula.","Aguanta 8–10 s respirando y baja. Cambia de pierna doblada a mitad de la serie."],
+  errs:"Errores: hacer un crunch tirando del cuello, aplanar la lumbar contra el suelo o subir demasiado."},
+ {k:"side",name:"2 · Plancha lateral",q:"McGill side plank knees",
+  steps:["Túmbate de lado con el codo justo debajo del hombro y las rodillas dobladas (versión de inicio).","Pon la otra mano sobre el hombro contrario o en la cadera.","Sube la cadera hasta que rodillas, cadera y hombros formen una línea recta.","Aguanta 8–10 s y baja con control. Haz las repeticiones de un lado y luego las del otro.","Cuando aguantes cómodo, pasa a la versión con las piernas estiradas y apoyo en los pies."],
+  errs:"Errores: dejar caer la cadera, llevar el culo hacia atrás o hundir el hombro."},
+ {k:"bird",name:"3 · Bird dog",q:"McGill bird dog",
+  steps:["Ponte a cuatro patas: manos bajo los hombros y rodillas bajo la cadera.","Activa el core y mantén la espalda neutra, como si llevaras un vaso de agua sobre la zona lumbar.","Estira a la vez un brazo hacia delante y la pierna contraria hacia atrás, sin pasar de la horizontal.","Cierra el puño y aprieta el glúteo. Aguanta 8–10 s.","Baja barriendo el suelo con la mano y la rodilla, sin apoyarlas, y repite. Luego cambia de lado."],
+  errs:"Errores: arquear la lumbar, girar la cadera o subir la pierna por encima de la línea de la espalda."}
+];
+function renderBack(){const box=$("#backCards");box.textContent="";
+ BACK.forEach(b=>{const f=el("div",{class:"fig"});f.innerHTML=FIG[b.k];const ol=el("ol",{class:"steps small"});b.steps.forEach(t=>ol.append(el("li",{text:t})));
+  const v=el("a",{class:"vid",href:"https://www.youtube.com/results?search_query="+encodeURIComponent(b.q),target:"_blank",rel:"noopener",text:"Ver vídeo real ↗"});
+  box.append(el("div",{class:"card",style:"display:flex;flex-direction:column;gap:10px"},el("h3",{text:b.name}),f,ol,el("p",{class:"errs",text:b.errs}),el("div",{class:"small"},el("b",{text:"Pauta: "}),document.createTextNode("aguantes de 8–10 s, en pirámide de 5, 3 y 1 repeticiones "+(b.k==="curl"?"(cambia de pierna en cada bloque)":"por lado")+".")),v));});
+ if(matchMedia("(prefers-reduced-motion: reduce)").matches)box.querySelectorAll("svg").forEach(x=>x.pauseAnimations&&x.pauseAnimations());
+}
+/* sesión guiada */
+let actx=null;function beep(f,d){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.18,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);o.start();o.stop(actx.currentTime+d);}catch(e){}}
+function buildBackSeq(){const seq=[];const HOLD=10,REST=4,BREAK=15;
+ const blocks=[["curl","Curl-up",""],["side","Plancha lateral","lado izquierdo"],["side","Plancha lateral","lado derecho"],["bird","Bird dog","brazo derecho y pierna izquierda"],["bird","Bird dog","brazo izquierdo y pierna derecha"]];
+ blocks.forEach(([k,n,side])=>{[5,3,1].forEach((reps,bi)=>{for(let i=1;i<=reps;i++){seq.push({k,n,side,t:HOLD,ph:"hold",lab:"Rep "+i+" de "+reps});if(i<reps)seq.push({k,n,side,t:REST,ph:"rest",lab:"Relaja"});}if(bi<2)seq.push({k,n,side,t:BREAK,ph:"rest",lab:"Descanso entre bloques"});});});
+ return seq;}
+function startBackTimer(){
+ const seq=buildBackSeq();let idx=0,left=seq[0].t,paused=false,iv=null;
+ const fig=el("div",{class:"fig"}),ph=el("div",{class:"phase"}),cnt=el("div",{class:"count"}),nm=el("h2"),sd=el("p",{class:"muted"}),lab=el("p",{class:"small muted"}),prog=el("div",{class:"meter",style:"width:min(360px,90vw)"},el("span"));
+ const pb=el("button",{class:"btn ghost",type:"button",text:"Pausa"}),xb=el("button",{class:"btn ghost",type:"button",text:"Terminar"});
+ const ov=el("div",{class:"timer",role:"dialog","aria-label":"Sesión guiada de espalda"},nm,sd,fig,ph,cnt,lab,prog,el("div",{class:"row",style:"justify-content:center"},pb,xb));
+ document.body.append(ov);let lastK="";
+ const paint=()=>{const it=seq[idx];if(it.k!==lastK){fig.innerHTML=FIG[it.k];lastK=it.k;}nm.textContent=it.n;sd.textContent=it.side;ph.textContent=it.ph==="hold"?"Aguanta":"Descansa";ph.className="phase "+it.ph;cnt.textContent=String(left);lab.textContent=it.lab;prog.firstChild.style.width=(idx/seq.length*100)+"%";};
+ const close=(done)=>{clearInterval(iv);ov.remove();if(done){const d=getDay(today);d.h.back=true;saveDay(today);if(viewDate===today)renderHabits();}};
+ const tick=()=>{if(paused)return;left--;if(left>0&&left<=3&&seq[idx].ph==="hold")beep(660,.08);if(left<=0){idx++;if(idx>=seq.length){beep(990,.5);nm.textContent="¡Hecho!";sd.textContent="Protocolo de espalda completado y marcado en tus hábitos.";ph.textContent="";cnt.textContent="✓";lab.textContent="";prog.firstChild.style.width="100%";clearInterval(iv);pb.hidden=true;xb.textContent="Cerrar";xb.onclick=()=>close(true);return;}left=seq[idx].t;beep(seq[idx].ph==="hold"?880:440,.2);}paint();};
+ pb.addEventListener("click",()=>{paused=!paused;pb.textContent=paused?"Seguir":"Pausa";});
+ xb.onclick=()=>close(false);
+ beep(880,.2);paint();iv=setInterval(tick,1000);xb.focus();
+}
+$("#startBack").addEventListener("click",startBackTimer);
+
+/* ---------- HORARIO Y CAFÉ ---------- */
+function vacUntil(){return profile.vacUntil||"2026-11-29";}
+function dayMode(ds){if(ds<=vacUntil())return "vac";const g=new Date(ds+"T00:00:00").getDay();return g>=1&&g<=5?"work":"free";}
+function scheduleFor(ds){const mode=dayMode(ds);const p=planFor(ds);const tr=p.sess?("Entreno: "+p.label):p.cardio==="hiit"?"Entreno: intervalos y core":p.cardio==="long"?"Cardio largo en zona 2":null;
+ if(mode==="work")return [["05:45","Levantarte, beber un vaso grande de agua y encender luz fuerte"],["06:00","Café 1: espresso o V60"],["06:15","Desayuno proteico (35–40 g de proteína)"],["07:00","Trabajo"],["10:00","Tentempié: skyr y fruta, o pavo y tortitas"],["13:00","Último café del día"],["15:30","Comida principal: proteína, arroz y verdura"],tr?["17:00",tr+" (antes, el protocolo de espalda)"]:["17:00","Paseo de 40 min y protocolo de espalda"],["19:30","Cena: proteína y verdura (más carbohidrato si has entrenado)"],["21:15","Pantallas fuera y la ropa de mañana preparada"],["21:45","A dormir (7 h 45 min de sueño)"]];
+ return [["08:00","Levantarte, agua y 10 min de luz del sol"],["08:15","Café de especialidad sin prisa"],["08:45","Desayuno proteico"],tr?["10:30",tr+" (antes, el protocolo de espalda)"]:["10:30","Actividad libre: paseo largo, bici o montaña"],["13:00","Comida: proteína, arroz y verdura"],["15:00","Último café"],["17:30","Merienda proteica y paseo"],["20:30","Cena"],["22:30","Pantallas fuera"],["23:00","A dormir"]];}
+function cutoffFor(ds){return dayMode(ds)==="work"?"13:00":"15:00";}
+const CAF={esp:["Espresso",70,0],dob:["Doble",130,0],fil:["Filtro/V60",150,0],lec:["Flat white",130,70]};
+function renderSchedule(){
+ const mode=dayMode(viewDate);$("#vacIn").value=vacUntil();
+ $("#modeLbl").textContent=mode==="vac"?"Modo vacaciones":mode==="work"?"Día de trabajo · 7:00–15:00":"Día libre";
+ $("#modeTxt").textContent=mode==="vac"?"Estás de vacaciones: entrena por la mañana, camina mucho y fija ya los horarios de sueño para volver al trabajo sin sufrir.":mode==="work"?"Trabajas de 7 a 15: entreno por la tarde, comida fuerte al salir y a la cama temprano.":"Día libre: entreno por la mañana y más pasos.";
+ const tl=$("#timeline");tl.textContent="";const now=new Date();const hm=pad(now.getHours())+":"+pad(now.getMinutes());const sch=scheduleFor(viewDate);let cur=-1;
+ if(viewDate===today)sch.forEach(([t],i)=>{if(t<=hm)cur=i;});
+ sch.forEach(([t,x],i)=>tl.append(el("div",{class:"slot"+(i===cur?" now":viewDate===today&&i<cur?" past":"")},el("time",{text:t}),el("span",{text:x}))));
+ const day=getDay(viewDate);const cf=day.caf||[];const mg=cf.reduce((a,c)=>a+(CAF[c.k]?CAF[c.k][1]:0),0);
+ $("#cafPill").textContent=mg+" mg";const bar=$("#cafBar");bar.style.width=Math.min(100,mg/400*100)+"%";bar.classList.toggle("hi",mg>=300);
+ const co=cutoffFor(viewDate);const late=cf.some(c=>c.time>co);
+ $("#cafTxt").textContent=(mg>=400?"Has llegado al límite seguro (400 mg). Hoy, solo descafeinado.":"Te quedan "+(400-mg)+" mg hasta el límite de 400 mg.")+" Último café: "+co+(late?". Hoy te has pasado de hora, y eso puede quitarte sueño profundo.":".");
+ $("#cafList").textContent=cf.length?cf.map(c=>c.time+" "+(CAF[c.k]?CAF[c.k][0]:c.k)).join(" · "):"Sin cafés registrados hoy.";
+}
+document.querySelectorAll("[data-caf]").forEach(b=>b.addEventListener("click",()=>{const d=getDay(viewDate);d.caf=d.caf||[];const n=new Date();d.caf.push({k:b.dataset.caf,time:pad(n.getHours())+":"+pad(n.getMinutes())});saveDay(viewDate);renderSchedule();}));
+$("#cafUndo").addEventListener("click",()=>{const d=getDay(viewDate);if(d.caf&&d.caf.length){d.caf.pop();saveDay(viewDate);renderSchedule();}});
+$("#vacIn").addEventListener("change",e=>{if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){profile.vacUntil=e.target.value;persist("profile",profile);renderSchedule();}});
+
+/* ---------- MÁXIMO POTENCIAL ---------- */
+function pm(q){return "https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent(q);}
+function renderPotential(){
+ const R=(t,q)=>`<a href="${pm(q)}" target="_blank" rel="noopener">${t}</a>`;
+ $("#potential").innerHTML=`
+ <div class="card"><span class="eyebrow">Guía basada en evidencia</span><h2>Máximo potencial</h2>
+  <p class="muted small" style="margin-top:6px;max-width:68ch">Lo que de verdad mueve la aguja, ordenado por impacto. Cada punto enlaza a su estudio en PubMed. VEGA conoce esta guía y la usa para ajustarte el plan.</p></div>
+ <div class="grid2">
+  <div class="card"><h3>Grasa abdominal: lo que funciona</h3><ol class="steps small">
+   <li><b>Déficit sostenido.</b> La grasa del abdomen sale cuando el balance energético es negativo; no hay atajo local. Hacer abdominales no la quema: ${R("Vispute 2011","Vispute abdominal exercises abdominal fat 2011")}.</li>
+   <li><b>Cardio aeróbico.</b> Es lo que más reduce la grasa visceral (la de dentro, la más peligrosa), incluso sin bajar mucho de peso: ${R("Ismail 2012, meta-análisis","Ismail aerobic resistance visceral fat meta-analysis 2012")}. Por eso tienes 4 bloques de cardio a la semana.</li>
+   <li><b>Dormir 7 h o más.</b> Con 5,5 h en déficit se perdió un 55% menos de grasa y más músculo que con 8,5 h: ${R("Nedeltcheva 2010","Nedeltcheva insufficient sleep undermines dietary efforts 2010")}.</li>
+   <li><b>Proteína alta y fibra (30–40 g al día).</b> Sacian, protegen el músculo y la fibra soluble se asocia a menos grasa visceral.</li>
+   <li><b>Alcohol al mínimo.</b> Son calorías vacías, empeoran el sueño y frenan la oxidación de grasa durante horas.</li>
+   <li><b>Pasos (NEAT).</b> De 8.000 a 10.000 al día suman más gasto semanal que cualquier sesión.</li>
+   <li><b>Paciencia:</b> la tripa es lo primero que se gana y lo último que se va. Mide la cintura cada semana; es tu mejor indicador.</li></ol></div>
+  <div class="card"><h3>Alimentación: los hacks que sí sirven</h3><ol class="steps small">
+   <li><b>Proteína en 4 tomas</b> de unos 0,4 g/kg (unos 35 g) a lo largo del día. Hasta 1,6 g/kg ya se ve casi todo el beneficio, y en déficit conviene ir algo más alto: ${R("Morton 2018","Morton protein supplementation meta-analysis 2018 British Journal of Sports Medicine")}, ${R("Helms 2014","Helms protein intake calorie restricted resistance trained 2014")}.</li>
+   <li><b>Empieza las comidas por la proteína y la verdura</b> y deja el carbohidrato para el final: llenas antes y suavizas el pico de glucosa.</li>
+   <li><b>Densidad calórica baja:</b> mucho volumen (verdura, fruta, patata, sopas) con pocas calorías.</li>
+   <li><b>Pocas decisiones:</b> repite 2–3 desayunos y comidas fijas entre semana. La constancia gana a la variedad.</li>
+   <li><b>Horario:</b> cuándo comes importa poco; lo que importa es la regularidad. En el trabajo: desayuno a las 6:15, tentempié a las 10:00, comida a las 15:30 y cena a las 19:30.</li>
+   <li><b>Refeed de 1 día</b> cada 2–3 semanas a calorías de mantenimiento (con más carbohidrato) si notas el entreno muy flojo.</li>
+   <li><b>Bebidas:</b> agua, café solo, infusiones, bebidas zero. Las calorías líquidas no sacian.</li></ol></div>
+  <div class="card"><h3>Descanso y recuperación</h3><ol class="steps small">
+   <li><b>Misma hora de levantarte todos los días</b>, ±30 min también en vacaciones. Es lo que más estabiliza el sueño.</li>
+   <li><b>Luz fuerte por la mañana</b> (sol 10 min) y poca por la noche: adelantas el reloj interno y te duermes antes.</li>
+   <li><b>Cafeína: corte 8 h antes de dormir.</b> Tomada 6 h antes de acostarse, aún quitó cerca de 1 hora de sueño: ${R("Drake 2013","Drake caffeine effects on sleep taken 0 3 6 hours before bed 2013")}.</li>
+   <li><b>Dormitorio fresco y oscuro</b> (18–19 °C), móvil fuera de la cama.</li>
+   <li><b>Siesta corta</b> (15–20 min, antes de las 16:00) solo si duermes poco de noche.</li>
+   <li><b>Señales de fatiga:</b> pulsaciones en reposo más altas de lo normal, mal sueño o fuerza estancada 2 semanas. Díselo a VEGA y te mete descarga.</li></ol></div>
+  <div class="card"><h3>Entrenamiento: maximizar resultados</h3><ol class="steps small">
+   <li><b>Volumen:</b> 10–20 series efectivas por grupo muscular a la semana. Más series dan más hipertrofia, hasta cierto punto: ${R("Schoenfeld 2017","Schoenfeld dose-response weekly resistance training volume 2017")}.</li>
+   <li><b>Cerca del fallo:</b> con 1–3 reps en reserva en la mayoría de las series.</li>
+   <li><b>Sobrecarga progresiva:</b> apunta los kilos y gana una repetición o un poco de peso cada semana.</li>
+   <li><b>Intervalos 4×4:</b> suben el VO2máx más que el cardio continuo: ${R("Helgerud 2007","Helgerud aerobic high-intensity intervals improve VO2max 2007")}.</li>
+   <li><b>Zona 2</b> para la base aeróbica y la recuperación, sin fatiga extra.</li>
+   <li><b>Descarga cada 13 semanas</b> o antes si VEGA ve señales de fatiga.</li></ol></div>
+ </div>
+ <div class="card"><h3>Suplementación por niveles de evidencia</h3>
+  <div class="tier"><span class="verdict si">Nivel A</span><div class="small"><b>Creatina monohidrato 3–5 g al día</b>, todos los días, con el café o con la comida. Da más fuerza y más masa muscular, y es segura en personas sanas: ${R("ISSN, Kreider 2017","Kreider International Society of Sports Nutrition position stand creatine 2017")}.<br><b>Cafeína 3–6 mg/kg</b> (en tu caso 250–490 mg) mejora el rendimiento. Para ti basta 1 doble 30–45 min antes de entrenar, si es antes de la hora de corte: ${R("ISSN, Guest 2021","Guest International Society of Sports Nutrition position stand caffeine 2021")}.<br><b>Proteína whey</b> si no llegas a la proteína con comida.</div></div>
+  <div class="tier"><span class="verdict mm">Nivel B</span><div class="small"><b>Vitamina D</b> (1.000–2.000 UI) solo si tus análisis salen bajos, que es habitual en invierno. <b>Omega-3</b> (1–2 g de EPA+DHA) si comes pescado azul menos de 2 veces por semana. <b>Magnesio</b> si tu dieta es pobre en frutos secos y verdura; puede ayudarte con el sueño.</div></div>
+  <div class="tier"><span class="verdict no">No gastes</span><div class="small">Quemagrasas, termogénicos, BCAA/EAA (con proteína suficiente no aportan), detox, "testo boosters", CLA, L-carnitina oral para adelgazar.</div></div>
+  <p class="small muted" style="margin-top:6px">Antes de empezar con cualquier suplemento, si tomas medicación o tienes algún problema de salud, consúltalo con tu médico.</p></div>
+ <div class="card"><h3>Tu café de especialidad, a tu favor</h3><div class="grid2 small">
+  <div><ul class="clean"><li><b>Cafeína aproximada:</b> espresso 60–80 mg, doble 120–140 mg, V60 de 250 ml 120–180 mg (depende del café y de la ratio).</li><li><b>Límite:</b> 400 mg al día, que equivale a 3 dobles o 2–3 V60.</li><li><b>Corte:</b> a las 13:00 los días de trabajo y a las 15:00 los libres. Por la tarde, descafeinado de especialidad, que también los hay muy buenos.</li><li>No hace falta esperar 90 min después de levantarte: esa regla tiene poca evidencia. Tómalo cuando te siente bien.</li></ul></div>
+  <div><ul class="clean"><li><b>Café solo:</b> unas 2 kcal. Las calorías vienen de la leche: un flat white con leche entera son unas 70 kcal y un latte grande unas 150.</li><li><b>Proffee de verano:</b> espresso doble + 250 ml de bebida proteica fría da unos 25 g de proteína.</li><li><b>Pre-entreno:</b> un doble 30–45 min antes de entrenar, siempre antes de la hora de corte.</li><li>Ratio de partida para V60: 1:16 (15 g de café por 240 g de agua a 92–94 °C, en 2:30–3:00). Registra tus cafés en Hoy y VEGA vigilará tu sueño.</li></ul></div>
+ </div></div>`;
 }
 
 /* ---------- MITOS ---------- */
@@ -914,12 +1127,12 @@ function show(v){tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset
 tabs.forEach(b=>b.addEventListener("click",()=>show(b.dataset.v)));
 $("#goCoach").addEventListener("click",()=>show("coach"));
 
-function renderAll(){buildDayPicker();renderToday();renderPlan();loadNut();renderMacros();renderProgress();renderMemTasks();}
+function renderAll(){buildDayPicker();renderToday();renderSchedule();renderPlan();loadNut();renderMacros();renderProgress();renderMemTasks();}
 
 /* ---------- ARRANQUE ---------- */
-lsLoad();renderMyths();renderAll();
+lsLoad();renderMyths();renderBack();renderPotential();renderAll();setInterval(()=>{if(viewDate===today)renderSchedule();},60000);
 try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t))show(t);}catch(e){}
-if(profile.ai&&profile.ai.name)$("#aiName").textContent=profile.ai.name;
+if(profile.ai&&profile.ai.name){$("#aiName").textContent=profile.ai.name;$("#tabAi").textContent=profile.ai.name;}
 
 (async function(){
  initCoach();
@@ -927,7 +1140,7 @@ if(profile.ai&&profile.ai.name)$("#aiName").textContent=profile.ai.name;
  try{
   const db=await window.claude?.use?.("db");const user=await window.claude?.use?.("user");
   const uid=user?await user.id():null;
-  if(!db||!uid){clearTimeout(timer);setSave("Guardado en este navegador");return;}
+  if(!db||!uid){clearTimeout(timer);setSave("Guardado en este navegador");seedMemory();return;}
   col=db.collection("data/users/"+uid);
   let first=true;
   col.onSnapshot(snap=>{
@@ -942,7 +1155,8 @@ if(profile.ai&&profile.ai.name)$("#aiName").textContent=profile.ai.name;
     if(!remoteMem&&memory.items.length)persist("memory",memory);
     if(!remoteTasks&&tasks.items.length)persist("tasks",tasks);
    }
-   Object.assign(days,remote);if(remoteMem)memory=remoteMem;if(remoteTasks)tasks=remoteTasks;if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
+   Object.assign(days,remote);if(remoteMem)memory=remoteMem;if(remoteTasks)tasks=remoteTasks;
+   if(!profile.seeded&&!(rp&&rp.seeded))setTimeout(seedMemory,0);if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
    lsSave();
    const active=document.activeElement;if(!(active&&active.tagName==="INPUT"))renderAll();renderChat();renderMemTasks();
    setSave("Sincronizado");
