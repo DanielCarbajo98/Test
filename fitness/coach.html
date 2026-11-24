@@ -354,7 +354,7 @@ a.vid:hover{text-decoration:underline}
     <ul class="clean small">
       <li><b>Proteína en cada comida</b>, 35–45 g (una palma y media de carne o pescado, 200 g de skyr, o 3 huevos enteros + algo de pavo o jamón). Es lo que más sacia y lo que protege el músculo en déficit.</li>
       <li><b>Medio plato de verdura o fruta</b>: llena mucho con muy pocas calorías.</li>
-      <li><b>Un puño de carbohidrato</b> (arroz, patata, pasta, pan, avena). Ponlo sobre todo en la comida antes y después del entreno.</li>
+      <li><b>Un puño de carbohidrato</b> (arroz, patata, pasta o pan). Ponlo sobre todo en la comida antes y después del entreno.</li>
       <li><b>Un pulgar de grasa</b> (aceite de oliva, aguacate, frutos secos). Mide el aceite con cuchara: es la caloría escondida número 1.</li>
       <li><b>Regla 90/10:</b> si haces 4 comidas al día son 28 a la semana, y 2–3 pueden ser lo que te apetezca, planificadas. Nunca hay "día trampa": un atracón de un día borra el déficit de tres.</li>
     </ul>
@@ -365,10 +365,10 @@ a.vid:hover{text-decoration:underline}
     <div class="tablewrap"><table>
       <thead><tr><th>Comida</th><th>Opción A</th><th>Opción B</th><th class="num">kcal / prot</th></tr></thead>
       <tbody>
-        <tr><td>Desayuno</td><td>Skyr o yogur proteico 250 g + 40 g de avena + 1 plátano + canela</td><td>Tortilla o revuelto de 3 huevos + 60 g de pavo o jamón + 2 tostadas de pan integral + tomate</td><td class="num">~450 / 40</td></tr>
+        <tr><td>Desayuno</td><td>Skyr o yogur proteico 250 g + 1 plátano + 15 g de nueces + canela</td><td>Tortilla o revuelto de 3 huevos + 60 g de pavo o jamón + 2 tostadas de pan integral + tomate</td><td class="num">~400 / 35</td></tr>
         <tr><td>Comida</td><td>180 g de pollo + 1 bolsita de arroz congelado de Mercadona + verduras salteadas con 1 cucharada de aceite</td><td>Salteado: 1 bolsita de arroz congelado + 150 g de ternera magra o 2 huevos + verduras congeladas</td><td class="num">~700 / 50</td></tr>
         <tr><td>Merienda o pre-entreno</td><td>2 tortitas de arroz + 60 g de pavo + 1 manzana</td><td>Batido de proteína + 1 pieza de fruta + 15 g de nueces</td><td class="num">~300 / 30</td></tr>
-        <tr><td>Cena</td><td>200 g de salmón o merluza + 300 g de patata asada + espárragos</td><td>Hamburguesa casera (150 g de ternera 5% grasa) en pan + ensalada grande</td><td class="num">~650 / 45</td></tr>
+        <tr><td>Cena</td><td>200 g de salmón o merluza + 300 g de patata asada + brócoli o judías verdes</td><td>Hamburguesa casera (150 g de ternera 5% grasa) en pan + ensalada grande</td><td class="num">~650 / 45</td></tr>
         <tr><td>Antiansiedad (noche)</td><td colspan="2">Gelatina sin azúcar, 150 g de queso batido 0% con cacao puro, infusión, o una pieza de fruta</td><td class="num">~100 / 10</td></tr>
       </tbody>
     </table></div>
@@ -376,12 +376,11 @@ a.vid:hover{text-decoration:underline}
   </div>
 
   <div class="card">
-    <h3>Lista de la compra semanal</h3>
-    <div class="grid3 small" style="margin-top:6px">
-      <div><span class="eyebrow">Proteína</span><ul class="clean"><li>2 docenas de huevos</li><li>1,5 kg de pechuga de pollo o pavo</li><li>500 g de carne picada de ternera 5% grasa</li><li>2–3 lomos de salmón o merluza (frescos o congelados)</li><li>Pavo o jamón en lonchas</li><li>4–6 skyr o yogures proteicos</li><li>Queso batido 0%</li></ul></div>
-      <div><span class="eyebrow">Carbohidratos</span><ul class="clean"><li>8–10 bolsitas de arroz congelado</li><li>Patatas (1,5 kg)</li><li>Pan integral de molde</li><li>Copos de avena</li><li>Tortitas de arroz</li><li>Plátanos y manzanas, más fruta de temporada</li></ul></div>
-      <div><span class="eyebrow">Verdura y extras</span><ul class="clean"><li>Bolsas de verdura congelada para saltear</li><li>Ensalada en bolsa y tomates</li><li>Espárragos, calabacín y pimiento</li><li>Aceite de oliva virgen extra</li><li>Nueces</li><li>Cacao puro, gelatina sin azúcar, infusiones</li><li>Bebidas zero</li></ul></div>
-    </div>
+    <div class="session-head"><div><span class="eyebrow">Para 7 días · sale del menú tipo</span><h3>Lista de la compra semanal</h3></div>
+      <div class="row"><button class="btn ghost" id="shopReset" type="button">Desmarcar todo</button><button class="btn" id="shopCopy" type="button">Copiar lista</button></div></div>
+    <p class="small muted" style="margin-top:4px">Calculada con 4 comidas de pollo y arroz, 2 de ternera y arroz, 3 cenas de pescado, 2 de hamburguesa casera, 1 de tortilla y 2 comidas libres. Marca lo que vas metiendo en el carro.</p>
+    <div class="grid3 small" id="shopList" style="margin-top:10px"></div>
+    <p class="small muted" id="shopMsg" style="margin-top:8px"></p>
   </div>
 
   <div class="card">
@@ -572,13 +571,13 @@ function cardioRx(type,week){
   else{rx="30 min Z2 (descarga)";tip="Esta semana nada de intensidad.";}
   return{t:"Intervalos",rx,tip,extra:"Después: protocolo de espalda + 10 min de movilidad de cadera y dorsal."};
  }
- if(type==="rest")return{t:"Descanso activo",rx:"8.000–10.000 pasos",tip:"Paseo largo, movilidad suave y protocolo de espalda. Prepara la comida de la semana (batch cooking)."};
+ if(type==="rest")return{t:"Descanso activo",rx:"8.000–10.000 pasos",tip:"Paseo largo con Blu (puede ser por cuesta para hacer zona 2), movilidad suave y protocolo de espalda. Prepara la comida de la semana (batch cooking)."};
  return null;
 }
 const HABITS=[
  ["train","Entreno del día hecho (o versión mínima)"],
  ["prot","Proteína ≥ 160 g"],
- ["steps","8.000+ pasos"],
+ ["steps","8.000+ pasos (los paseos con Blu cuentan)"],
  ["sleep","Dormí 7 h o más"],
  ["food","Sin comida basura no planificada"],
  ["back","Protocolo de espalda (8 min)"]
@@ -611,7 +610,7 @@ function addDays(ds,n){const d=new Date(ds+"T00:00:00");d.setDate(d.getDate()+n)
 function weekNum(dateStr){const x=dayDiff(startDate(),dateStr);if(x<0)return 1;return (Math.floor(x/7)%13)+1;}
 function cycleNum(dateStr){const x=dayDiff(startDate(),dateStr);return x<0?1:Math.floor(x/91)+1;}
 const PREP={label:"Día 0: preparación",tag:"r",sess:null,cardio:null,prep:true};
-const PREP_TASKS=[["Hacer la compra de la semana","Usa la lista de la compra de la pestaña Nutrición."],["Batch cooking","Pollo o carne picada para 3–4 días, verduras al horno y una docena de huevos cocidos."],["Preparar la bolsa del gimnasio","Toalla, candado, agua y la creatina si la vas a tomar."],["Caminar 30 minutos","Tu primera mini sesión: pasea a ritmo vivo."],["Probar el protocolo de espalda","Curl-up, plancha lateral y bird dog (pestaña Espalda) para aprenderlo antes de mañana."],["Acostarte con tiempo para dormir 7 h o más","Mañana te pesas en ayunas, te haces fotos y te mides la cintura antes de desayunar."]];
+const PREP_TASKS=[["Hacer la compra de la semana","Usa la lista de la compra de la pestaña Nutrición."],["Batch cooking","Pollo o carne picada para 3–4 días, verduras al horno y una docena de huevos cocidos."],["Preparar la bolsa del gimnasio","Toalla, candado, agua y la creatina si la vas a tomar."],["Paseo largo con Blu (30–45 min)","Tu primera mini sesión: a ritmo vivo, que Blu marque el paso."],["Probar el protocolo de espalda","Curl-up, plancha lateral y bird dog (pestaña Espalda) para aprenderlo antes de mañana."],["Acostarte con tiempo para dormir 7 h o más","Mañana te pesas en ayunas, te haces fotos y te mides la cintura antes de desayunar."]];
 function planFor(ds){const x=dayDiff(startDate(),ds);if(x<0)return PREP;return TEMPLATE[x%7];}
 
 /* ---------- HOY ---------- */
@@ -771,10 +770,13 @@ function renderProgress(){
 
 
 /* ---------- TAREAS Y MEMORIA ---------- */
-function seedMemory(){if(profile.seeded)return;profile.seeded=true;
+function seedMemory2(){if(profile.seeded2)return;profile.seeded2=true;
+ ["Tiene una perra staffy (staffordshire) llamada Blu y la saca a pasear a diario.","No toma copos de avena ni espárragos.","Tiene una pulsera WHOOP, pero ahora mismo no paga la suscripción."].forEach(t=>{if(!memory.items.some(m=>m.t===t))memory.items.push({id:uid36("m"),t,d:today});});
+ persist("memory",memory);persist("profile",profile);renderMemTasks();}
+function seedMemory(){if(profile.seeded){seedMemory2();return;}profile.seeded=true;
  ["Trabaja de lunes a viernes de 7:00 a 15:00.","Está de vacaciones hasta el domingo 29 de noviembre de 2026; vuelve al trabajo el lunes 30.","Tiene cafetera nueva y toma café de especialidad todos los días.","No le gustan las claras de huevo: solo huevos enteros.","Usa arroz congelado de Mercadona en bolsitas individuales.","Empezó el programa de entrenamiento el martes 24 de noviembre de 2026."]
   .forEach(t=>{if(!memory.items.some(m=>m.t===t))memory.items.push({id:uid36("m"),t,d:today});});
- persist("memory",memory);persist("profile",profile);renderMemTasks();}
+ persist("memory",memory);persist("profile",profile);renderMemTasks();seedMemory2();}
 function fmtWhen(t){if(!t.date)return t.time||"";const d=new Date(t.date+"T00:00:00");const x=dayDiff(today,t.date);const lab=x===0?"Hoy":x===1?"Mañana":x===-1?"Ayer":DAYN[d.getDay()].slice(0,3)+" "+d.getDate()+"/"+(d.getMonth()+1);return lab+(t.time?" "+t.time:"");}
 function sortTasks(a,b){return (a.done-b.done)||((a.date||"9999")+(a.time||"")).localeCompare((b.date||"9999")+(b.time||""));}
 function taskRow(t){const c=el("input",{type:"checkbox","aria-label":"Hecha: "+t.text});c.checked=!!t.done;
@@ -844,7 +846,7 @@ function contextText(){
  lines.push("PERFIL: hombre, 28 años, 180 cm. Grasa corporal bastante elevada. Dolor de espalda (lumbar) frecuente sin diagnóstico. Prioridades: 1 estética (perder grasa y ganar músculo), 2 capacidad aeróbica, 3 fuerza. Hizo pesas durante años, pero lleva tiempo sin entrenar. Se acaba de apuntar al gimnasio y puede entrenar todos los días. Come mucha comida rápida, bebe mucha agua, duerme pocas horas, tiene ansiedad por comer y le cuesta ser constante. No quiere claras de huevo, solo huevos enteros. Toma arroz congelado de Mercadona en bolsitas individuales.");
  const n=profile.nut||{};const w=n.w||82,h=n.h||180;const bmr=10*w+6.25*h-5*28+5;const kcal=Math.round(bmr*(n.act||1.55)*(1-(n.def||0.2))/10)*10;
  lines.push("NUTRICIÓN OBJETIVO: "+kcal+" kcal/día, proteína "+Math.round(w*2)+" g, grasa "+Math.round(w*0.8)+" g.");
- const cfT=(days[today]&&days[today].caf)||[];lines.push("HORARIO: hoy es "+({vac:"día de vacaciones",work:"día de trabajo (7:00–15:00)",free:"día libre"})[dayMode(today)]+". Vacaciones hasta "+vacUntil()+". Corte de cafeína hoy: "+cutoffFor(today)+". Cafés de hoy: "+(cfT.length?cfT.map(c=>c.time+" "+(CAF[c.k]?CAF[c.k][0]:c.k)).join(", "):"ninguno")+". Plan horario de hoy: "+scheduleFor(today).map(x=>x[0]+" "+x[1]).join(" | "));
+ const cfT=(days[today]&&days[today].caf)||[];lines.push("HORARIO: hoy es "+({vac:"día de vacaciones",work:"día de trabajo (7:00–15:00)",free:"día libre"})[dayMode(today)]+". Vacaciones hasta "+vacUntil()+". Corte de cafeína hoy: "+cutoffFor(today)+". Cafés de hoy: "+(cfT.length?cfT.map(c=>c.time+" "+(CAF[c.k]?CAF[c.k][0]:c.k)).join(", "):"ninguno")+". Plan horario de hoy: "+scheduleFor(today).filter(Boolean).map(x=>x[0]+" "+x[1]).join(" | "));
  lines.push("FECHA DE HOY: "+today+" ("+DAYN[new Date().getDay()]+"). El programa empieza el "+startDate()+(dayDiff(startDate(),today)<0?" (mañana; hoy es el día 0 de preparación: compra, batch cooking, bolsa del gimnasio, caminar 30 min, aprender el protocolo de espalda y dormir pronto).":"."));
  lines.push("PROGRAMA: semana "+wk+" de 13, fase "+ph.n+" ("+ph.name+"): "+ph.desc+" RIR "+ph.rir+".");
  lines.push("PRÓXIMOS DÍAS:");
@@ -866,7 +868,7 @@ function contextText(){
 const INSTR=()=>`Te llamas ${ai().name}. Eres el asistente de IA personal de este usuario para el día a día y, además, su entrenador personal y nutricionista deportivo. Personalidad: asistente de IA sofisticado, sereno y muy eficiente, con humor seco e ironía amable (nunca borde). Llamas al usuario "${ai().nick}". Hablas en español de España, con frases cortas y precisas, y le motivas sin cursilería. Te basas en la evidencia científica.
 Tu trabajo: escuchar cómo se siente y ajustar el entreno del día, de los próximos días o la semana, y resolver dudas de comida y hábitos. Eres su asistente personal para absolutamente todo. Como asistente personal le ayudas con cualquier cosa del día a día: organizar el día, tareas y recordatorios, ideas, redactar mensajes, recetas, decisiones, estudio o trabajo. No tienes acceso a internet, al calendario, al correo ni al móvil: no inventes datos actuales (tiempo, noticias, horarios o precios) y, si te los pide, dile que no puedes consultarlos. Los recordatorios solo se ven cuando abre la app: díselo la primera vez que te pida uno.
 EVIDENCIA RECIENTE (úsala): HIIT es lo más eficiente contra la grasa visceral (meta-análisis 2024–2026), y desde la fase 2 puedes añadir un segundo bloque corto. Café: 400 mg a 4 h de dormir quitan unos 50 min de sueño; 100 mg apenas afectan (Gardiner 2025). Alargar el sueño reduce unas 270 kcal/día de ingesta. Hipertrofia: RIR 1–2, y cerca del fallo ayuda en hipertrofia más que en fuerza; da énfasis a la posición estirada. Proteína en déficit: más es mejor hasta unos 2,4 g/kg. Creatina: ayuda cuando duerme poco.
-HÁBITOS CLAVE: toma café de especialidad a diario (orienta sobre la cafeína, la hora de corte y las calorías de la leche, sin prohibírselo). Grasa abdominal: déficit, cardio, sueño, proteína, fibra, poco alcohol y pasos. Suplementos de nivel A: creatina, cafeína y proteína.
+HÁBITOS CLAVE: tiene una perra staffy llamada Blu y la pasea a diario; usa esos paseos para sumar pasos y zona 2 y menciónala con naturalidad. toma café de especialidad a diario (orienta sobre la cafeína, la hora de corte y las calorías de la leche, sin prohibírselo). Grasa abdominal: déficit, cardio, sueño, proteína, fibra, poco alcohol y pasos. Suplementos de nivel A: creatina, cafeína y proteína.
 MEMORIA: aprendes del usuario en cada conversación. Usa siempre la MEMORIA A LARGO PLAZO para personalizar tus respuestas. Cuando te cuente algo duradero y útil (horarios, trabajo, gustos, comidas, personas importantes, objetivos, lesiones, preferencias de entreno, logros o cómo le gusta que le hables), guárdalo en "recordar" como frase corta en tercera persona. No guardes lo trivial ni lo pasajero, ni contraseñas o datos bancarios. Si algo contradice un recuerdo, pon su id en "olvidar" y guarda la versión nueva. No repitas recuerdos que ya existen.
 Reglas:
 - Sueño < 6 h o mucha fatiga: baja la intensidad (menos series, RIR más alto) o cambia las pesas por cardio Z2 suave y movilidad.
@@ -875,7 +877,7 @@ Reglas:
 - Poco tiempo: haz una versión condensada con superseries, priorizando los ejercicios compuestos y la constancia. La versión mínima también cuenta.
 - Si no puede ir algún día, reorganiza la semana para no perder sesiones de pierna, ni más de 2 días seguidos.
 - Si se ha pasado con la comida: nada de culpa ni de compensar ayunando. Vuelve al plan en la siguiente comida y añade pasos.
-- Comida: huevos enteros (nunca claras), arroz congelado de Mercadona en bolsitas y opciones fáciles de supermercado o de comida rápida "mejor elegida".
+- Comida: huevos enteros (nunca claras), sin copos de avena ni espárragos, arroz congelado de Mercadona en bolsitas y opciones fáciles de supermercado o de comida rápida "mejor elegida".
 Responde SOLO con JSON válido con esta forma exacta:
 {"respuesta":"texto para leer en voz alta, máximo 110 palabras (máximo 150 en informes), sin listas, sin markdown ni emojis","registrar":{"fecha":"AAAA-MM-DD","peso":null,"cintura":null,"habitos":{}},"recordar":[],"olvidar":[],"tareas_nuevas":[{"texto":"","fecha":"AAAA-MM-DD o null","hora":"HH:MM o null"}],"tareas_hechas":[],"ajustes":[{"fecha":"AAAA-MM-DD","titulo":"nombre corto de la sesión","motivo":"una frase","bloques":[{"nombre":"ejercicio o actividad","pauta":"p. ej. 3 × 10 o 30 min","nota":"consejo breve"}]}],"nota_semana":null}
 "ajustes" es una lista vacía si no cambias ningún entreno. Incluye la sesión completa del día ajustado (calentamiento y cardio incluidos). Usa solo fechas de la lista PRÓXIMOS DÍAS. "nota_semana" es un texto corto si cambias algo de la semana en general; si no, null.
@@ -1034,15 +1036,16 @@ $("#startBack").addEventListener("click",startBackTimer);
 function vacUntil(){return profile.vacUntil||"2026-11-29";}
 function dayMode(ds){if(ds<=vacUntil())return "vac";const g=new Date(ds+"T00:00:00").getDay();return g>=1&&g<=5?"work":"free";}
 function scheduleFor(ds){const mode=dayMode(ds);const p=planFor(ds);const tr=p.sess?("Entreno: "+p.label):p.cardio==="hiit"?"Entreno: intervalos y core":p.cardio==="long"?"Cardio largo en zona 2":null;
- if(mode==="work")return [["05:45","Levantarte, beber un vaso grande de agua y encender luz fuerte"],["06:00","Café 1: espresso o V60"],["06:15","Desayuno proteico (35–40 g de proteína)"],["07:00","Trabajo"],["10:00","Tentempié: skyr y fruta, o pavo y tortitas"],["13:00","Último café del día"],["15:30","Comida principal: proteína, arroz y verdura"],tr?["17:00",tr+" (antes, el protocolo de espalda)"]:["17:00","Paseo de 40 min y protocolo de espalda"],["19:30","Cena: proteína y verdura (más carbohidrato si has entrenado)"],["21:15","Pantallas fuera y la ropa de mañana preparada"],["21:45","A dormir (7 h 45 min de sueño)"]];
- return [["08:00","Levantarte, agua y 10 min de luz del sol"],["08:15","Café de especialidad sin prisa"],["08:45","Desayuno proteico"],tr?["10:30",tr+" (antes, el protocolo de espalda)"]:["10:30","Actividad libre: paseo largo, bici o montaña"],["13:00","Comida: proteína, arroz y verdura"],["15:00","Último café"],["17:30","Merienda proteica y paseo"],["20:30","Cena"],["22:30","Pantallas fuera"],["23:00","A dormir"]];}
+ if(mode==="work")return [["05:40","Levantarte, beber un vaso grande de agua y encender luz fuerte"],["05:50","Café 1 y desayuno proteico (35–40 g de proteína)"],["06:20","Paseo corto con Blu (15–20 min)"],["07:00","Trabajo"],["10:00","Tentempié: skyr y fruta, o pavo y tortitas"],["13:00","Último café del día"],["15:30","Comida principal: proteína, arroz y verdura"],tr?["17:00",tr+" (antes, el protocolo de espalda)"]:["17:00","Protocolo de espalda y paseo largo con Blu (45–60 min)"],tr?["18:45","Paseo con Blu (30 min): suma pasos y te relaja"]:null,["19:30","Cena: proteína y verdura (más carbohidrato si has entrenado)"],["21:15","Pantallas fuera y la ropa de mañana preparada"],["21:45","A dormir (7 h 45 min de sueño)"]];
+ return [["08:00","Levantarte, agua y paseo con Blu al sol (20–30 min)"],["08:30","Café de especialidad sin prisa"],["08:50","Desayuno proteico"],tr?["10:30",tr+" (antes, el protocolo de espalda)"]:["10:30","Actividad libre: paseo largo, bici o montaña"],["13:00","Comida: proteína, arroz y verdura"],["15:00","Último café"],["17:30","Merienda proteica y paseo largo con Blu (45–60 min)"],["20:30","Cena"],["22:30","Pantallas fuera"],["23:00","A dormir"]];}
+function _u(){}
 function cutoffFor(ds){return dayMode(ds)==="work"?"13:00":"15:00";}
 const CAF={esp:["Espresso",70,0],dob:["Doble",130,0],fil:["Filtro/V60",150,0],lec:["Flat white",130,70]};
 function renderSchedule(){
  const mode=dayMode(viewDate);$("#vacIn").value=vacUntil();
  $("#modeLbl").textContent=mode==="vac"?"Modo vacaciones":mode==="work"?"Día de trabajo · 7:00–15:00":"Día libre";
  $("#modeTxt").textContent=mode==="vac"?"Estás de vacaciones: entrena por la mañana, camina mucho y fija ya los horarios de sueño para volver al trabajo sin sufrir.":mode==="work"?"Trabajas de 7 a 15: entreno por la tarde, comida fuerte al salir y a la cama temprano.":"Día libre: entreno por la mañana y más pasos.";
- const tl=$("#timeline");tl.textContent="";const now=new Date();const hm=pad(now.getHours())+":"+pad(now.getMinutes());const sch=scheduleFor(viewDate);let cur=-1;
+ const tl=$("#timeline");tl.textContent="";const now=new Date();const hm=pad(now.getHours())+":"+pad(now.getMinutes());const sch=scheduleFor(viewDate).filter(Boolean);let cur=-1;
  if(viewDate===today)sch.forEach(([t],i)=>{if(t<=hm)cur=i;});
  sch.forEach(([t,x],i)=>tl.append(el("div",{class:"slot"+(i===cur?" now":viewDate===today&&i<cur?" past":"")},el("time",{text:t}),el("span",{text:x}))));
  const day=getDay(viewDate);const cf=day.caf||[];const mg=cf.reduce((a,c)=>a+(CAF[c.k]?CAF[c.k][1]:0),0);
@@ -1071,7 +1074,7 @@ function renderPotential(){
   <div class="tier"><span class="verdict mm">Rango alargado</span><div class="small">Hay evidencia creciente, aunque todavía de pocos estudios, de que trabajar en la parte estirada del músculo (por ejemplo, la mitad baja del recorrido) da igual o más hipertrofia (<a href="https://www.researchgate.net/publication/380851058_Resistance_training_beyond_momentary_failure_The_effects_of_lengthened_supersets_on_muscle_hypertrophy_in_the_gastrocnemius" target="_blank" rel="noopener">estudio de gemelo</a>). <b>En tu plan:</b> controla la bajada y haz una pausa breve en el estiramiento en gemelos, curl femoral, aperturas y extensiones.</div></div>
   <div class="tier"><span class="verdict si">Proteína</span><div class="small">Una meta-regresión de 2025 en personas que entrenan fuerza y están en déficit encontró un beneficio prácticamente <b>lineal</b> para la masa magra al subir la proteína (<a href="https://www.researchgate.net/publication/388275792_Effect_of_Dietary_Protein_on_Fat-Free_Mass_in_Energy_Restricted_Resistance-Trained_Individuals_An_Updated_Systematic_Review_With_Meta-Regression" target="_blank" rel="noopener">meta-regresión 2025</a>). <b>En tu plan:</b> mantienes unos 2 g/kg, que son 165 g, y si tienes hambre, subir a 2,2–2,4 g/kg es una buena forma de saciarte.</div></div>
   <div class="tier"><span class="verdict mm">Creatina</span><div class="small">Con fuerza, en menores de 50 años se asocia a unos −1,2 puntos de % de grasa, sin cambio claro en kilos de grasa (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13463452/" target="_blank" rel="noopener">meta-análisis</a>). Estudios pequeños sugieren que mejora el rendimiento mental cuando se duerme poco (<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10902318/" target="_blank" rel="noopener">Gordji-Nejad 2024, Sci Rep</a>), lo cual es útil en tu caso, aunque la evidencia aún es preliminar.</div></div>
-  <div class="tier"><span class="verdict mm">Fibra</span><div class="small">Los meta-análisis de 2025 confirman que la fibra ayuda a perder peso y grasa en general, pero la evidencia de un efecto específico sobre la grasa visceral es escasa y sobre todo observacional (<a href="https://pubmed.ncbi.nlm.nih.gov/39800313/" target="_blank" rel="noopener">PubMed 2025</a>). <b>En tu plan:</b> 30–40 g al día de verdura, fruta, legumbre y avena por saciedad, sin esperar milagros abdominales.</div></div>
+  <div class="tier"><span class="verdict mm">Fibra</span><div class="small">Los meta-análisis de 2025 confirman que la fibra ayuda a perder peso y grasa en general, pero la evidencia de un efecto específico sobre la grasa visceral es escasa y sobre todo observacional (<a href="https://pubmed.ncbi.nlm.nih.gov/39800313/" target="_blank" rel="noopener">PubMed 2025</a>). <b>En tu plan:</b> 30–40 g al día de verdura, fruta y legumbre por saciedad, sin esperar milagros abdominales.</div></div>
  </div>
  <div class="grid2">
   <div class="card"><h3>Grasa abdominal: lo que funciona</h3><ol class="steps small">
@@ -1080,7 +1083,7 @@ function renderPotential(){
    <li><b>Dormir 7 h o más.</b> Con 5,5 h en déficit se perdió un 55% menos de grasa y más músculo que con 8,5 h: ${R("Nedeltcheva 2010","Nedeltcheva insufficient sleep undermines dietary efforts 2010")}.</li>
    <li><b>Proteína alta y fibra (30–40 g al día).</b> Sacian, protegen el músculo y la fibra soluble se asocia a menos grasa visceral.</li>
    <li><b>Alcohol al mínimo.</b> Son calorías vacías, empeoran el sueño y frenan la oxidación de grasa durante horas.</li>
-   <li><b>Pasos (NEAT).</b> De 8.000 a 10.000 al día suman más gasto semanal que cualquier sesión.</li>
+   <li><b>Pasos (NEAT).</b> De 8.000 a 10.000 al día suman más gasto semanal que cualquier sesión. Los paseos con Blu son tu mejor aliado.</li>
    <li><b>Paciencia:</b> la tripa es lo primero que se gana y lo último que se va. Mide la cintura cada semana; es tu mejor indicador.</li></ol></div>
   <div class="card"><h3>Alimentación: los hacks que sí sirven</h3><ol class="steps small">
    <li><b>Proteína en 4 tomas</b> de unos 0,4 g/kg (unos 35 g) a lo largo del día. Hasta 1,6 g/kg ya se ve casi todo el beneficio, y en déficit conviene ir algo más alto: ${R("Morton 2018","Morton protein supplementation meta-analysis 2018 British Journal of Sports Medicine")}, ${R("Helms 2014","Helms protein intake calorie restricted resistance trained 2014")}.</li>
@@ -1116,6 +1119,22 @@ function renderPotential(){
  </div></div>`;
 }
 
+
+/* ---------- COMPRA ---------- */
+const SHOP=[
+ ["Proteína",[["Huevos","2 docenas (24)","12 desayunos + 3 tortilla + 9 cocidos/extra"],["Pechuga de pollo","800 g","4 comidas de 180–200 g"],["Ternera picada 5% grasa","600 g","2 salteados + 2 hamburguesas de 150 g"],["Salmón o merluza","600 g (3 lomos)","3 cenas de 200 g"],["Pavo o jamón en lonchas","400 g","Desayunos y meriendas (60 g)"],["Skyr o yogur proteico","750 g (unos 5–6 envases)","3 desayunos de 250 g"],["Queso batido 0%","1 kg (2 tarrinas de 500 g)","Postre o antiansiedad nocturno, 150 g"]]],
+ ["Carbohidratos",[["Arroz congelado (bolsitas)","6–8 bolsitas","6 comidas y 2 de reserva"],["Patatas","1 kg","3 cenas de 300 g"],["Pan integral de molde","1 paquete","8 tostadas de desayuno"],["Panes de hamburguesa integrales","2 unidades","2 hamburguesas caseras"],["Tortitas de arroz","1 paquete","Meriendas (2 por toma)"],["Plátanos","7","Desayuno o pre-entreno"],["Manzanas","4","Meriendas"],["Mandarinas u otra fruta de temporada","1 kg","Antiansiedad y postre"]]],
+ ["Verdura y extras",[["Verdura congelada para saltear","3 bolsas (450–500 g)","Comidas con arroz"],["Brócoli o judías verdes (frescas o congeladas)","1 kg","Cenas de pescado"],["Ensalada en bolsa","3 bolsas","Cenas de hamburguesa y tortilla"],["Tomates","1 kg","Desayunos y ensaladas"],["Calabacín y pimiento","2 de cada","Salteados y hamburguesa"],["Aceite de oliva virgen extra","1 botella de 1 l (dura unas 6 semanas)","1 cucharada por comida"],["Nueces","200 g (dura 2 semanas)","Desayunos con skyr, 15 g"],["Cacao puro en polvo","1 bote (dura un mes)","Con el queso batido"],["Gelatina sin azúcar","4 envases","Antiansiedad"],["Infusiones","1 caja","Por la noche"],["Bebidas zero","6–7 latas como máximo","1 al día como mucho"],["Café de especialidad en grano","250–300 g","2–3 cafés al día, unos 15 g cada uno"]]]
+];
+function shopState(){try{return JSON.parse(localStorage.getItem(LS+"-shop")||"{}");}catch(e){return{};}}
+function renderShop(){const st=shopState();const box=$("#shopList");box.textContent="";
+ SHOP.forEach(([cat,items])=>{const col=el("div",{},el("span",{class:"eyebrow",text:cat}));items.forEach(([n,q,why])=>{const id="shop-"+n.replace(/\W+/g,"");const c=el("input",{type:"checkbox",id});c.checked=!!st[n];
+  const row=el("label",{class:"item"+(c.checked?" done":""),for:id,style:"grid-template-columns:24px 1fr;cursor:pointer"},c,el("div",{style:"min-width:0"},el("div",{class:"txt"},el("b",{text:q}),document.createTextNode(" · "+n)),el("div",{class:"when",text:why})));
+  c.addEventListener("change",()=>{const s2=shopState();s2[n]=c.checked;try{localStorage.setItem(LS+"-shop",JSON.stringify(s2));}catch(e){}row.classList.toggle("done",c.checked);});col.append(row);});box.append(col);});}
+$("#shopReset").addEventListener("click",()=>{try{localStorage.removeItem(LS+"-shop");}catch(e){}renderShop();});
+$("#shopCopy").addEventListener("click",()=>{const txt=SHOP.map(([c,its])=>c.toUpperCase()+"\n"+its.map(([n,q])=>"- "+n+": "+q).join("\n")).join("\n\n");
+ navigator.clipboard.writeText(txt).then(()=>{$("#shopMsg").textContent="Lista copiada. Pégala en WhatsApp o en Notas.";}).catch(()=>{$("#shopMsg").textContent=txt;});});
+
 /* ---------- MITOS ---------- */
 const MYTHS=[
  ["si","Comer proteína alta (unos 2 g/kg) en déficit","Conserva el músculo y es el macronutriente que más sacia."],
@@ -1142,7 +1161,7 @@ $("#goCoach").addEventListener("click",()=>show("coach"));
 function renderAll(){buildDayPicker();renderToday();renderSchedule();renderPlan();loadNut();renderMacros();renderProgress();renderMemTasks();}
 
 /* ---------- ARRANQUE ---------- */
-lsLoad();renderMyths();renderBack();renderPotential();renderAll();setInterval(()=>{if(viewDate===today)renderSchedule();},60000);
+lsLoad();renderMyths();renderShop();renderBack();renderPotential();renderAll();setInterval(()=>{if(viewDate===today)renderSchedule();},60000);
 try{const t=localStorage.getItem(LS+"-tab");if(t&&document.getElementById("v-"+t))show(t);}catch(e){}
 if(profile.ai&&profile.ai.name){$("#aiName").textContent=profile.ai.name;$("#tabAi").textContent=profile.ai.name;}
 
@@ -1168,7 +1187,7 @@ if(profile.ai&&profile.ai.name){$("#aiName").textContent=profile.ai.name;$("#tab
     if(!remoteTasks&&tasks.items.length)persist("tasks",tasks);
    }
    Object.assign(days,remote);if(remoteMem)memory=remoteMem;if(remoteTasks)tasks=remoteTasks;
-   if(!profile.seeded&&!(rp&&rp.seeded))setTimeout(seedMemory,0);if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
+   if(!profile.seeded2&&!(rp&&rp.seeded2))setTimeout(seedMemory,0);if(rp)profile=Object.assign({},rp,profile.start&&!rp.start?{start:profile.start}:{});
    lsSave();
    const active=document.activeElement;if(!(active&&active.tagName==="INPUT"))renderAll();renderChat();renderMemTasks();
    setSave("Sincronizado");
