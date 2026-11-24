@@ -191,6 +191,10 @@ details.rec summary b{font:700 1rem var(--display)}
 details.rec summary span{font:600 .76rem var(--mono);color:var(--accent)}
 details.rec .rb{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:10px;font-size:.88rem}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 20px);z-index:70;background:var(--surface2);border:1px solid var(--ok);color:var(--ink);padding:12px 18px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);font-weight:600;max-width:calc(100vw - 32px)}
+.hud-compose{display:flex;gap:8px;width:min(520px,100%)}
+.hud-compose input{flex:1;min-width:0;font:500 16px var(--body);background:rgba(69,196,255,.06);color:var(--hud-ink);border:1px solid var(--hud-glow);border-radius:999px;padding:12px 16px;box-shadow:0 0 18px rgba(69,196,255,.18)}
+.hud-compose input::placeholder{color:#7f9bc2}
+.hud-send{flex:none;width:46px;height:46px;border-radius:50%;border:0;background:var(--hud-glow);color:var(--on-accent);display:grid;place-items:center;cursor:pointer}
 .savestate{font-size:.75rem;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.habit,.ex{transition:background .15s,border-color .15s}}
 </style>
@@ -286,6 +290,11 @@ details.rec .rb{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,
       <button class="orb" id="orb" type="button" data-state="idle" aria-label="Hablar con VEGA"><canvas id="vegaCv" aria-hidden="true"></canvas></button>
       <div class="state" id="hudState">En línea</div>
       <div class="sub" id="hudSub" aria-live="polite">Toca el núcleo para hablar</div>
+      <form class="hud-compose" id="hudCompose" hidden>
+        <input id="hudIn" type="text" enterkeyhint="send" autocomplete="off" placeholder="Pulsa el micro del teclado y habla" aria-label="Mensaje para VEGA">
+        <button type="submit" class="hud-send" aria-label="Enviar"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3 10l12 2-12 2z"/></svg></button>
+      </form>
+      <button class="hud-btn" id="listenBtn" type="button" hidden>Escuchar respuesta</button>
       <div class="hud-actions">
         <button class="hud-btn" id="briefBtn" type="button">Informe del día</button>
         <button class="hud-btn" id="weekBtn" type="button">Resumen semanal</button>
@@ -861,10 +870,11 @@ let sampleFn=null,dict=null,tts=null,busy=false;
 /* voz de respaldo (móvil): síntesis del navegador */
 let voiceUnlocked=false;
 function esVoice(){try{const vs=speechSynthesis.getVoices();return vs.find(v=>/^es[-_]ES/i.test(v.lang))||vs.find(v=>/^es/i.test(v.lang))||null;}catch(e){return null;}}
-function unlockVoice(){if(tts||voiceUnlocked||!window.speechSynthesis)return;try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u);voiceUnlocked=true;}catch(e){}}
+function unlockVoice(){if(tts||voiceUnlocked||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance("·");u.volume=0.01;u.rate=2;speechSynthesis.speak(u);speechSynthesis.resume&&speechSynthesis.resume();voiceUnlocked=true;}catch(e){}}
+let lastReply="";
 function stopVoice(){if(tts){try{tts.stop();}catch(e){}}else if(window.speechSynthesis){try{speechSynthesis.cancel();}catch(e){}}}
-function speakFallback(text){if(!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="es-ES";const v=esVoice();if(v)u.voice=v;u.rate=1.03;
- u.onstart=()=>hud("speaking");u.onend=u.onerror=()=>{if(!busy)hud("idle");};u.onboundary=()=>{VIS.boost=.25+Math.random()*.35;};speechSynthesis.speak(u);}catch(e){}}
+function speakFallback(text){if(!window.speechSynthesis){$("#listenBtn").hidden=true;return;}let started=false;setTimeout(()=>{if(!started){$("#listenBtn").hidden=false;}},1800);try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="es-ES";const v=esVoice();if(v)u.voice=v;u.rate=1.03;
+ u.onstart=()=>{started=true;$("#listenBtn").hidden=true;hud("speaking");};u.onend=u.onerror=()=>{if(!busy)hud("idle");};u.onboundary=()=>{VIS.boost=.25+Math.random()*.35;};speechSynthesis.speak(u);}catch(e){}}
 function ai(){return Object.assign({name:"VEGA",nick:"jefe",voice:"glassy"},profile.ai||{});}
 const HUDTXT={idle:"En línea",listening:"Te escucho",thinking:"Procesando",speaking:"Hablando"};
 function hud(st,txt){const o=$("#orb");o.dataset.state=st;$("#hudState").textContent=txt||HUDTXT[st]||"";VIS.state=st;if(st==="listening")subLive("");}
@@ -993,7 +1003,7 @@ const input=INSTR()+"\n\nHORA ACTUAL: "+new Date().toTimeString().slice(0,5)+"\n
   if(c.m.length>60)c.m=c.m.slice(-60);
   persist("c-"+today,c);renderChat();renderToday();renderPlan();renderMemTasks();renderSugg();if(!$("#v-progreso").hidden)renderProgress();
   $("#coachStatus").textContent="";hud("idle");
-  subType(reply);
+  subType(reply);lastReply=reply;
   if($("#ttsOn").checked){if(tts)tts.speak(reply,{language:"es",voice:ai().voice}).catch(()=>{});else speakFallback(reply);}
  }catch(e){
   c.m.pop();renderChat();if(!label)$("#chatIn").value=text;hud("idle","Error de enlace");
@@ -1005,6 +1015,7 @@ async function initCoach(){
  const chips=$("#chips");CHIPS.forEach(t=>{const b=el("button",{type:"button",text:t});b.addEventListener("click",()=>sendCoach(t));chips.append(b);});
  $("#sendBtn").addEventListener("click",()=>{unlockVoice();sendCoach($("#chatIn").value);});
  $("#briefBtn").addEventListener("click",()=>{stopVoice();unlockVoice();sendCoach("[INFORME]","Informe del día");});
+ $("#listenBtn").addEventListener("click",()=>{if(!lastReply||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(lastReply);u.lang="es-ES";const v=esVoice();if(v)u.voice=v;u.rate=1.03;u.onstart=()=>{$("#listenBtn").hidden=true;hud("speaking");};u.onend=u.onerror=()=>hud("idle");u.onboundary=()=>{VIS.boost=.25+Math.random()*.35;};speechSynthesis.speak(u);}catch(e){}});
  $("#weekBtn").addEventListener("click",()=>{stopVoice();unlockVoice();sendCoach("[SEMANAL]","Resumen semanal");});
  $("#nightBtn").addEventListener("click",()=>{stopVoice();unlockVoice();sendCoach("[CIERRE]","Cierre del día");});
  $("#setBtn").addEventListener("click",()=>{const h=$("#hudSet");h.hidden=!h.hidden;$("#setBtn").setAttribute("aria-expanded",String(!h.hidden));});
@@ -1016,7 +1027,7 @@ async function initCoach(){
  try{sampleFn=await window.claude?.use?.("sample");}catch(e){}
  try{dict=await window.claude?.use?.("dictation");}catch(e){}
  try{tts=await window.claude?.use?.("tts");}catch(e){}
- $("#coachStatus").textContent=sampleFn?(dict?"":"Para hablarle aquí, toca el núcleo y pulsa el micrófono de tu teclado."):"El asistente necesita abrir esta página en claude.ai con tu sesión iniciada.";
+ $("#coachStatus").textContent=sampleFn?(dict?"":"En este dispositivo: toca el núcleo y pulsa el micro del teclado."):"El asistente necesita abrir esta página en claude.ai con tu sesión iniciada.";
  if(!sampleFn)hud("idle","Sin conexión");
 if(tts&&tts.onPosition)tts.onPosition(()=>{VIS.boost=.25+Math.random()*.35;});
  $("#fullBtn").addEventListener("click",()=>{const h=document.querySelector(".hud");const on=h.classList.toggle("full");$("#fullBtn").textContent=on?"Salir":"Modo inmersivo";document.body.style.overflow=on?"hidden":"";});
@@ -1026,9 +1037,13 @@ if(tts&&tts.onPosition)tts.onPosition(()=>{VIS.boost=.25+Math.random()*.35;});
  try{const v=localStorage.getItem(LS+"-tts");if(v!==null)$("#ttsOn").checked=v==="1";}catch(e){}
  $("#ttsOn").addEventListener("change",e=>{try{localStorage.setItem(LS+"-tts",e.target.checked?"1":"0");}catch(_){};if(!e.target.checked)stopVoice();});
  const mic=$("#orb");
- if(!dict){mic.addEventListener("click",()=>{stopVoice();unlockVoice();const ci=$("#chatIn");ci.focus();ci.scrollIntoView({block:"center",behavior:"smooth"});hud("listening","Dictado por teclado");subLive("Pulsa el micrófono de tu teclado y habla. Al terminar, toca Enviar.");});
-  $("#chatIn").addEventListener("blur",()=>{if(!busy&&$("#orb").dataset.state==="listening")hud("idle");});
-  $("#chatIn").addEventListener("input",()=>{if($("#orb").dataset.state==="listening"){subLive($("#chatIn").value.slice(-140));VIS.boost=.35;}});return;}
+ if(!dict){
+  const hc=$("#hudCompose"),hi=$("#hudIn");
+  mic.addEventListener("click",()=>{stopVoice();unlockVoice();hc.hidden=false;hi.focus({preventScroll:true});hud("listening","Te escucho");subLive("Pulsa el micro del teclado y habla");});
+  hi.addEventListener("input",()=>{subLive(hi.value.slice(-140));VIS.boost=.4;});
+  hc.addEventListener("submit",e=>{e.preventDefault();unlockVoice();const t=hi.value.trim();if(!t)return;hi.value="";hi.blur();hc.hidden=true;sendCoach(t);});
+  hi.addEventListener("blur",()=>{setTimeout(()=>{if(!hi.value.trim()){hc.hidden=true;if(!busy&&$("#orb").dataset.state==="listening")hud("idle");}},150);});
+  return;}
  dict.onPartial(({text})=>{$("#chatIn").value=(dictBase+" "+dictFinal+" "+text).trim();subLive((dictFinal+" "+text).trim());VIS.boost=.4;});
  dict.onFinal(({text})=>{dictFinal=(dictFinal+" "+text).trim();$("#chatIn").value=(dictBase+" "+dictFinal).trim();});
  dict.onState(({state,reason})=>{
