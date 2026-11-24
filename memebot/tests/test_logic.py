@@ -1,12 +1,15 @@
 import time
 
+import numpy as np
+
 from bot.config import ExitCfg, FilterCfg, RiskCfg, load_config
 from bot.executor import PaperExecutor
+from bot.signals import clean_rows, features, latest_signal, momentum, to_series
 from bot.models import PairSnapshot, Position
 from bot.portfolio import Portfolio
 from bot.risk import can_open, evaluate_exit, position_size_usd
 from bot.safety import top10_pct_excluding_pools
-from bot.strategy import evaluate, score
+from bot.strategy import prefilter, rank
 
 NOW_MS = 1_800_000_000_000
 
@@ -36,26 +39,63 @@ def pos(**over):
     return Position(**d)
 
 
-# ---------------------------------------------------------------- estrategia
-def test_parse_and_good_candidate_passes():
+# ---------------------------------------------------------------- prefiltro
+def test_parse_and_prefilter():
     s = snap()
     assert s.age_minutes == 360 and s.buys_m5 == 140
-    sig = evaluate(s, FilterCfg())
-    assert sig.passed, sig.reasons
-    assert sig.score >= 60
+    assert prefilter(s, FilterCfg()) == []
+    assert prefilter(snap(pairCreatedAt=NOW_MS - 5 * 60_000), FilterCfg())
+    assert prefilter(snap(liquidity={"usd": 8_000}), FilterCfg())
+    assert prefilter(snap(dexId="unknowndex"), FilterCfg())
+    assert rank(snap()) > rank(snap(volume={"m5": 0, "h1": 50_000}))
 
 
-def test_rejects_too_new_parabolic_and_dumping():
-    f = FilterCfg()
-    assert not evaluate(snap(pairCreatedAt=NOW_MS - 5 * 60_000), f).passed
-    assert not evaluate(snap(priceChange={"m5": 1, "h1": 400, "h6": 500}), f).passed
-    assert not evaluate(snap(priceChange={"m5": -12, "h1": 20, "h6": 30}), f).passed
-    assert not evaluate(snap(liquidity={"usd": 8_000}), f).passed
-    assert not evaluate(snap(dexId="unknowndex"), f).passed
+# ---------------------------------------------------------------- señales
+def candles(n=400, start_price=1.0, drift=0.0, vol=1000.0, t0=1_700_000_000):
+    rows, p = [], start_price
+    for i in range(n):
+        o = p
+        p = p * (1 + drift)
+        rows.append([t0 + 60 * i, o, max(o, p) * 1.001, min(o, p) * 0.999, p, vol])
+    return rows
 
 
-def test_boost_penalised():
-    assert score(PairSnapshot.from_dexscreener(raw_pair(), NOW_MS, boosted=True)) < score(snap())
+def test_clean_rows_drops_spikes_and_last_candle():
+    rows = candles(20)
+    rows[10][4] = rows[10][4] * 50      # cierre absurdo aislado
+    rows[12][2] = rows[12][2] * 50      # mecha absurda
+    out = clean_rows(rows)
+    assert len(out) == 18               # -1 pico, -1 vela en curso
+    assert max(r[2] for r in out) < 2
+
+
+def test_to_series_fills_gaps():
+    rows = candles(10)
+    del rows[3:6]
+    s = to_series(rows, clean=False)
+    assert len(s) == 10 and s.v[4] == 0 and s.c[4] == s.c[2]
+
+
+def test_features_have_no_lookahead():
+    rows = candles(400, drift=0.001)
+    s = to_series(rows, clean=False)
+    f_full = features(s, rows[0][0], 1e9)
+    s_cut = to_series(rows[:300], clean=False)
+    f_cut = features(s_cut, rows[0][0], 1e9)
+    for k in f_cut:
+        assert np.allclose(f_full[k][:300], f_cut[k], equal_nan=True), k
+
+
+def test_momentum_signal_fires_on_accelerating_uptrend():
+    rows = candles(300, drift=0.0005, vol=500)
+    p = rows[-1][4]
+    rows += [[rows[-1][0] + 60 * (i + 1), p, p, p, p * (1 + 0.003 * (i + 1)), 8000] for i in range(60)]
+    rows.append(rows[-1][:])  # vela "en curso" que se descarta
+    sig, f = latest_signal("momentum", rows, rows[0][0], 1e6, {})
+    assert f["accel"] >= 1.0 and f["ret_60m"] > 5
+    assert sig
+    flat, _ = latest_signal("momentum", candles(400, vol=2000), 1_700_000_000, 1e6, {})
+    assert not flat
 
 
 # ---------------------------------------------------------------- riesgo
@@ -120,7 +160,7 @@ def test_top10_excludes_pda_owned_pool_vaults():
 
 # ---------------------------------------------------------------- paper + cartera
 def test_paper_roundtrip_loses_fees(tmp_path):
-    exe = PaperExecutor()
+    exe = PaperExecutor("USDC", 6)
     b = exe.buy("MINT", 6, 40, 0.001, 120_000)
     s = exe.sell("MINT", 6, b.qty, 0.001, 120_000)
     assert b.price > 0.001  # pagas impacto + fee

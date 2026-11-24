@@ -11,28 +11,34 @@ from dotenv import load_dotenv
 
 @dataclass
 class ScannerCfg:
-    interval_seconds: int = 30
-    max_candidates: int = 30
+    interval_seconds: int = 20          # revisión de posiciones abiertas
+    entry_interval_seconds: int = 60    # búsqueda de entradas
+    max_candidates: int = 60
+    include_gecko: bool = True
     include_boosted: bool = True
     include_profiles: bool = True
 
 
 @dataclass
 class FilterCfg:
+    """Prefiltro en tiempo real (DexScreener) antes de descargar velas."""
     min_liquidity_usd: float = 40_000
     max_liquidity_usd: float = 5_000_000
     min_age_minutes: float = 30
     max_age_minutes: float = 72 * 60
-    min_volume_h1_usd: float = 50_000
-    min_txns_h1: int = 300
-    min_buy_ratio_m5: float = 0.55
-    min_buy_ratio_h1: float = 0.52
-    min_change_h1: float = 5.0
-    max_change_h1: float = 150.0      # no perseguir velas parabólicas
-    min_change_m5: float = -3.0       # no entrar en plena caída
+    min_volume_h1_usd: float = 30_000
+    min_txns_h1: int = 200
+    min_buy_ratio_m5: float = 0.0     # 0 = desactivado (no se puede backtestear)
     max_fdv_usd: float = 50_000_000
-    min_score: float = 60.0
     allowed_dexes: list[str] = field(default_factory=lambda: ["raydium", "pumpswap", "meteora", "orca"])
+
+
+@dataclass
+class StrategyCfg:
+    """Estrategia validada en backtest (bot/signals.py). Ver reports/ y research/apply_best.py."""
+    name: str = "momentum"
+    params: dict = field(default_factory=dict)
+    max_ohlcv_per_cycle: int = 8      # límite de GeckoTerminal: ~30 peticiones/min
 
 
 @dataclass
@@ -55,6 +61,7 @@ class RiskCfg:
     daily_loss_limit_pct: float = 5.0  # kill-switch diario
     cooldown_minutes: int = 240       # no reentrar en el mismo token
     slippage_bps: int = 300
+    max_price_impact_pct: float = 3.0  # rechaza órdenes con más impacto
 
 
 @dataclass
@@ -76,6 +83,7 @@ class Config:
     state_dir: str = "state"
     scanner: ScannerCfg = field(default_factory=ScannerCfg)
     filters: FilterCfg = field(default_factory=FilterCfg)
+    strategy: StrategyCfg = field(default_factory=StrategyCfg)
     safety: SafetyCfg = field(default_factory=SafetyCfg)
     risk: RiskCfg = field(default_factory=RiskCfg)
     exits: ExitCfg = field(default_factory=ExitCfg)
@@ -109,6 +117,7 @@ def load_config(path: str | Path = "config.yaml") -> Config:
         state_dir=raw.get("state_dir", "state"),
         scanner=_section(ScannerCfg, raw.get("scanner")),
         filters=_section(FilterCfg, raw.get("filters")),
+        strategy=_section(StrategyCfg, raw.get("strategy")),
         safety=_section(SafetyCfg, raw.get("safety")),
         risk=_section(RiskCfg, raw.get("risk")),
         exits=_section(ExitCfg, raw.get("exits")),
@@ -120,6 +129,9 @@ def load_config(path: str | Path = "config.yaml") -> Config:
     )
     if cfg.mode not in ("paper", "live"):
         raise ValueError("mode debe ser 'paper' o 'live'")
+    from .signals import STRATEGIES
+    if cfg.strategy.name not in STRATEGIES:
+        raise ValueError(f"Estrategia desconocida: {cfg.strategy.name}")
     if cfg.mode == "live" and not (cfg.wallet_private_key and cfg.jupiter_api_key):
         raise ValueError("Modo live requiere WALLET_PRIVATE_KEY y JUPITER_API_KEY en .env")
     return cfg

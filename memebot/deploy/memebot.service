@@ -1,0 +1,14 @@
+# Copiar a /etc/systemd/system/memebot.service  ->  systemctl enable --now memebot
+[Unit]
+Description=MemeBot (Solana)
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/memebot
+ExecStart=/opt/memebot/.venv/bin/python -m bot.main --config config.yaml
+Restart=always
+RestartSec=10
+User=memebot
+
+[Install]
+WantedBy=multi-user.target

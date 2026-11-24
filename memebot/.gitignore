@@ -3,3 +3,9 @@ state/
 __pycache__/
 .venv/
 config.yaml
+data/
+data_launches/
+state-paper/
+state-live/
+config.paper.yaml
+config.live.yaml

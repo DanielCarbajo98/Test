@@ -2,7 +2,9 @@
 import httpx
 
 from bot.config import Config
+from bot.executor import Quoter
 from bot.main import Bot
+from bot.market import Candles
 from bot.scanner import DexScreener
 from bot.safety import SolanaRPC
 from tests.test_logic import raw_pair
@@ -20,6 +22,25 @@ def make_transport(state):
         if "/tokens/v1/solana/" in url:
             p = raw_pair(pairCreatedAt=state["now_ms"] - 6 * 3600_000, priceUsd=str(state["price"]))
             return httpx.Response(200, json=[p])
+        if "trending_pools" in url or "/pools?" in url:
+            return httpx.Response(200, json={"data": []})
+        if "ohlcv/minute" in url:
+            # tendencia que acelera en la última hora -> señal momentum
+            t0, p, rows = state["now_ms"] // 1000 - 400 * 60, 0.0005, []
+            for i in range(400):
+                o = p
+                p *= 1.003 if i >= 340 else 1.0005
+                rows.append([t0 + 60 * i, o, p, o, p, 8000 if i >= 340 else 500])
+            rows.reverse()
+            return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": rows}}})
+        if "quote" in url:
+            q = dict(req.url.params)
+            amt = int(q["amount"])
+            if q["inputMint"] == "MINT":   # venta: tokens(6 dec) -> USDC(6 dec)
+                out = int(amt * state["price"] * 0.99)
+            else:                            # compra: USDC -> tokens
+                out = int(amt / state["price"] * 0.99)
+            return httpx.Response(200, json={"outAmount": str(out), "priceImpactPct": "0.004"})
         if "rugcheck" in url:
             return httpx.Response(200, json={"score_normalised": 3, "risks": [{"name": "Low LP", "level": "warn"}]})
         body = req.read()
@@ -46,19 +67,21 @@ def test_full_cycle_buy_then_take_profit(tmp_path, monkeypatch):
     bot.dex = DexScreener(client)
     bot.safety.rpc = SolanaRPC("http://rpc", client)
     bot.safety.http = client
+    bot.candles = Candles(client, min_interval=0)
+    bot.exe.quoter = Quoter("", 300, client)
 
-    bot.cycle()
+    bot.cycle(force_entries=True)
     assert "MINT" in bot.pf.positions
     p = bot.pf.positions["MINT"]
-    assert 39 <= p.cost_usd <= 40 and bot.pf.cash == 1000 - p.cost_usd
+    assert p.cost_usd == 40 and bot.pf.cash == 1000 - p.cost_usd
 
     state["price"] = 0.0025      # +150%: primer take profit (vende 50%)
-    bot.cycle()
+    bot.cycle(force_entries=True)
     p = bot.pf.positions["MINT"]
     assert p.tp_levels_hit == [0] and abs(p.qty - p.initial_qty / 2) < 1e-6
     assert bot.pf.daily_pnl() > 0
 
     state["price"] = 0.0009      # vuelve bajo la entrada: break-even stop cierra el resto
-    bot.cycle()
+    bot.cycle(force_entries=True)
     assert "MINT" not in bot.pf.positions
     assert bot.pf.equity() > 1000  # el TP parcial dejó la operación en positivo

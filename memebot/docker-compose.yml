@@ -1,0 +1,23 @@
+services:
+  paper:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./config.paper.yaml:/app/config.yaml:ro
+      - ./state-paper:/app/state
+    command: ["python", "-m", "bot.main", "--config", "config.yaml"]
+  live:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    profiles: ["live"]          # solo arranca con: docker compose --profile live up -d
+    volumes:
+      - ./config.live.yaml:/app/config.yaml:ro
+      - ./state-live:/app/state
+  collector:                    # amplía el dataset de backtest cada 6 h
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+    command: ["sh", "-c", "while true; do python -m research.collect --hours 72 --out data; sleep 21600; done"]
