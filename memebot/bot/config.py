@@ -13,7 +13,8 @@ from dotenv import load_dotenv
 class ScannerCfg:
     interval_seconds: int = 20          # revisión de posiciones abiertas
     entry_interval_seconds: int = 60    # búsqueda de entradas
-    max_candidates: int = 200
+    max_candidates: int = 1000
+    include_jupiter: bool = True        # listas de Jupiter: más negociados, en tendencia, más orgánicos
     discovery_cache_seconds: int = 120  # la lista de tokens se refresca cada 2 min (ahorra cupo de API)
     include_gecko: bool = True
     include_boosted: bool = True
@@ -126,12 +127,41 @@ def _section(cls, data: dict | None):
     return cls(**known)
 
 
+# Valores por defecto de versiones anteriores -> valores nuevos. Solo se cambian si el usuario
+# conserva EXACTAMENTE el valor antiguo (no tocamos lo que haya personalizado).
+MIGRATIONS = [
+    ("scanner", "max_candidates", (30, 60), 1000),
+    ("scanner", "interval_seconds", (30,), 20),
+    ("filters", "max_fdv_usd", (50_000_000,), 1_000_000_000),
+    ("filters", "max_liquidity_usd", (5_000_000,), 100_000_000),
+    ("filters", "min_volume_h1_usd", (50_000,), 30_000),
+    ("filters", "min_txns_h1", (300,), 200),
+]
+
+
+def _migrate(raw: dict) -> list[str]:
+    changed = []
+    for sec, key, olds, new in MIGRATIONS:
+        d = raw.get(sec)
+        if isinstance(d, dict) and key in d and d[key] in olds:
+            d[key] = new
+            changed.append(f"{sec}.{key}: {olds[0]} → {new}")
+    # claves que ya no existen en versiones nuevas
+    for k in ("min_buy_ratio_h1", "min_change_h1", "max_change_h1", "min_change_m5", "min_score"):
+        if isinstance(raw.get("filters"), dict):
+            raw["filters"].pop(k, None)
+    return changed
+
+
 def load_config(path: str | Path = "config.yaml") -> Config:
     load_dotenv()
     raw = {}
     p = Path(path)
     if p.exists():
         raw = yaml.safe_load(p.read_text()) or {}
+    for msg in _migrate(raw):
+        import logging
+        logging.getLogger("config").info("Ajuste antiguo actualizado: %s", msg)
     cfg = Config(
         mode=raw.get("mode", "paper"),
         quote_mint=raw.get("quote_mint", Config.quote_mint),

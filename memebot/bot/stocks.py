@@ -29,14 +29,40 @@ import numpy as np
 log = logging.getLogger("stocks")
 YF = "https://query1.finance.yahoo.com/v8/finance/chart/{sym}"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; MemeBot/1.0)"}
-DEFAULT_WATCHLIST = [
-    # EE. UU.
-    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "AMD", "AVGO", "NFLX", "SPY", "QQQ",
-    # España (IBEX 35)
-    "SAN.MC", "BBVA.MC", "ITX.MC", "IBE.MC", "TEF.MC", "REP.MC", "CABK.MC", "AENA.MC",
-    # Europa
-    "ASML.AS", "SAP.DE", "MC.PA",
-]
+IBEX35 = ["ACS.MC", "ACX.MC", "AENA.MC", "AMS.MC", "ANA.MC", "ANE.MC", "BBVA.MC", "BKT.MC", "CABK.MC", "CLNX.MC",
+          "COL.MC", "ELE.MC", "ENG.MC", "FDR.MC", "FER.MC", "GRF.MC", "IAG.MC", "IBE.MC", "IDR.MC", "ITX.MC",
+          "LOG.MC", "MAP.MC", "MRL.MC", "MTS.MC", "NTGY.MC", "PUIG.MC", "RED.MC", "REP.MC", "ROVI.MC", "SAB.MC",
+          "SAN.MC", "SCYR.MC", "SLR.MC", "TEF.MC", "UNI.MC"]
+EUROSTOXX50 = ["ADS.DE", "ADYEN.AS", "AD.AS", "AI.PA", "AIR.PA", "ALV.DE", "ABI.BR", "ASML.AS", "CS.PA", "BAS.DE",
+               "BAYN.DE", "BMW.DE", "BNP.PA", "BN.PA", "DB1.DE", "DHL.DE", "DTE.DE", "ENEL.MI", "ENI.MI", "EL.PA",
+               "RACE.MI", "IFX.DE", "INGA.AS", "ISP.MI", "KER.PA", "OR.PA", "MC.PA", "MBG.DE", "MUV2.DE", "NOKIA.HE",
+               "RI.PA", "PRX.AS", "SAF.PA", "SGO.PA", "SAN.PA", "SAP.DE", "SU.PA", "SIE.DE", "STLAM.MI", "TTE.PA",
+               "UCG.MI", "DG.PA", "VOW3.DE", "WKL.AS", "RMS.PA"]
+US_CORE = ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "AVGO", "AMD", "NFLX", "JPM", "V", "MA", "COST",
+           "LLY", "UNH", "XOM", "WMT", "ORCL", "CRM", "ADBE", "INTC", "QCOM", "KO", "PEP", "DIS", "BA", "PLTR",
+           "SPY", "QQQ"]
+DEFAULT_WATCHLIST = US_CORE + IBEX35 + [s for s in EUROSTOXX50 if s not in IBEX35]
+# listas dinámicas de Yahoo (se renuevan cada pocas horas)
+SCREENERS = ["most_actives", "day_gainers", "day_losers", "undervalued_large_caps", "growth_technology_stocks",
+             "undervalued_growth_stocks"]
+
+
+def screener_symbols(http: httpx.Client, count: int = 100) -> list[str]:
+    out: list[str] = []
+    for scr in SCREENERS:
+        try:
+            r = http.get("https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved",
+                         params={"scrIds": scr, "count": count}, headers=UA)
+            quotes = r.json()["finance"]["result"][0]["quotes"]
+        except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError):
+            continue
+        for q in quotes:
+            sym = q.get("symbol")
+            price = q.get("regularMarketPrice") or 0
+            # fuera: chicharros (< 2 $), que son puro ruido y muy manipulables
+            if sym and sym not in out and price >= 2 and q.get("quoteType", "EQUITY") in ("EQUITY", "ETF"):
+                out.append(sym)
+    return out
 
 
 # --------------------------------------------------------------------------- indicadores
@@ -181,14 +207,28 @@ def notify(text: str):
 
 
 def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = None,
-             fetcher=fetch) -> dict:
+             fetcher=fetch, max_per_run: int = 0, pause: float = 0.0, refresh_minutes: float = 60) -> dict:
+    """Analiza las acciones. Con max_per_run > 0 va por turnos: primero las alertas abiertas y luego
+    las que llevan más tiempo sin revisarse (todas se revisan al menos cada `refresh_minutes`)."""
     http = http or httpx.Client(timeout=20)
     f = state_dir / "stocks.json"
     st = json.loads(f.read_text()) if f.exists() else {"positions": {}, "alerts": [], "closed": []}
     charts = state_dir / "stock_charts"
     charts.mkdir(parents=True, exist_ok=True)
-    rows, today = [], time.strftime("%Y-%m-%d")
-    for sym in watchlist:
+    today = time.strftime("%Y-%m-%d")
+    prev = {r["symbol"]: r for r in st.get("watchlist", [])}
+    universe = list(dict.fromkeys(list(st.get("positions", {})) + watchlist))
+    if max_per_run:
+        now = time.time()
+        due = sorted(universe, key=lambda x: (x not in st.get("positions", {}), prev.get(x, {}).get("checked", 0)))
+        todo = [x for x in due if x in st.get("positions", {}) or now - prev.get(x, {}).get("checked", 0) >= refresh_minutes * 60]
+        todo = todo[:max_per_run]
+    else:
+        todo = universe
+    rows = []
+    for sym in todo:
+        if pause:
+            time.sleep(pause)
         b = fetcher(http, sym)
         if b is None:
             continue
@@ -225,7 +265,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
             status = "compra"
         rows.append({"symbol": sym, "name": b.name, "currency": b.currency, "price": a["price"], "chg_1d": a["chg_1d"],
                      "chg_1m": a["chg_1m"], "rsi": a["rsi"], "trend": a["trend"], "signal": a["signal"],
-                     "status": status, "market_open": b.market_open,
+                     "status": status, "market_open": b.market_open, "checked": int(time.time()),
                      "checks": {k: [[t, bool(ok)] for t, ok in v] for k, v in a["checks"].items()}})
         n = 180
         chart = {"symbol": sym, "name": b.name, "currency": b.currency,
@@ -236,9 +276,14 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                  "alerts": [x for x in st["alerts"] if x["symbol"] == sym][-20:],
                  "position": st["positions"].get(sym)}
         (charts / f"{sym.replace('.', '_')}.json").write_text(json.dumps(chart))
+    # conservar lo ya analizado de las que no tocaban en este turno (y olvidar las que salieron del universo)
+    merged = {**{k: v for k, v in prev.items() if k in universe}, **{r["symbol"]: r for r in rows}}
+    for sym, r in merged.items():
+        if sym not in st["positions"] and r.get("status") == "en cartera":
+            r["status"] = "vigilando"
     closed = st["closed"]
     rets = [x["ret"] for x in closed]
-    st.update({"ts": int(time.time()), "watchlist": rows, "alerts": st["alerts"][-200:], "closed": closed[-200:],
+    st.update({"ts": int(time.time()), "watchlist": list(merged.values()), "universe": len(universe), "alerts": st["alerts"][-200:], "closed": closed[-200:],
                "track": {"n": len(rets), "win_rate": round(100 * np.mean(np.array(rets) > 0), 1) if rets else None,
                          "avg_ret": round(float(np.mean(rets)), 2) if rets else None}})
     tmp = f.with_suffix(".tmp")
@@ -256,12 +301,19 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s stocks: %(message)s")
     logging.getLogger("httpx").setLevel(logging.WARNING)
     wl_env = os.getenv("STOCKS_WATCHLIST", "")
-    wl = [s.strip().upper() for s in (a.watchlist or wl_env).split(",") if s.strip()] or DEFAULT_WATCHLIST
+    fixed = [s.strip().upper() for s in (a.watchlist or wl_env).split(",") if s.strip()]
     from . import version
+    http = httpx.Client(timeout=20)
+    dyn, dyn_ts = [], 0.0
     while True:
         try:
-            st = run_once(Path(a.state), wl)
-            log.info("%d acciones analizadas, %d alertas abiertas", len(st["watchlist"]), len(st["positions"]))
+            if not fixed and time.time() - dyn_ts > 6 * 3600:
+                dyn, dyn_ts = screener_symbols(http), time.time()
+                log.info("Universo dinámico de Yahoo: %d acciones", len(dyn))
+            wl = fixed or list(dict.fromkeys(DEFAULT_WATCHLIST + dyn))
+            st = run_once(Path(a.state), wl, http=http, max_per_run=150 if a.loop else 0, pause=1.0 if a.loop else 0)
+            log.info("Universo %d acciones · %d con datos · %d alertas abiertas", len(wl), len(st["watchlist"]),
+                     len(st["positions"]))
         except Exception:  # noqa: BLE001
             log.exception("Fallo en el análisis de acciones")
         if not a.loop:

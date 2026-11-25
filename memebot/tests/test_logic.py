@@ -211,3 +211,13 @@ def test_reclaim_rent_builds_close_tx_only_for_empty_accounts():
     tx = Transaction.from_bytes(base64.b64decode(sent[0]))
     assert tx.verify() is None and len(tx.message.instructions) == 1
     assert bytes(tx.message.instructions[0].data) == bytes([9])
+
+
+def test_old_config_defaults_are_migrated_but_custom_values_kept(tmp_path):
+    old = tmp_path / "config.yaml"
+    old.write_text("mode: paper\nscanner:\n  max_candidates: 60\nfilters:\n  max_fdv_usd: 50000000\n"
+                   "  max_liquidity_usd: 2000000\n  min_score: 60\n")
+    cfg = load_config(old)
+    assert cfg.scanner.max_candidates == 1000            # valor antiguo por defecto -> nuevo
+    assert cfg.filters.max_fdv_usd == 1_000_000_000
+    assert cfg.filters.max_liquidity_usd == 2_000_000    # personalizado por el usuario: se respeta

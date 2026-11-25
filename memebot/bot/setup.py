@@ -203,21 +203,35 @@ def main():
     print("  Créalo en github.com/settings/personal-access-tokens/new → Only select repositories → test")
     print("  → Permissions → Contents: Read-only → Generate token.")
     while True:
-        tok = ask("Token de GitHub (Enter para omitir)", secret=True) or env.get("GITHUB_TOKEN", "")
+        tok = (ask("Token de GitHub (Enter para omitir)", secret=True) or env.get("GITHUB_TOKEN", "")).strip()
         if not tok:
             warn("Sin token: tendrás que actualizar a mano descargando el ZIP.")
             break
+        if not tok.startswith(("github_pat_", "ghp_")) or len(tok) < 40:
+            bad(f"Eso no parece un token de GitHub completo (empieza por «{tok[:6]}…», {len(tok)} caracteres). "
+                f"Debe empezar por «github_pat_» y tener unos 90 caracteres: cópialo con el icono de copiar.")
+            continue
         try:
-            r = httpx.get("https://api.github.com/repos/danielcarbajo98/test/commits/claude/bold-johnson-evz8g1",
+            r = httpx.get("https://api.github.com/repos/danielcarbajo98/test/commits",
+                          params={"sha": "claude/bold-johnson-evz8g1", "per_page": 1},
                           headers={"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json"}, timeout=15)
-            good = r.status_code == 200
+            code = r.status_code
         except httpx.HTTPError:
-            good = False
-        if good:
+            code = 0
+        if code == 200:
             env["GITHUB_TOKEN"] = tok
             ok("Actualizaciones automáticas activadas")
             break
-        bad("GitHub rechaza ese token (¿repositorio «test» y Contents: Read-only?). Prueba otra vez o pulsa Enter.")
+        reasons = {
+            401: "token no válido, caducado o mal copiado. Regenera el token en GitHub y cópialo con el icono.",
+            404: "el token es válido pero NO tiene acceso al repositorio «test». En GitHub, edita el token: "
+                 "Repository access → Only select repositories → danielcarbajo98/test, y Permissions → "
+                 "Contents → Read-only. Guarda con «Update» y vuelve a pegarlo.",
+            403: "GitHub ha rechazado el acceso (permisos insuficientes o límite temporal). Revisa Contents: Read-only.",
+            0: "no hay conexión con GitHub ahora mismo. Inténtalo de nuevo en un momento.",
+        }
+        bad(f"GitHub responde {code or 'sin conexión'}: {reasons.get(code, 'respuesta inesperada.')} "
+            f"(Enter para omitir)")
 
     # 5. Perfil y modo ------------------------------------------------------
     print(f"\n{B}5. Capital y modo{X}")

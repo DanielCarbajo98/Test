@@ -25,7 +25,7 @@ from . import version
 from .brain import BrainRuntime
 from .config import Config, ExitCfg, load_config
 from .executor import JupiterExecutor, PaperExecutor, Quoter
-from .market import DEFAULT_SOURCES, Candles, discover
+from .market import DEFAULT_SOURCES, Candles, discover, jupiter_discover
 from .models import Position
 from .portfolio import Portfolio
 from .risk import can_open, evaluate_exit, position_size_usd
@@ -78,6 +78,7 @@ class Bot:
         self._ctx_ts = 0.0
         self.risk_off = ""
         self._disc: tuple = ()
+        self.token_info: dict[str, dict] = {}
         self._disc_ts = 0.0
         self._last_equity_log = 0.0
         self.started_at = time.time()
@@ -198,8 +199,13 @@ class Bot:
         if time.time() - self._disc_ts < c.scanner.discovery_cache_seconds and self._disc:
             return self._disc
         addrs, boosted = self.dex.latest_token_addresses(c.scanner.include_boosted, c.scanner.include_profiles)
+        seen = set(addrs)
+        if c.scanner.include_jupiter:
+            jm, self.token_info = jupiter_discover(c.jupiter_api_key)
+            addrs += [m for m in jm if m not in seen]
+            seen.update(jm)
         if c.scanner.include_gecko:
-            addrs += [m for m in discover(self.candles, DEFAULT_SOURCES) if m not in addrs]
+            addrs += [m for m in discover(self.candles, DEFAULT_SOURCES) if m not in seen]
         self._disc, self._disc_ts = (addrs, boosted), time.time()
         return self._disc
 
@@ -330,7 +336,7 @@ class Bot:
                 self._analysis.pop(next(iter(self._analysis)))
             self._log_decision(s, signal, feat, checks)
             self._save_chart(s.pair_address, s.token_address, s.symbol, rows, signal, feat, checks, pred,
-                             {"liquidity": s.liquidity_usd, "fdv": s.fdv})
+                             {"liquidity": s.liquidity_usd, "fdv": s.fdv, **self.token_info.get(s.token_address, {})})
             self.last_scan["analyzed"] += 1
             self.last_scan["signals"] += int(signal)
             if not signal or not ok or len(self.pf.positions) >= c.risk.max_open_positions:

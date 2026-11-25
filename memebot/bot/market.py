@@ -77,7 +77,37 @@ def discover(c: "Candles", sources: list[tuple[str, dict]]) -> list[str]:
     return mints
 
 
+# GeckoTerminal: pocas fuentes (su cupo se reserva para las velas); Jupiter aporta el grueso del universo
 DEFAULT_SOURCES = [("trending_pools", {"duration": "5m"}), ("trending_pools", {"duration": "1h"}),
-                   ("trending_pools", {"duration": "6h"}), ("trending_pools", {"duration": "24h"}),
-                   ("pools", {"sort": "h24_volume_usd_desc"}), ("pools", {"sort": "h24_tx_count_desc"}),
-                   ("pools", {"sort": "h24_volume_usd_desc", "page": 2}), ("pools", {"sort": "h24_tx_count_desc", "page": 2})]
+                   ("pools", {"sort": "h24_tx_count_desc"})]
+
+
+JUP_LISTS = [("toptrending", "5m"), ("toptrending", "1h"), ("toptrending", "6h"), ("toptrending", "24h"),
+             ("toptraded", "1h"), ("toptraded", "24h"), ("toporganicscore", "1h"), ("toporganicscore", "24h")]
+
+
+def jupiter_discover(api_key: str = "", client: httpx.Client | None = None) -> tuple[list[str], dict[str, dict]]:
+    """Cientos de tokens activos de Solana desde las listas de Jupiter (no gasta el cupo de velas).
+    Devuelve (mints, info) con info[mint] = {organic, holders, verified}."""
+    http = client or httpx.Client(timeout=20)
+    base, headers = (("https://api.jup.ag/tokens/v2", {"x-api-key": api_key}) if api_key
+                     else ("https://lite-api.jup.ag/tokens/v2", {}))
+    mints: list[str] = []
+    info: dict[str, dict] = {}
+    for cat, interval in JUP_LISTS:
+        try:
+            r = http.get(f"{base}/{cat}/{interval}", params={"limit": 100}, headers=headers)
+            if r.status_code != 200 and api_key:          # clave sin acceso a esta API: probar sin clave
+                r = http.get(f"https://lite-api.jup.ag/tokens/v2/{cat}/{interval}", params={"limit": 100})
+            data = r.json() if r.status_code == 200 else []
+        except (httpx.HTTPError, ValueError):
+            continue
+        for t in data or []:
+            m = t.get("id")
+            if not m or m in QUOTE_MINTS:
+                continue
+            if m not in info:
+                mints.append(m)
+            info[m] = {"organic": t.get("organicScore"), "holders": t.get("holderCount"),
+                       "verified": bool(t.get("isVerified"))}
+    return mints, info

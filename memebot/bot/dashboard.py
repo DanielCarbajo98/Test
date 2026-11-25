@@ -101,7 +101,7 @@ def _stocks_view(state: Path) -> dict:
     st = _read_json(state / "stocks.json", {})
     if not st:
         return {}
-    return {"ts": st.get("ts"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
+    return {"ts": st.get("ts"), "universe": st.get("universe"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
             "alerts": st.get("alerts", [])[-40:][::-1], "closed": st.get("closed", [])[-40:][::-1],
             "track": st.get("track", {})}
 

@@ -18,8 +18,8 @@ def make_zip(files: dict[str, str]) -> bytes:
 
 def client(sha: str, zipdata: bytes) -> httpx.Client:
     def handler(req: httpx.Request):
-        if req.url.path.endswith("/commits/claude/bold-johnson-evz8g1"):
-            return httpx.Response(200, json={"sha": sha})
+        if req.url.path.endswith("/commits") and req.url.params.get("sha") == "claude/bold-johnson-evz8g1":
+            return httpx.Response(200, json=[{"sha": sha}])
         if f"/zipball/{sha}" in req.url.path:
             return httpx.Response(200, content=zipdata)
         return httpx.Response(404)

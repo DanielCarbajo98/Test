@@ -7,7 +7,8 @@ state_dir: state
 scanner:
   interval_seconds: 20          # revisión de posiciones abiertas
   entry_interval_seconds: 60    # búsqueda de entradas
-  max_candidates: 200
+  max_candidates: 1000
+  include_jupiter: true        # cientos de tokens activos de Solana (listas de Jupiter)
   discovery_cache_seconds: 120
   include_gecko: true           # trending / más activos de GeckoTerminal
   include_boosted: true

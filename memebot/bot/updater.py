@@ -37,9 +37,9 @@ NEVER_TOUCH = {".env", "config.yaml", "state", "data", "data_launches", ".update
 
 
 def latest_sha(http: httpx.Client, repo: str, branch: str) -> str:
-    r = http.get(f"{API}/repos/{repo}/commits/{branch}")
+    r = http.get(f"{API}/repos/{repo}/commits", params={"sha": branch, "per_page": 1})
     r.raise_for_status()
-    return r.json()["sha"]
+    return r.json()[0]["sha"]
 
 
 def download(http: httpx.Client, repo: str, sha: str, dest: Path) -> Path:

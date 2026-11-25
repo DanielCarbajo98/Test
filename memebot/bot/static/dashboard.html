@@ -347,7 +347,21 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   <section class="card" style="margin-top:16px">
     <div class="card-h"><h2>Acciones · alertas</h2><span class="sub" id="stkSub" style="margin-left:auto"></span></div>
     <div class="stk" style="margin-top:10px; border-top:1px solid var(--border)">
-      <div class="table-wrap scroll" id="stkTable"></div>
+      <div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <input id="stkSearch" type="search" placeholder="Buscar (ej. SAN, Apple)…" aria-label="Buscar acción"
+            style="flex:1;min-width:140px;height:32px;border-radius:9px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:0 10px;font:inherit">
+          <select id="stkFilter" aria-label="Filtrar" style="height:32px;border-radius:9px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:0 8px;font:inherit">
+            <option value="all">Todas</option><option value="sig">Señales y alertas</option><option value="up">Tendencia alcista</option>
+            <option value="down">Tendencia bajista</option><option value="es">España</option><option value="us">EE. UU.</option><option value="eu">Europa</option>
+          </select>
+          <select id="stkSort" aria-label="Ordenar" style="height:32px;border-radius:9px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:0 8px;font:inherit">
+            <option value="status">Primero alertas</option><option value="gain">Más suben hoy</option><option value="loss">Más bajan hoy</option>
+            <option value="rsi">RSI más bajo</option><option value="name">Alfabético</option>
+          </select>
+        </div>
+        <div class="table-wrap scroll" id="stkTable"></div>
+      </div>
       <div>
         <div class="chead" id="stkHead"></div>
         <div id="schart"><div class="empty">Elige una acción de la lista.</div></div>
@@ -633,16 +647,27 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 
   // ---------- acciones ----------
   let selStock = null, slw = null, scs = null, s50 = null, s200 = null, sLoaded = "";
+  ["stkSearch", "stkFilter", "stkSort"].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener("input", () => S && renderStocks()); });
   function renderStocks() {
     const k = S.stocks || {}, wl = k.watchlist || [];
     if (!wl.length) { $("stkTable").innerHTML = `<div class="empty" style="height:120px">El análisis de acciones aparece a los pocos minutos de arrancar (servicio «stocks»).</div>`; $("stkSub").textContent = ""; return; }
     const tr = k.track || {};
-    $("stkSub").textContent = `${wl.length} acciones · ${Object.keys(k.positions || {}).length} alertas abiertas` + (tr.n ? ` · historial: ${tr.n} cerradas, acierto ${tr.win_rate}%, media ${pct(tr.avg_ret)}` : "") + ` · ${ago(S.now - k.ts)}`;
+    $("stkSub").textContent = `${wl.length}${k.universe && k.universe > wl.length ? " de " + k.universe : ""} acciones analizadas · ${Object.keys(k.positions || {}).length} alertas abiertas` + (tr.n ? ` · historial: ${tr.n} cerradas, acierto ${tr.win_rate}%, media ${pct(tr.avg_ret)}` : "") + ` · ${ago(S.now - k.ts)}`;
     if (!selStock || !wl.some(r => r.symbol === selStock)) selStock = (wl.find(r => r.status !== "vigilando") || wl[0]).symbol;
     const tag = r => r.status === "en cartera" ? '<span class="badge pos">Alerta abierta</span>' : r.status === "compra" ? '<span class="badge sig">COMPRAR</span>'
       : r.status === "venta" ? '<span class="badge" style="background:color-mix(in srgb,var(--bad) 22%,transparent);color:var(--bad-text)">VENDER</span>' : '<span class="badge no">Vigilando</span>';
-    $("stkTable").innerHTML = `<table><thead><tr><th>Acción</th><th class="num">Precio</th><th class="num">1 día</th><th class="num">1 mes</th><th class="num">RSI</th><th>Tendencia</th><th>Estado</th></tr></thead><tbody>${
-      wl.map(r => `<tr data-s="${esc(r.symbol)}" class="${r.symbol === selStock ? "on" : ""}"><td><b>${esc(r.symbol)}</b><div class="sub">${esc((r.name || "").slice(0, 26))}</div></td>
+    const q = ($("stkSearch").value || "").trim().toLowerCase(), flt = $("stkFilter").value, srt = $("stkSort").value;
+    const mkt = sym => sym.endsWith(".MC") ? "es" : sym.includes(".") ? "eu" : "us";
+    const rank = r => ({ "compra": 0, "venta": 1, "en cartera": 2 }[r.status] ?? (r.signal ? 3 : 4));
+    let view = wl.filter(r => (!q || r.symbol.toLowerCase().includes(q) || (r.name || "").toLowerCase().includes(q))
+      && (flt === "all" || (flt === "sig" && (r.signal || r.status !== "vigilando")) || (flt === "up" && r.trend === "alcista")
+          || (flt === "down" && r.trend === "bajista") || flt === mkt(r.symbol)));
+    const sorters = { status: (a, b) => rank(a) - rank(b) || Math.abs(b.chg_1d) - Math.abs(a.chg_1d), gain: (a, b) => b.chg_1d - a.chg_1d,
+      loss: (a, b) => a.chg_1d - b.chg_1d, rsi: (a, b) => a.rsi - b.rsi, name: (a, b) => a.symbol.localeCompare(b.symbol) };
+    view.sort(sorters[srt] || sorters.status);
+    const total = view.length; view = view.slice(0, 300);
+    $("stkTable").innerHTML = (total ? "" : `<div class="empty" style="height:80px">Ninguna acción coincide.</div>`) + `<table><thead><tr><th>Acción</th><th class="num">Precio</th><th class="num">1 día</th><th class="num">1 mes</th><th class="num">RSI</th><th>Tendencia</th><th>Estado</th></tr></thead><tbody>${
+      view.map(r => `<tr data-s="${esc(r.symbol)}" class="${r.symbol === selStock ? "on" : ""}"><td><b>${esc(r.symbol)}</b><div class="sub">${esc((r.name || "").slice(0, 26))}</div></td>
         <td class="num">${r.price.toLocaleString("es-ES", { maximumFractionDigits: 2 })} ${esc(r.currency)}</td><td class="num ${cls(r.chg_1d)}">${pct(r.chg_1d)}</td>
         <td class="num ${cls(r.chg_1m)}">${pct(r.chg_1m)}</td><td class="num">${r.rsi.toFixed(0)}</td>
         <td class="${r.trend === "alcista" ? "trend-up" : r.trend === "bajista" ? "trend-down" : "flat"}">${esc(r.trend)}</td><td>${tag(r)}</td></tr>`).join("")}</tbody></table>`;
