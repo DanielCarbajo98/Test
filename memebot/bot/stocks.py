@@ -354,6 +354,16 @@ def cash_eur(state_dir: Path, st: dict) -> float:
     return account(st)["cash"]
 
 
+def equity_eur(state_dir: Path, st: dict) -> float:
+    """Saldo sobre el que se calcula el tamaño: el conjunto con cripto (simulado) o el de la cuenta propia."""
+    from . import joint
+    if joint.enabled():
+        e = joint.stocks_equity_eur(state_dir, st)
+        if e is not None:
+            return e
+    return account(st)["cash"] + sum(position_value(p) for p in (st.get("positions") or {}).values())
+
+
 def position_value(p: dict) -> float:
     """Lo que darían hoy por la posición, ya descontadas las comisiones de compra y venta."""
     amt = p.get("amount", PAPER_EUR)
@@ -573,18 +583,24 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                 by_sym[sym]["status"] = "señal (silenciada)" if muted else "señal (límite diario)"
             continue
         acc = account(st)
-        if cash_eur(state_dir, st) < PAPER_EUR:                       # sin liquidez: no compra (sí lo apunta)
+        pl = a["plan"]
+        # el bot decide cuánto invertir: riesgo, ventaja de la estrategia, mercado, riesgo abierto y liquidez
+        from . import brokers
+        from .sizing import stock_amount
+        fixed = brokers.BROKERS[brokers.broker_key()]["fee"](PAPER_EUR, brokers.region(sym))
+        amount, size_why = stock_amount(equity_eur(state_dir, st), cash_eur(state_dir, st), a["price"], pl["stop"],
+                                        pl.get("expected"), market_up, list(st["positions"].values()), fixed)
+        if amount <= 0:                                               # no compra (sí lo apunta)
             if sym in by_sym:
-                by_sym[sym]["status"] = "señal (sin liquidez)"
+                by_sym[sym]["status"] = "señal (sin liquidez)" if "liquidez" in " ".join(size_why) else "señal (importe mínimo)"
             continue
         daily["n"] += 1
-        acc["cash"] -= PAPER_EUR                                      # compra automática simulada
-        pl = a["plan"]
+        acc["cash"] -= amount                                         # compra automática simulada
         st["positions"][sym] = {"symbol": sym, "name": b.name, "currency": b.currency, "entry": a["price"],
                                 "entry_ts": int(time.time()), "stop": pl["stop"], "tp": pl["tp"],
                                 "max_days": pl["max_days"], "peak": a["price"], "atr": a["atr"],
                                 "setup": a["signal"], "price": a["price"], "expected": pl.get("expected"),
-                                "amount": PAPER_EUR, "fees_eur": trade_fees(sym, PAPER_EUR),
+                                "amount": amount, "fees_eur": trade_fees(sym, amount), "size_why": size_why,
                                 "pending_open": not (b.market_open or a.get("session")),
                                 "entry_session": a.get("session") or ("regular" if b.market_open else None)}
         st.setdefault("last_buy", {})[sym] = today
@@ -605,7 +621,8 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                f"⏳ Plazo máximo: {pl['max_days']} días de mercado{hist}"
                f"{'' if b.market_open else chr(10) + ('Precio de PRE-MARKET: la cartera simulada compra ya a este precio.' if a.get('session') == 'pre' else 'Precio de AFTER-HOURS: la cartera simulada compra ya a este precio.' if a.get('session') == 'post' else 'Mercado cerrado: la cartera simulada comprará en cuanto se pueda operar (pre-market o apertura), con stop y objetivo ajustados.')}\n"
                f"{cap_line}"
-               f"🤖 Compra automática simulada: {PAPER_EUR:.0f} € · liquidez restante {fmt_eur(cash_eur(state_dir, st))}.\n"
+               f"🤖 Compra automática simulada: {fmt_eur(amount)} · liquidez restante {fmt_eur(cash_eur(state_dir, st))}.\n"
+               f"Por qué ese importe: {'; '.join(size_why)}.\n"
                f"Costes con {paper_summary(st)['broker']} (comisión, divisa e impuestos, ida y vuelta): "
                f"~{fmt_eur(st['positions'][sym]['fees_eur'])}.\n"
                f"Es una alerta, no una orden: decides tú en tu broker.")

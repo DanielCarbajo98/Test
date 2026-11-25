@@ -484,6 +484,13 @@ class Bot:
                 eq_sz, cash_sz = jv["equity"], max(0.0, jv["cash"])
             size = position_size_usd(eq_sz, cash_sz, s.liquidity_usd, self.exit_cfg().stop_loss_pct, c.risk)
             size = round(size * max(0.0, min(1.0, mult)), 2)
+            # el bot ajusta el importe: confianza del modelo y racha; nunca por encima de los topes de config.yaml
+            from .sizing import crypto_multiplier
+            champ = self.brain.champion if self.brain_active() else None
+            conf, size_why = crypto_multiplier(pred, (champ or {}).get("threshold") if pred is not None else None,
+                                               eq_sz, c.risk.starting_equity_usd, c.risk.max_drawdown_pct)
+            cap = min(eq_sz * c.risk.max_position_pct / 100, s.liquidity_usd * c.risk.max_pool_share_pct / 100, cash_sz)
+            size = round(min(size * conf, cap), 2)
             if size < 5:
                 log.info("Tamaño insuficiente para %s (%.2f USD)", s.symbol, size)
                 continue
@@ -508,6 +515,7 @@ class Bot:
                 f"📉 Trailing: −{ex.trailing_stop_pct:g}% desde el máximo (tras +{ex.trailing_activation_pct:g}%) · "
                 f"⏳ sale si en {ex.time_stop_minutes} min no sube +{ex.time_stop_min_gain_pct:g}%\n"
                 f"liq ${s.liquidity_usd:,.0f} | 1h {feat.get('ret_60m', 0):+.0f}% | top10 {rep.top10_pct}%\n"
+                + (f"💡 Importe: {'; '.join(size_why)}\n" if size_why else "") +
                 f"https://dexscreener.com/solana/{s.pair_address}")
         self.pf.save()
 

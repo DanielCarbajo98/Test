@@ -59,3 +59,12 @@ def stocks_cash_eur(state: Path, st: dict) -> float | None:
         return None
     s = stocks_side(st)
     return status["cash"] / s["usd_per_eur"] - s["committed_eur"] + s["realized_eur"]
+
+
+def stocks_equity_eur(state: Path, st: dict) -> float | None:
+    """Saldo conjunto en euros, visto desde el servicio de acciones (None si cripto aún no ha publicado su estado)."""
+    status = _read(state / "status.json")
+    if "equity" not in status or status.get("mode") == "live":
+        return None
+    s = stocks_side(st)
+    return status["equity"] / s["usd_per_eur"] + s["realized_eur"] + s["open_pnl_eur"]

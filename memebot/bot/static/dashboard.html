@@ -1187,7 +1187,8 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <span>Entrada</span><b>${money(pos.entry)}</b><span>Ahora (${esc(ses)})</span><b class="${cls(r)}">${money(now)} (${pct(r)})</b>
         <span>Stop</span><b class="down">${money(pos.stop)}</b><span>Objetivo</span><b class="up">${pos.tp ? money(pos.tp) : "—"}</b>
         <span>Invertido</span><b>${amt.toFixed(0)} €</b><span>Resultado con comisiones</span><b class="${cls(pnl)}">${eur(pnl)}</b></div>
-        <p class="sub" style="margin:10px 0 0">${esc(pos.setup || "")} · alerta del ${dt(pos.entry_ts)} · plazo máximo ${pos.max_days} días de mercado${pos.pending_open ? " · esperando a poder operar para comprar" : ""}</p>`;
+        <p class="sub" style="margin:10px 0 0">${esc(pos.setup || "")} · alerta del ${dt(pos.entry_ts)} · plazo máximo ${pos.max_days} días de mercado${pos.pending_open ? " · esperando a poder operar para comprar" : ""}</p>
+        ${(pos.size_why || []).length ? `<p class="sub" style="margin:6px 0 0">💡 Por qué ${amt.toFixed(0)} €: ${pos.size_why.map(esc).join(" · ")}</p>` : ""}`;
     } else if (last) {
       const fromExit = now && last.exit ? (now / last.exit - 1) * 100 : null;
       $("tInfo").innerHTML = `<div class="kv" style="grid-template-columns:repeat(4,auto 1fr);gap:8px 16px">
