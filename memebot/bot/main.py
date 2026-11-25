@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import time
 from collections import deque
 from datetime import datetime, timezone
@@ -98,6 +99,34 @@ class Bot:
     def brain_active(self) -> bool:
         b = self.cfg.brain
         return b.enabled and self.brain.champion is not None and (self.cfg.mode == "paper" or b.auto_apply_live)
+
+    def max_open(self) -> int:
+        """Límite de posiciones abiertas. En simulado no hay límite fijo (0): manda el riesgo total abierto.
+        Con dinero real se respeta el de tu config.yaml (pon 0 allí para quitarlo también)."""
+        if self.cfg.mode == "paper" and os.getenv("CRYPTO_PAPER_UNLIMITED", "1") != "0":
+            return 0
+        return self.cfg.risk.max_open_positions
+
+    def daily_limit(self) -> float:
+        """Pérdida diaria máxima. En simulado no hay corte fijo (0): el bot reduce el tamaño tras pérdidas
+        (bot/sizing.py). Con dinero real se respeta el de tu config.yaml."""
+        if self.cfg.mode == "paper" and os.getenv("CRYPTO_PAPER_UNLIMITED", "1") != "0":
+            return 0.0
+        return self.cfg.risk.daily_loss_limit_pct
+
+    def heat_pct(self) -> float:
+        """% del saldo que se perdería si saltaran a la vez todos los stops de las posiciones abiertas."""
+        eq = self.pf.equity()
+        sl = self.exit_cfg().stop_loss_pct / 100
+        risk = 0.0
+        for m, p in self.pf.positions.items():
+            stop = p.entry_price if p.tp_levels_hit else p.entry_price * (1 - sl)
+            px = self.pf.last_prices.get(m, p.entry_price)
+            risk += max(0.0, p.qty * (px - stop))
+        return 100 * risk / eq if eq > 0 else 0.0
+
+    def heat_ok(self) -> bool:
+        return self.heat_pct() < float(os.getenv("CRYPTO_MAX_HEAT_PCT", "30"))
 
     def joint_view(self) -> dict | None:
         """Saldo conjunto cripto + acciones (bot/joint.py). Solo en modo simulado."""
@@ -394,8 +423,12 @@ class Bot:
 
     def find_entries(self):
         c = self.cfg
-        ok, why = can_open(len(self.pf.positions), self.pf.daily_pnl(), self.pf.start_equity_today(), c.risk,
+        import dataclasses
+        r_eff = dataclasses.replace(c.risk, max_open_positions=self.max_open(), daily_loss_limit_pct=self.daily_limit())
+        ok, why = can_open(len(self.pf.positions), self.pf.daily_pnl(), self.pf.start_equity_today(), r_eff,
                            self.pf.equity())
+        if ok and not self.heat_ok():
+            ok, why = False, f"riesgo total abierto en el máximo ({self.heat_pct():.0f}% del saldo)"
         if ok and self.risk_off:
             ok, why = False, f"freno por contexto: {self.risk_off}"
         if not ok:
@@ -448,7 +481,7 @@ class Bot:
                              {"liquidity": s.liquidity_usd, "fdv": s.fdv, **self.token_info.get(s.token_address, {})})
             self.last_scan["analyzed"] += 1
             self.last_scan["signals"] += int(signal)
-            if not signal or not ok or len(self.pf.positions) >= c.risk.max_open_positions:
+            if not signal or not ok or (self.max_open() and len(self.pf.positions) >= self.max_open()) or not self.heat_ok():
                 continue
             rep = self.safety.check(s)
             if not rep.ok:
@@ -488,7 +521,8 @@ class Bot:
             from .sizing import crypto_multiplier
             champ = self.brain.champion if self.brain_active() else None
             conf, size_why = crypto_multiplier(pred, (champ or {}).get("threshold") if pred is not None else None,
-                                               eq_sz, c.risk.starting_equity_usd, c.risk.max_drawdown_pct)
+                                               eq_sz, c.risk.starting_equity_usd, c.risk.max_drawdown_pct,
+                                               daily_pnl=self.pf.daily_pnl(), day_start=self.pf.start_equity_today())
             cap = min(eq_sz * c.risk.max_position_pct / 100, s.liquidity_usd * c.risk.max_pool_share_pct / 100, cash_sz)
             size = round(min(size * conf, cap), 2)
             if size < 5:
@@ -565,8 +599,9 @@ class Bot:
                       "blocks_entries": self.brain_blocks_entries()},
             "equity": eq, "cash": self.pf.cash, "start_equity": self.cfg.risk.starting_equity_usd,
             "daily_pnl": self.pf.daily_pnl(), "day_start_equity": self.pf.start_equity_today(),
-            "max_open": self.cfg.risk.max_open_positions,
-            "daily_loss_limit_pct": self.cfg.risk.daily_loss_limit_pct,
+            "max_open": self.max_open(), "heat_pct": round(self.heat_pct(), 1),
+            "max_heat_pct": float(os.getenv("CRYPTO_MAX_HEAT_PCT", "30")),
+            "daily_loss_limit_pct": self.daily_limit(),
             "positions": positions, "last_scan": self.last_scan, "events": list(self.notify.events)[:30],
             "interval": self.cfg.scanner.interval_seconds,
             "risk_off": self.risk_off,

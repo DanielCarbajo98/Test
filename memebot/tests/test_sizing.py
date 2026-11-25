@@ -28,3 +28,20 @@ def test_crypto_multiplier():
     assert m == 1.0
     m, why = crypto_multiplier(None, None, 8_000, 10_000, 40)
     assert m < 1 and "prudente" in why[0]
+
+
+def test_zero_means_no_position_limit():
+    from bot.config import RiskCfg
+    from bot.risk import can_open
+    assert can_open(50, 0, 1000, RiskCfg(max_open_positions=0))[0]
+    assert not can_open(4, 0, 1000, RiskCfg(max_open_positions=4))[0]
+
+
+def test_daily_losses_shrink_size_without_stopping():
+    from bot.config import RiskCfg
+    from bot.risk import can_open
+    assert can_open(1, -2000, 10_000, RiskCfg(daily_loss_limit_pct=0, max_open_positions=0))[0]
+    m, why = crypto_multiplier(None, None, 10_000, 10_000, 40, daily_pnl=-500, day_start=10_000)
+    assert 0.5 < m < 1 and "reduce" in why[0]
+    m, _ = crypto_multiplier(None, None, 10_000, 10_000, 40, daily_pnl=-2000, day_start=10_000)
+    assert m == 0.25

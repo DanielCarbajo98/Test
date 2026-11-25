@@ -25,9 +25,9 @@ def can_open(open_positions: int, daily_pnl_usd: float, day_start_equity: float,
              equity: float | None = None) -> tuple[bool, str]:
     if r.max_drawdown_pct and equity is not None and equity < r.starting_equity_usd * (1 - r.max_drawdown_pct / 100):
         return False, f"freno total: saldo {equity:.2f} por debajo del {100 - r.max_drawdown_pct:.0f}% del inicial"
-    if open_positions >= r.max_open_positions:
+    if r.max_open_positions and open_positions >= r.max_open_positions:      # 0 = sin límite
         return False, "máximo de posiciones abiertas"
-    if day_start_equity > 0 and -daily_pnl_usd >= day_start_equity * r.daily_loss_limit_pct / 100:
+    if r.daily_loss_limit_pct and day_start_equity > 0 and -daily_pnl_usd >= day_start_equity * r.daily_loss_limit_pct / 100:
         return False, "límite de pérdida diaria alcanzado (kill-switch)"
     return True, ""
 

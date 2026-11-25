@@ -55,7 +55,7 @@ def stock_amount(equity: float, cash: float, price: float, stop: float, expected
 
 
 def crypto_multiplier(pred: float | None, threshold: float | None, equity: float, start: float,
-                      max_drawdown_pct: float = 0.0) -> tuple[float, list[str]]:
+                      max_drawdown_pct: float = 0.0, daily_pnl: float = 0.0, day_start: float = 0.0) -> tuple[float, list[str]]:
     """Factor sobre el tamaño base (riesgo fijo) de cripto: confianza del modelo y racha del bot."""
     m, why = 1.0, []
     if pred is not None and threshold and threshold > 0:
@@ -69,4 +69,10 @@ def crypto_multiplier(pred: float | None, threshold: float | None, equity: float
         if c < 0.999:
             m *= c
             why.append(f"el saldo está un {100 * dd:.1f} % por debajo del inicio → ×{c:.2f} (más prudente)")
+    if day_start > 0 and daily_pnl < 0:                     # mal día: más pequeño, sin cortar del todo
+        loss = -daily_pnl / day_start
+        c = 1 - 0.75 * _clip(loss / 0.10, 0, 1)             # −10 % en el día → un 25 % del tamaño normal
+        if c < 0.999:
+            m *= c
+            why.append(f"hoy va {100 * daily_pnl / day_start:+.1f} % → ×{c:.2f} (reduce tras pérdidas)")
     return m, why

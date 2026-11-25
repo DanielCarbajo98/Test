@@ -584,11 +584,14 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("cashS").textContent = has && eq ? `${(100 * cash / eq).toFixed(0)}% del saldo${J ? " · compartida con acciones" : ""}` : "";
     const dp = st.daily_pnl ?? 0;
     $("daily").textContent = has ? sgnUsd(dp) : "—"; $("daily").className = "v " + cls(dp);
-    const limit = (st.day_start_equity || start) * (st.daily_loss_limit_pct || 5) / 100;
+    const noLimit = st.daily_loss_limit_pct === 0;
+    const limit = (st.day_start_equity || start) * (noLimit ? 10 : (st.daily_loss_limit_pct || 5)) / 100;
     const used = dp < 0 ? Math.min(1, -dp / limit) : 0;
     $("dailyMeter").style.width = (used * 100) + "%";
     $("dailyMeter").className = used > .8 ? "crit" : used > .5 ? "warn" : "";
-    $("dailyS").textContent = has ? (dp < 0 ? `${(used * 100).toFixed(0)}% del límite diario (−${usd(limit)})` : `Límite de pérdida diaria: −${usd(limit)}`) : "";
+    $("dailyS").textContent = !has ? "" : noLimit
+      ? (dp < 0 ? `Sin corte diario: el bot invierte un ${Math.round(75 * used)}% menos por operación hasta recuperarse` : "Sin límite diario: el bot reduce el tamaño tras pérdidas")
+      : (dp < 0 ? `${(used * 100).toFixed(0)}% del límite diario (−${usd(limit)})` : `Límite de pérdida diaria: −${usd(limit)}`);
     const s = S.stats || { n: 0 };
     $("realized").textContent = s.n ? sgnUsd(s.pnl_usd) : usd(0); $("realized").className = "v " + cls(s.n ? s.pnl_usd : 0);
     $("realizedS").textContent = s.n ? `${s.n} operaciones cerradas` : "Sin operaciones cerradas";
@@ -596,10 +599,12 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("winrateS").textContent = s.n ? `Ganancia media ${pct(s.avg_win)} · pérdida media ${pct(s.avg_loss)}` : "Aparece con la primera operación";
     $("expect").textContent = s.n ? pct(s.expectancy, 2) : "—"; $("expect").className = "v " + cls(s.n ? s.expectancy : 0);
     $("expectS").textContent = s.n ? `Profit factor ${s.profit_factor == null ? "∞ (sin pérdidas)" : s.profit_factor.toFixed(2)} · peor ${pct(s.worst, 0)}` : "Media de retorno por operación";
-    const n = (st.positions || []).length, mx = st.max_open || 4;
-    $("openN").textContent = has ? `${n} / ${mx}` : "—";
-    $("openMeter").style.width = (100 * n / mx) + "%";
-    $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
+    const n = (st.positions || []).length, mx = st.max_open ?? 4;
+    const heat = st.heat_pct ?? null, hmax = st.max_heat_pct || 30;
+    $("openN").textContent = has ? (mx ? `${n} / ${mx}` : `${n}`) : "—";
+    $("openMeter").style.width = (mx ? 100 * n / mx : 100 * Math.min(1, (heat || 0) / hmax)) + "%";
+    $("openS").textContent = has ? (mx ? (n ? `${usd(invested)} invertidos` : "Esperando señal")
+      : `Sin límite de posiciones · riesgo abierto ${heat != null ? heat.toFixed(1) : "—"}% de ${hmax}% máx.`) : "";
 
 
     const up = S.update || {};
