@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MemeBot · Panel</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233987e5'/%3E%3Cpath d='M7 21l6-7 5 4 7-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
 :root {
   color-scheme: dark;
@@ -25,7 +27,7 @@
   --grid: #2a2a28;
   --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.25);
   --radius: 14px;
-  --font: ui-sans-serif, -apple-system, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: Inter, ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: light) {
@@ -54,8 +56,36 @@ a:hover { color: var(--accent); }
 button { font: inherit; }
 .wrap { max-width: 1280px; margin: 0 auto; padding: 20px 24px 48px; }
 
+/* ---------- navegación por secciones ---------- */
+.nav { position: sticky; top: 0; z-index: 5; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+       margin: 0 -24px 22px; padding: 10px 24px; background: color-mix(in srgb, var(--bg) 88%, transparent);
+       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+.nav::-webkit-scrollbar { display: none; }
+.nav button { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 10px;
+       border: 1px solid transparent; background: transparent; color: var(--muted); font-weight: 600; font-size: 13.5px; cursor: pointer; }
+.nav button:hover { color: var(--text); background: var(--surface-2); }
+.nav button.on { color: var(--text); background: var(--surface); border-color: var(--border); box-shadow: var(--shadow); }
+.nav button:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.nav .n { font-size: 11px; font-weight: 700; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; display: inline-grid; place-items: center;
+       background: var(--accent-soft); color: var(--accent); }
+.nav .n:empty { display: none; }
+[data-tab][hidden] { display: none !important; }
+.page-h { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 0 14px; }
+.page-h h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.page-h p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.stack { display: grid; gap: 18px; }
+.areas { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.area { padding: 16px 18px; cursor: pointer; text-align: left; font: inherit; color: inherit; display: grid; gap: 6px; transition: border-color .15s, transform .15s; }
+.area:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); transform: translateY(-1px); }
+.area .v { font-size: 22px; font-weight: 650; letter-spacing: -.01em; }
+.area .go { font-size: 12px; color: var(--accent); font-weight: 600; }
+@media (max-width: 900px) { .areas { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .area { transition: none; } .area:hover { transform: none; } }
+tr.click { cursor: pointer; }
+.hint { font-size: 12px; color: var(--muted); margin: 6px 0 10px; }
+
 /* ---------- cabecera ---------- */
-header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 17px; letter-spacing: -.01em; }
 .brand svg { width: 28px; height: 28px; }
 .pills { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -84,7 +114,7 @@ header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-
 .top { grid-template-columns: minmax(280px, 1.15fr) 2fr; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
 .card-h { display: flex; align-items: center; gap: 12px; padding: 16px 18px 0; }
-.card-h h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--text-2); letter-spacing: .01em; }
+.card-h h2 { margin: 0; font-size: 14px; font-weight: 650; color: var(--text); letter-spacing: -.005em; }
 .card-b { padding: 14px 18px 18px; }
 .hero { padding: 20px 22px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
 .label { font-size: 12.5px; color: var(--muted); font-weight: 550; }
@@ -187,6 +217,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 }
 @media (max-width: 560px) {
   .wrap { padding: 16px 16px 40px; }
+  .nav { margin: 0 -16px 18px; padding: 8px 16px; }
   .hero-value { font-size: 38px; }
   .tiles { grid-template-columns: 1fr 1fr; }
   .tile .v { font-size: 20px; }
@@ -297,9 +328,19 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     </div>
   </header>
 
+  <nav class="nav" id="nav" aria-label="Secciones del panel">
+    <button data-go="resumen">Resumen</button>
+    <button data-go="cripto">Cripto <span class="n" id="navCrypto"></span></button>
+    <button data-go="acciones">Acciones <span class="n" id="navStocks"></span></button>
+    <button data-go="cazador">Cazador y traders</button>
+    <button data-go="cerebro">Cerebro</button>
+    <button data-go="mercado">Mercado y noticias</button>
+  </nav>
+
   <div class="banner" id="banner"></div>
 
-  <section class="grid top">
+  <div class="page-h" data-tab="resumen"><h1>Resumen</h1><p id="resSub">Saldo, posiciones y cómo va cada parte del bot.</p></div>
+  <section class="grid top" data-tab="resumen">
     <div class="card hero">
       <div>
         <div class="label">Saldo total</div>
@@ -324,7 +365,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     </div>
   </section>
 
-  <section class="card" style="margin-top:16px">
+  <section class="grid areas" style="margin-top:16px" data-tab="resumen" id="areas"></section>
+
+  <section class="card" style="margin-top:16px" data-tab="resumen">
     <div class="card-h"><h2>Evolución del saldo</h2>
       <div class="seg" id="range">
         <button data-r="3600">1H</button><button data-r="86400" class="on">24H</button><button data-r="604800">7D</button><button data-r="0">Todo</button>
@@ -333,17 +376,19 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     <div class="card-b"><div class="chart" id="chart"></div></div>
   </section>
 
-  <section class="card" style="margin-top:16px">
+  <div class="page-h" data-tab="mercado"><h1>Mercado y noticias</h1><p>Contexto que usa el bot para frenar o seguir.</p></div>
+  <section class="card" data-tab="mercado">
     <div class="card-h"><h2>Analista Claude</h2><span class="pill" id="anlPill" style="margin-left:auto">—</span></div>
     <div class="card-b" id="anl"></div>
   </section>
 
-  <section class="card" style="margin-top:16px">
+  <section class="card" style="margin-top:16px" data-tab="mercado">
     <div class="card-h"><h2>Contexto de mercado y noticias</h2><span class="pill" id="ctxPill" style="margin-left:auto">—</span></div>
     <div class="ctx" id="ctx" style="margin-top:10px; border-top:1px solid var(--border)"></div>
   </section>
 
-  <section class="card" style="margin-top:16px" id="liveCard">
+  <div class="page-h" data-tab="cripto"><h1>Cripto</h1><p>Memecoins de Solana: mercado en directo, operaciones y escáner.</p></div>
+  <section class="card" data-tab="cripto" id="liveCard">
     <div class="card-h"><h2>Mercado en directo</h2><span class="sub" id="liveSub" style="margin-left:auto"></span></div>
     <div class="live" style="margin-top:12px; border-top:1px solid var(--border)">
       <div class="tlist" id="tlist"></div>
@@ -356,8 +401,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     </div>
   </section>
 
-  <section class="card" style="margin-top:16px">
-    <div class="card-h"><h2>Acciones · alertas</h2><span class="sub" id="stkSub" style="margin-left:auto"></span>
+  <div class="page-h" data-tab="acciones"><h1>Acciones</h1><p>Cartera simulada con las alertas, lista vigilada y lo que aprende el cerebro de acciones.</p></div>
+  <section class="card" data-tab="acciones">
+    <div class="card-h"><h2>Cartera simulada y alertas</h2><span class="sub" id="stkSub" style="margin-left:auto"></span>
       <button class="btn" id="stkMute" style="height:28px;font-size:12px">Silenciar alertas</button></div>
     <div class="card-b" id="stkPaper" style="padding-bottom:0"></div>
     <div class="stk" style="margin-top:10px; border-top:1px solid var(--border)">
@@ -385,22 +431,24 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     <div class="card-b" id="stkBrain" style="border-top:1px solid var(--border)"></div>
   </section>
 
-  <section class="card" style="margin-top:16px">
-    <div class="card-h"><h2>Cazador y copia de carteras · simulado</h2><span class="pill" id="huntPill" style="margin-left:auto">—</span></div>
+  <div class="page-h" data-tab="cazador"><h1>Cazador y traders</h1><p>Lanzamientos nuevos, copia de carteras y análisis de habilidad o suerte. Siempre simulado.</p></div>
+  <section class="card" data-tab="cazador">
+    <div class="card-h"><h2>Cazador y copia de carteras</h2><span class="pill" id="huntPill" style="margin-left:auto">—</span></div>
     <div class="card-b" id="hunter"></div>
   </section>
 
-  <section class="card" style="margin-top:16px">
-    <div class="card-h"><h2>Cerebro</h2><span class="pill" id="brainPill" style="margin-left:auto">—</span></div>
+  <div class="page-h" data-tab="cerebro"><h1>Cerebro</h1><p>Cómo aprende el bot de cripto y qué estrategia usa.</p></div>
+  <section class="card" data-tab="cerebro">
+    <div class="card-h"><h2>Cerebro de cripto</h2><span class="pill" id="brainPill" style="margin-left:auto">—</span></div>
     <div class="card-b" id="brain"></div>
   </section>
 
-  <section class="card" style="margin-top:16px">
-    <div class="card-h"><h2>Posiciones abiertas</h2></div>
+  <section class="card" style="margin-top:16px" data-tab="resumen">
+    <div class="card-h"><h2>Posiciones abiertas de cripto</h2></div>
     <div class="card-b table-wrap" id="positions"></div>
   </section>
 
-  <section class="grid bottom" style="margin-top:16px">
+  <section class="grid bottom" style="margin-top:16px" data-tab="cripto">
     <div class="card">
       <div class="card-h"><h2>Operaciones</h2>
         <div class="tabs" id="histTabs"><button data-t="closed" class="on">Cerradas</button><button data-t="fills">Ejecuciones</button></div>
@@ -487,6 +535,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 
   function render() {
     safe("cabecera", renderHeader);
+    safe("resumen", renderOverview);
     [["saldo", renderChart], ["analista", renderAnalyst], ["contexto", renderContext], ["mercado", renderTokenList],
      ["acciones", renderStocks], ["cerebro de acciones", renderStockBrain], ["cartera de acciones", renderStockPaper],
      ["cerebro", renderBrain], ["cazador", renderHunter], ["posiciones", renderPositions], ["operaciones", renderHistory], ["actividad", renderActivity]]
@@ -819,11 +868,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     if (!p) { el.innerHTML = ""; return; }
     const eur = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
     const open = (k.open_alerts || []).map(a => { const r = a.pending_open ? 0 : (a.price / a.entry - 1) * 100, pnl = (a.amount || p.per_alert) * r / 100 - (a.fees_eur != null ? a.fees_eur : 2 * p.fee);
-      return `<tr><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}${a.pending_open ? " · compra en cuanto se pueda operar" : a.price_session === "pre" ? " · precio pre-market" : a.price_session === "post" ? " · precio after-hours" : a.price_session === "cierre" ? " · bolsa cerrada" : ""}</div></td><td class="sub">${dt(a.entry_ts)}</td>
+      return `<tr class="click" data-sym="${esc(a.symbol)}" title="Ver velas en directo"><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}${a.pending_open ? " · compra en cuanto se pueda operar" : a.price_session === "pre" ? " · precio pre-market" : a.price_session === "post" ? " · precio after-hours" : a.price_session === "cierre" ? " · bolsa cerrada" : ""}</div></td><td class="sub">${dt(a.entry_ts)}</td>
         <td class="num">${a.entry.toFixed(2)}</td><td class="num">${(a.price || a.entry).toFixed(2)}</td>
         <td class="num">${a.stop.toFixed(2)} / ${a.tp ? a.tp.toFixed(2) : "—"}</td><td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(r)}">${pct(r)}</div></td></tr>`; }).join("");
     const closed = (k.closed || []).slice(0, 15).map(c => { const pnl = c.pnl_eur != null ? c.pnl_eur : (c.amount || p.per_alert) * c.ret / 100 - 2 * p.fee;
-      return `<tr><td><b>${esc(c.symbol)}</b><div class="sub">${esc(c.setup || "")}</div></td><td class="sub">${dt(c.exit_ts)}</td>
+      return `<tr class="click" data-sym="${esc(c.symbol)}" title="Ver gráfico con tu entrada y salida"><td><b>${esc(c.symbol)}</b><div class="sub">${esc(c.setup || "")}</div></td><td class="sub">${dt(c.exit_ts)}</td>
         <td class="num">${c.entry.toFixed(2)}</td><td class="num">${c.exit.toFixed(2)}</td><td class="sub">${esc(c.reason || "")}</td>
         <td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(c.ret)}">${pct(c.ret)}</div></td></tr>`; }).join("");
     el.innerHTML = `<div class="funnel" style="grid-template-columns:repeat(5,1fr)">
@@ -832,6 +881,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <div><b class="${cls(p.open_pnl)}">${eur(p.open_pnl)}</b><span>Abiertas (${p.open}${p.pending_open ? `, ${p.pending_open} esperando la apertura` : ""})${p.fees_open != null ? `: ${eur(p.move_open)} por precio y ${eur(-p.fees_open)} de comisiones` : ""}</span></div>
         <div><b>${p.win_rate != null ? p.win_rate + "%" : "—"}</b><span>Acierto</span></div>
         <div><b>${p.per_alert.toFixed(0)} €</b><span>por alerta · costes de ${p.broker || "tu broker"}</span></div></div>
+      ${(k.open_alerts || []).length || (k.closed || []).length ? `<p class="hint">Pulsa una acción para ver sus velas en directo (con pre-market) y tu entrada, stop, objetivo y salida.</p>` : ""}
       <p class="sub" style="margin:0 0 10px">Lo que habría pasado invirtiendo ${p.per_alert.toFixed(0)} € en cada alerta de compra, con la comisión de tu broker. Precios en la moneda de cada acción.</p>
       ${open ? `<div class="table-wrap"><table><thead><tr><th>Abierta</th><th>Desde</th><th class="num">Entrada</th><th class="num">Ahora</th><th class="num">Stop / objetivo</th><th class="num">Resultado</th></tr></thead><tbody>${open}</tbody></table></div>` : ""}
       ${closed ? `<div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Cerrada</th><th>Cuándo</th><th class="num">Entrada</th><th class="num">Salida</th><th>Motivo</th><th class="num">Resultado</th></tr></thead><tbody>${closed}</tbody></table></div>` : ""}`;
@@ -1040,6 +1090,108 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   }
 
 
+  // ---------- pestañas ----------
+  const TABS = ["resumen", "cripto", "acciones", "cazador", "cerebro", "mercado"];
+  function showTab(t, push) {
+    if (!TABS.includes(t)) t = "resumen";
+    document.querySelectorAll("[data-tab]").forEach(el => { el.hidden = el.dataset.tab !== t; });
+    document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.go === t));
+    if (push && location.hash !== "#" + t) history.replaceState(null, "", location.pathname + location.search + "#" + t);
+    try { localStorage.setItem("tab", t); } catch (e) {}
+    if (S) render();                        // los gráficos se redibujan al hacerse visibles
+    window.scrollTo({ top: 0 });
+  }
+  $("nav").addEventListener("click", e => { const b = e.target.closest("button[data-go]"); if (b) showTab(b.dataset.go, true); });
+  window.addEventListener("hashchange", () => showTab(location.hash.slice(1)));
+  (() => { let t = location.hash.slice(1); if (!TABS.includes(t)) { try { t = localStorage.getItem("tab") || ""; } catch (e) {} } showTab(t || "resumen", true); })();
+
+  function renderOverview() {
+    const k = S.stocks || {}, p = k.paper || {}, H = S.hunter || {}, sm = H.summary || {}, b = S.brain || {};
+    const nPos = ((S.status || {}).positions || []).length, nStk = (k.open_alerts || []).length;
+    $("navCrypto").textContent = nPos || ""; $("navStocks").textContent = nStk || "";
+    const eur = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    const hp = ["cazador", "copia"].reduce((a, x) => a + ((sm[x] || {}).pnl || 0), 0);
+    const st = (b.status || (S.status || {}).brain?.status || "—");
+    $("areas").innerHTML = `
+      <button class="card area" data-go="acciones"><span class="label">Acciones · cartera simulada</span>
+        <span class="v ${cls(p.total)}">${eur(p.total)}</span><span class="sub">${nStk} abiertas · ${p.closed || 0} cerradas${p.win_rate != null ? ` · acierto ${p.win_rate}%` : ""}</span><span class="go">Ver acciones →</span></button>
+      <button class="card area" data-go="cazador"><span class="label">Cazador y copia · simulado</span>
+        <span class="v ${cls(hp)}">${(hp >= 0 ? "+" : "−") + "$" + Math.abs(hp).toFixed(2)}</span><span class="sub">${(H.study || {}).edge || (H.copy || {}).edge ? "Con ventaja demostrada" : "Midiendo en silencio"}</span><span class="go">Ver cazador →</span></button>
+      <button class="card area" data-go="cerebro"><span class="label">Cerebro de cripto</span>
+        <span class="v" style="font-size:17px">${esc(st === "recopilando" ? "Aprendiendo" : st === "defensivo" ? "Modo defensivo" : st === "activo" ? "Al mando" : st)}</span>
+        <span class="sub">${esc(((b.status_text || "") + "").slice(0, 90))}</span><span class="go">Ver cerebro →</span></button>`;
+    $("areas").querySelectorAll("[data-go]").forEach(x => x.onclick = () => showTab(x.dataset.go, true));
+  }
+
+  // ---------- velas en directo de una acción de la cartera ----------
+  let slive = null, sliveTimer = null, sliveSym = null;
+  $("stkPaper").addEventListener("click", ev => { const tr = ev.target.closest("tr[data-sym]"); if (tr) openStockLive(tr.dataset.sym); });
+  async function openStockLive(sym) {
+    sliveSym = sym;
+    $("tradeBg").style.display = "grid";
+    $("tTitle").textContent = sym; $("tSub").textContent = "Cargando velas…"; $("tInfo").innerHTML = ""; $("tNote").textContent = "";
+    $("tChart").innerHTML = `<div class="empty">Descargando velas…</div>`;
+    await drawStockLive(true);
+    clearInterval(sliveTimer);
+    sliveTimer = setInterval(() => drawStockLive(false), 30000);      // en directo: cada 30 s
+  }
+  async function drawStockLive(first) {
+    const sym = sliveSym;
+    let d;
+    try {
+      const r = await fetch("api/stock_live" + (location.search ? location.search + "&" : "?") + "symbol=" + encodeURIComponent(sym), { headers: H, cache: "no-store" });
+      d = await r.json(); if (!r.ok) throw new Error(d.error || r.status);
+    } catch (e) { if (first) { $("tSub").textContent = "No se pudo cargar"; $("tChart").innerHTML = `<div class="empty">No se pudieron descargar las velas. Vuelve a intentarlo en unos segundos.</div>`; } return; }
+    if (sym !== sliveSym) return;
+    const pos = d.position, last = (d.closed || [])[d.closed.length - 1], rec = pos || last, cur = d.currency || "";
+    const ses = { pre: "pre-market", regular: "mercado abierto", post: "after-hours", closed: "bolsa cerrada" }[d.session] || "";
+    $("tTitle").textContent = `${sym} · ${d.name || ""}`;
+    $("tSub").textContent = `velas de ${d.interval.replace("m", " min").replace("1d", "1 día")} · ${ses}${pos ? " · se actualiza cada 30 s" : ""}`;
+    if (!d.candles.length || !window.LightweightCharts) { $("tChart").innerHTML = `<div class="empty">Sin velas ahora mismo.</div>`; return; }
+    if (first || !slive) {
+      const el = $("tChart"); el.innerHTML = "";
+      if (slive) { slive.chart.remove(); slive = null; }
+      const chart = LightweightCharts.createChart(el, { autoSize: true,
+        layout: { background: { type: "solid", color: "transparent" }, textColor: css("--muted"), fontFamily: css("--font") },
+        grid: { vertLines: { color: css("--grid") }, horzLines: { color: css("--grid") } },
+        rightPriceScale: { borderColor: css("--border") }, timeScale: { borderColor: css("--border"), timeVisible: d.interval !== "1d" },
+        localization: { timeFormatter: x => new Date(x * 1000).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) } });
+      const ser = chart.addCandlestickSeries({ upColor: "#16a34a", downColor: "#dc2626", borderVisible: false, wickUpColor: "#16a34a", wickDownColor: "#dc2626" });
+      slive = { chart, ser, lines: [] };
+    }
+    const { chart, ser } = slive;
+    const seen = new Set(), cd = d.candles.filter(c => !seen.has(c[0]) && seen.add(c[0]));
+    ser.setData(cd.map(c => ({ time: c[0], open: c[1], high: c[2], low: c[3], close: c[4] })));
+    const t0 = cd[0][0], t1 = cd[cd.length - 1][0], step = cd.length > 1 ? cd[1][0] - cd[0][0] : 300;
+    const snap = x => Math.min(Math.max(Math.floor((x - t0) / step) * step + t0, t0), t1);
+    const marks = [];
+    if (rec && rec.entry_ts && !rec.pending_open) marks.push({ time: snap(rec.entry_ts), position: "belowBar", color: "#3987e5", shape: "arrowUp", text: "COMPRA" });
+    (d.closed || []).forEach(c => { if (c.exit_ts) marks.push({ time: snap(c.exit_ts), position: "aboveBar", color: "#f59e0b", shape: "arrowDown", text: "VENTA" }); });
+    ser.setMarkers(marks.sort((a, b) => a.time - b.time));
+    slive.lines.forEach(l => ser.removePriceLine(l)); slive.lines = [];
+    const line = (price, color, title, style = 0) => price && slive.lines.push(ser.createPriceLine({ price, color, lineWidth: 1, lineStyle: style, axisLabelVisible: true, title }));
+    if (pos) { line(pos.entry, "#3987e5", pos.pending_open ? "Compra prevista" : "Tu entrada"); line(pos.stop, "#dc2626", "Stop", 2); line(pos.tp, "#16a34a", "Objetivo", 2); }
+    else if (last) { line(last.entry, "#3987e5", "Tu entrada"); line(last.exit, "#f59e0b", "Tu salida", 2); }
+    if (first) chart.timeScale().fitContent();
+    const now = d.price_now, fx = d.eur_rate || 1, amt = (rec && rec.amount) || 100;
+    const money = v => (cur && cur !== "EUR" ? `${v.toFixed(2)} ${esc(cur)} · ` : "") + `${(v * fx).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+    const eur = v => (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    if (pos) {
+      const r = pos.pending_open ? 0 : (now / pos.entry - 1) * 100, pnl = amt * r / 100 - (pos.fees_eur ?? 2);
+      $("tInfo").innerHTML = `<div class="kv" style="grid-template-columns:repeat(4,auto 1fr);gap:8px 16px">
+        <span>Entrada</span><b>${money(pos.entry)}</b><span>Ahora (${esc(ses)})</span><b class="${cls(r)}">${money(now)} (${pct(r)})</b>
+        <span>Stop</span><b class="down">${money(pos.stop)}</b><span>Objetivo</span><b class="up">${pos.tp ? money(pos.tp) : "—"}</b>
+        <span>Invertido</span><b>${amt.toFixed(0)} €</b><span>Resultado con comisiones</span><b class="${cls(pnl)}">${eur(pnl)}</b></div>
+        <p class="sub" style="margin:10px 0 0">${esc(pos.setup || "")} · alerta del ${dt(pos.entry_ts)} · plazo máximo ${pos.max_days} días de mercado${pos.pending_open ? " · esperando a poder operar para comprar" : ""}</p>`;
+    } else if (last) {
+      const fromExit = now && last.exit ? (now / last.exit - 1) * 100 : null;
+      $("tInfo").innerHTML = `<div class="kv" style="grid-template-columns:repeat(4,auto 1fr);gap:8px 16px">
+        <span>Entrada</span><b>${money(last.entry)}</b><span>Salida</span><b class="${cls(last.ret)}">${money(last.exit)} (${pct(last.ret)})</b>
+        <span>Resultado</span><b class="${cls(last.pnl_eur)}">${last.pnl_eur != null ? eur(last.pnl_eur) : "—"}</b><span>Ahora</span><b>${now ? money(now) : "—"}${fromExit != null ? ` <span class="${cls(fromExit)}">(${pct(fromExit)} desde tu salida)</span>` : ""}</b></div>
+        <p class="sub" style="margin:10px 0 0">Motivo de la salida: ${esc(last.reason || "")} · ${dt(last.exit_ts)}</p>`;
+    }
+  }
+
   // ---------- detalle de una operación cerrada (gráfico + cuánto valdría ahora) ----------
   let tlw = null;
   document.getElementById("history").addEventListener("click", ev => {
@@ -1048,8 +1200,10 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   });
   $("tClose").onclick = () => closeTrade();
   $("tradeBg").onclick = e => { if (e.target.id === "tradeBg") closeTrade(); };
-  function closeTrade() { $("tradeBg").style.display = "none"; if (tlw) { tlw.remove(); tlw = null; } }
+  function closeTrade() { $("tradeBg").style.display = "none"; if (tlw) { tlw.remove(); tlw = null; }
+    clearInterval(sliveTimer); sliveTimer = null; sliveSym = null; if (slive) { slive.chart.remove(); slive = null; } }
   async function openTrade(mint) {
+    clearInterval(sliveTimer); sliveSym = null; if (slive) { slive.chart.remove(); slive = null; }
     $("tradeBg").style.display = "grid";
     $("tTitle").textContent = "Cargando…"; $("tSub").textContent = ""; $("tInfo").innerHTML = "";
     $("tChart").innerHTML = `<div class="empty">Descargando el gráfico…</div>`;

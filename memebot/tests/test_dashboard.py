@@ -114,3 +114,23 @@ def test_api_is_valid_json_even_with_infinite_profit_factor(tmp_path):
         assert json.loads(body)["stats"]["profit_factor"] is None
     finally:
         httpd.shutdown()
+
+
+def test_stock_live_chart_with_entry_and_exit(tmp_path):
+    import httpx
+    from bot.dashboard import stock_live, _STOCK_LIVE
+    _STOCK_LIVE.clear()
+    (tmp_path / "stocks.json").write_text(json.dumps({
+        "positions": {"SAP.DE": {"entry": 100, "entry_ts": 1795600000, "stop": 95, "tp": 110, "amount": 100}},
+        "closed": [{"symbol": "AAPL", "entry": 50, "exit": 55, "entry_ts": 1795500000, "exit_ts": 1795550000, "ret": 10}],
+        "watchlist": [{"symbol": "SAP.DE", "name": "SAP SE", "currency": "EUR", "eur_rate": 1.0}]}))
+
+    def handler(req):
+        assert req.url.params["includePrePost"] == "true"
+        return httpx.Response(200, json={"chart": {"result": [{"meta": {}, "timestamp": [1, 2, 3], "indicators": {
+            "quote": [{"open": [1, 2, None], "high": [2, 3, 4], "low": [0.5, 1, 2], "close": [1.5, 2.5, 3], "volume": [1, 1, 1]}]}}]}})
+    c = httpx.Client(transport=httpx.MockTransport(handler))
+    d = stock_live(tmp_path, "SAP.DE", client=c)
+    assert d["name"] == "SAP SE" and len(d["candles"]) == 2 and d["position"]["stop"] == 95 and d["price_now"] == 2.5
+    assert stock_live(tmp_path, "AAPL", client=c)["closed"][0]["exit"] == 55
+    assert stock_live(tmp_path, "MSFT", client=c) is None             # no está en la cartera

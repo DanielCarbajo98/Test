@@ -202,6 +202,56 @@ def trade_detail(state: Path, mint: str, client=None) -> dict | None:
     return {**out, "trade": trade}
 
 
+_STOCK_LIVE: dict[str, tuple[float, dict]] = {}
+
+
+def stock_live(state: Path, sym: str, client=None) -> dict | None:
+    """Velas intradía (con pre-market y after-hours) de una acción de la cartera simulada, con su entrada y salida."""
+    import httpx
+    st = _read_json(state / "stocks.json", {})
+    pos = (st.get("positions") or {}).get(sym)
+    closed = [c for c in st.get("closed") or [] if c.get("symbol") == sym]
+    if not pos and not closed:
+        return None
+    hit = _STOCK_LIVE.get(sym)
+    if hit and time.time() - hit[0] < 30:
+        return hit[1]
+    rec = pos or closed[-1]
+    since = float(rec.get("entry_ts") or time.time() - 86400)
+    age_d = (time.time() - since) / 86400
+    if age_d < 4:
+        rng, iv = "5d", "5m"
+    elif age_d < 25:
+        rng, iv = "1mo", "30m"
+    else:
+        rng, iv = "6mo", "1d"
+    http = client or httpx.Client(timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+    out = {"symbol": sym, "interval": iv, "candles": [], "position": pos, "closed": closed[-5:],
+           "alerts": [a for a in st.get("alerts") or [] if a.get("symbol") == sym][-10:]}
+    row = next((r for r in st.get("watchlist") or [] if r.get("symbol") == sym), {})
+    out.update(name=row.get("name") or rec.get("name") or sym, currency=row.get("currency") or rec.get("currency", ""),
+               eur_rate=row.get("eur_rate") or 1.0)
+    try:
+        r = http.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}",
+                     params={"range": rng, "interval": iv, "includePrePost": "true" if iv != "1d" else "false"})
+        res = r.json()["chart"]["result"][0]
+        q = res["indicators"]["quote"][0]
+        rows = [[int(t), o, h, lo, c, v or 0] for t, o, h, lo, c, v in
+                zip(res.get("timestamp") or [], q["open"], q["high"], q["low"], q["close"], q["volume"])
+                if None not in (o, h, lo, c)]
+        out["candles"] = rows
+        out["price_now"] = rows[-1][4] if rows else None
+        per = res["meta"].get("currentTradingPeriod") or {}
+        now = time.time()
+        out["session"] = next((k for k in ("pre", "regular", "post") if (per.get(k) or {}).get("start", 0) <= now
+                               <= (per.get(k) or {}).get("end", 0)), "closed")
+    except Exception:  # noqa: BLE001
+        pass
+    if out["candles"]:
+        _STOCK_LIVE[sym] = (time.time(), out)
+    return out
+
+
 def _hunter_view(state: Path) -> dict:
     h = _read_json(state / "hunter.json", {})
     sl = h.get("sleeves") or {}
@@ -320,6 +370,12 @@ def make_handler(state: Path, token: str):
                     return self._json({"error": "símbolo no válido"}, 400)
                 d = _read_json(state / "stock_charts" / f"{sym.replace('.', '_')}.json", None)
                 return self._json(d) if d else self._json({"error": "sin gráfico"}, 404)
+            if path == "/api/stock_live":
+                sym = (parse_qs(urlparse(self.path).query).get("symbol") or [""])[0].upper()
+                if not sym or not all(ch.isalnum() or ch in ".-^=" for ch in sym):
+                    return self._json({"error": "símbolo no válido"}, 400)
+                d = stock_live(state, sym)
+                return self._json(d) if d else self._json({"error": "no está en tu cartera"}, 404)
             if path == "/api/trade":
                 mint = (parse_qs(urlparse(self.path).query).get("mint") or [""])[0]
                 d = trade_detail(state, mint)
