@@ -38,10 +38,17 @@ STRUCTURE_FILES = ["Dockerfile", "docker-compose.yml"]
 NEVER_TOUCH = {".env", "config.yaml", "state", "data", "data_launches", ".update"}
 
 
-def latest_sha(http: httpx.Client, repo: str, branch: str) -> str:
+def latest_commit(http: httpx.Client, repo: str, branch: str) -> tuple[str, str]:
+    """(sha, primera línea del mensaje) del último commit de la rama."""
     r = http.get(f"{API}/repos/{repo}/commits", params={"sha": branch, "per_page": 1})
     r.raise_for_status()
-    return r.json()[0]["sha"]
+    c = r.json()[0]
+    lines = ((c.get("commit") or {}).get("message") or "").strip().splitlines()
+    return c["sha"], (lines[0] if lines else "")
+
+
+def latest_sha(http: httpx.Client, repo: str, branch: str) -> str:
+    return latest_commit(http, repo, branch)[0]
 
 
 def download(http: httpx.Client, repo: str, sha: str, dest: Path) -> Path:
@@ -145,7 +152,8 @@ def check_once(work: Path, repo: str, branch: str, token: str, test: bool = True
     http = http or httpx.Client(timeout=120, headers={"Authorization": f"Bearer {token}",
                                                       "Accept": "application/vnd.github+json"})
     current = (work / "bot" / "VERSION").read_text().strip() if (work / "bot" / "VERSION").exists() else ""
-    sha = latest_sha(http, repo, branch)
+    sha, title = latest_commit(http, repo, branch)
+    what = f"\nCambio: {title[:300]}" if title else ""
     status.update({"checked_at": int(time.time()), "current": current, "latest": sha})
     if sha == current:
         status["state"] = "al día"
@@ -165,12 +173,12 @@ def check_once(work: Path, repo: str, branch: str, token: str, test: bool = True
             structural = [f for f in rebuild if f in STRUCTURE_FILES or not bootstrap_active()]
             if structural:
                 notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Trae cambios de Docker "
-                       f"({', '.join(structural)}): haz doble clic en INICIAR cuando puedas para completarla.")
+                       f"({', '.join(structural)}): haz doble clic en INICIAR cuando puedas para completarla." + what)
             elif rebuild:
                 notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Instala sus librerías nuevas "
-                       f"y se reinicia solo.")
+                       f"y se reinicia solo." + what)
             else:
-                notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Se reinicia solo.")
+                notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Se reinicia solo." + what)
         shutil.rmtree(work / ".update", ignore_errors=True)
     status["needs_iniciar"] = image_outdated(work)
     status_f.write_text(json.dumps(status, indent=1))
@@ -209,6 +217,8 @@ def main():
         try:                                   # vigilante (cada minuto) y resumen diario de las 21:00
             watchdog.check_health(state, memo)
             watchdog.maybe_daily_summary(state, memo)
+            from . import reports                  # informe diario para la mejora automática semanal
+            reports.maybe_publish(state, repo, branch, token, notify)
         except Exception as e:  # noqa: BLE001
             log.warning("Vigilante: %s", e)
         time.sleep(60)
