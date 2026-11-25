@@ -437,9 +437,15 @@ class Bot:
                            realized_usd=0.0, entry_liquidity=s.liquidity_usd, opened_at=time.time(),
                            peak_price=fill.price, pool=s.pair_address)
             self.pf.open(pos, self.strategy_label(), fill.tx)
+            ex = self.exit_cfg()
+            tps = " / ".join(f"+{g:g}% (vende {q:g}%)" for g, q in ex.take_profits)
             self.notify.send(
-                f"🟢 BUY {s.symbol} ${fill.usd:.2f} @ {fill.price:.6g} [{c.mode}] | {self.strategy_label()} | "
-                f"liq ${s.liquidity_usd:,.0f} | 1h {feat.get('ret_60m', 0):+.0f}% | top10 {rep.top10_pct}% | "
+                f"🟢 BUY {s.symbol} ${fill.usd:.2f} @ {fill.price:.6g} [{c.mode}] | {self.strategy_label()}\n"
+                f"🛑 Stop loss: {fill.price * (1 - ex.stop_loss_pct / 100):.6g} (−{ex.stop_loss_pct:g}%)\n"
+                f"🎯 Take profit: {tps}\n"
+                f"📉 Trailing: −{ex.trailing_stop_pct:g}% desde el máximo (tras +{ex.trailing_activation_pct:g}%) · "
+                f"⏳ sale si en {ex.time_stop_minutes} min no sube +{ex.time_stop_min_gain_pct:g}%\n"
+                f"liq ${s.liquidity_usd:,.0f} | 1h {feat.get('ret_60m', 0):+.0f}% | top10 {rep.top10_pct}%\n"
                 f"https://dexscreener.com/solana/{s.pair_address}")
         self.pf.save()
 

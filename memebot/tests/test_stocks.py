@@ -54,3 +54,41 @@ def test_breakout_not_given_when_overextended():
     a = st.analyze(bars(spike))
     assert a["signal"] is None
     assert any("salto brusco" in t and not ok for t, ok in a["checks"]["Ruptura"])
+
+
+def test_stock_brain_learns_and_alerts_carry_sl_tp(tmp_path):
+    from bot import stocks_brain
+    rng = np.random.default_rng(1)
+    bars = {}
+    for k in range(40):                       # acciones con tendencia alcista y retrocesos que se recuperan
+        c = [100.0]
+        for i in range(700):
+            c.append(c[-1] * (1 + 0.0012 + rng.normal(0, 0.012) - (0.05 if i % 60 == 30 else 0)))
+        c = np.array(c)
+        ts = 1_600_000_000 + 86400 * np.arange(len(c))
+        bars[f"S{k}"] = {"ts": ts.tolist(), "o": c.tolist(), "h": (c * 1.01).tolist(), "l": (c * 0.99).tolist(),
+                         "c": c.tolist(), "v": [1e6] * len(c)}
+    res = stocks_brain.run(tmp_path, bars, [])
+    pull = res["setups"]["Retroceso en tendencia"]
+    assert pull["in_sample"]["n"] > 0 and "stop_atr" in pull["params"] and res["lessons"]
+    params, active, info = stocks_brain.params_for(tmp_path, "Retroceso en tendencia")
+    assert params["stop_atr"] == pull["params"]["stop_atr"]
+    # una señal con estos parámetros lleva stop loss y take profit
+    up = np.linspace(100, 200, 300)
+    clean = {"ts": (1_600_000_000 + 86400 * np.arange(300)).tolist(), "o": up.tolist(), "h": (up * 1.01).tolist(),
+             "l": (up * 0.99).tolist(), "c": up.tolist(), "v": [1e6] * 300}
+    a = st.analyze(bars_obj(clean), {"Retroceso en tendencia": (dict(params, rsi_max=101), True, info)})
+    assert a["signal"] == "Retroceso en tendencia" and a["plan"]["stop"] < a["price"] < a["plan"]["tp"]
+
+
+def test_live_failures_suspend_a_strategy():
+    from bot import stocks_brain
+    learned = {"Retroceso en tendencia": {"out_of_sample": {"expectancy": 1.5}}, "Ruptura": {}}
+    closed = [{"setup": "Retroceso en tendencia", "ret": -4.0}] * 9
+    fb = stocks_brain.live_feedback(learned, closed)
+    assert fb["Retroceso en tendencia"]["suspended"] and not fb["Ruptura"]["suspended"]
+
+
+def bars_obj(b):
+    a = {k: np.array(b[k], dtype=float) for k in ("ts", "o", "h", "l", "c", "v")}
+    return st.Bars("S0", "S0", "USD", a["ts"], a["o"], a["h"], a["l"], a["c"], a["v"], float(a["c"][-1]), True)

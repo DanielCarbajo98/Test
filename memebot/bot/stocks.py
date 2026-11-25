@@ -115,7 +115,7 @@ class Bars:
 
 def fetch(http: httpx.Client, sym: str) -> Bars | None:
     try:
-        r = http.get(YF.format(sym=sym), params={"range": "2y", "interval": "1d"}, headers=UA)
+        r = http.get(YF.format(sym=sym), params={"range": "5y", "interval": "1d"}, headers=UA)
         res = r.json()["chart"]["result"][0]
     except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError) as e:
         log.info("Sin datos de %s: %s", sym, e)
@@ -146,8 +146,40 @@ def fetch(http: httpx.Client, sym: str) -> Bars | None:
                 bool(tp.get("start", 0) <= now <= tp.get("end", 0)))
 
 
+# --------------------------------------------------------------------------- divisas (precios en euros)
+_FX: dict[str, tuple[float, float]] = {}
+
+
+def eur_rate(http: httpx.Client, cur: str) -> float | None:
+    """Euros por 1 unidad de `cur` (USD, GBP, GBp, CHF...). Caché de 30 min."""
+    if not cur or cur.upper() == "EUR":
+        return 1.0
+    pence = cur == "GBp" or cur == "GBX"
+    code = "GBP" if pence else cur.upper()
+    hit = _FX.get(code)
+    if hit and time.time() - hit[1] < 1800:
+        rate = hit[0]
+    else:
+        try:
+            r = http.get(YF.format(sym=f"{code}EUR=X"), params={"range": "5d", "interval": "1d"}, headers=UA)
+            rate = float(r.json()["chart"]["result"][0]["meta"]["regularMarketPrice"])
+            _FX[code] = (rate, time.time())
+        except Exception:  # noqa: BLE001 — sin tipo de cambio la alerta sale igual, sin euros
+            return None
+    return rate / 100 if pence else rate
+
+
+def fmt_eur(v: float | None) -> str:
+    return "—" if v is None else f"{v:,.2f} €".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
 # --------------------------------------------------------------------------- señales
-def analyze(b: Bars) -> dict:
+def analyze(b: Bars, learned: dict | None = None) -> dict:
+    """`learned` = {setup: (params, activa, info)} del cerebro de acciones (stocks_brain)."""
+    from .stocks_brain import DEFAULT_PARAMS
+    learned = learned or {}
+    pp = (learned.get("Retroceso en tendencia") or (DEFAULT_PARAMS["Retroceso en tendencia"], True, {}))[0]
+    bp = (learned.get("Ruptura") or (DEFAULT_PARAMS["Ruptura"], True, {}))[0]
     c = b.c
     s50, s200, r, a = sma(c, 50), sma(c, 200), rsi(c), atr(b.h, b.l, c)
     vavg = sma(b.v, 20)
@@ -160,21 +192,32 @@ def analyze(b: Bars) -> dict:
     checks_pull = [
         ("Precio sobre la media de 200 días", last["price"] > last["sma200"]),
         ("Media 50 sobre media 200 (tendencia sana)", last["sma50"] > last["sma200"]),
-        (f"RSI bajo (< 35): {last['rsi']:.0f}", last["rsi"] < 35),
+        (f"RSI bajo (< {pp['rsi_max']}): {last['rsi']:.0f}", last["rsi"] < pp["rsi_max"]),
     ]
     checks_brk = [
         ("Precio sobre la media de 200 días", last["price"] > last["sma200"]),
         (f"Rompe el máximo de 55 días ({last['hi55']:.2f})", last["price"] > last["hi55"]),
         (f"Volumen > 1,5x la media ({last['vol_ratio']:.1f}x)", last["vol_ratio"] > 1.5),
-        (f"Sin sobrecompra extrema (RSI ≤ 75): {last['rsi']:.0f}", last["rsi"] <= 75),
+        (f"Sin sobrecompra extrema (RSI ≤ {bp['rsi_cap']}): {last['rsi']:.0f}", last["rsi"] <= bp["rsi_cap"]),
         (f"Sin salto brusco de un día (≤ 15 %): {last['chg_1d']:+.1f}%", abs(last["chg_1d"]) <= 15),
     ]
-    signal = None
-    if all(ok for _, ok in checks_pull):
-        signal = "Retroceso en tendencia"
-    elif all(ok for _, ok in checks_brk):
-        signal = "Ruptura"
+    active = {k: (learned.get(k) or (None, True, {}))[1] for k in ("Retroceso en tendencia", "Ruptura")}
+    signal, blocked = None, None
+    for name, checks in (("Retroceso en tendencia", checks_pull), ("Ruptura", checks_brk)):
+        if all(ok for _, ok in checks):
+            if active[name]:
+                signal = name
+                break
+            blocked = name
     last["signal"] = signal
+    last["blocked_signal"] = blocked              # cumplía, pero esa estrategia está suspendida
+    last["params"] = {"Retroceso en tendencia": pp, "Ruptura": bp}
+    if signal:
+        sp = pp if signal == "Retroceso en tendencia" else bp
+        last["plan"] = {"stop": last["price"] - sp["stop_atr"] * last["atr"],
+                        "tp": last["price"] + sp["tp_atr"] * last["atr"], "max_days": sp["max_days"],
+                        "stop_atr": sp["stop_atr"], "tp_atr": sp["tp_atr"],
+                        "expected": ((learned.get(signal) or (None, None, {}))[2] or {}).get("out_of_sample")}
     last["checks"] = {"Retroceso en tendencia": checks_pull, "Ruptura": checks_brk}
     last["reasoning"] = reasoning(last)
     last["sma50_series"], last["sma200_series"] = s50, s200
@@ -212,11 +255,17 @@ def reasoning(a: dict) -> list[str]:
         out.append(f"Volatilidad típica diaria (ATR): {100 * a['atr'] / p:.1f}% del precio.")
     out.append(f"En el último mes: {a['chg_1m']:+.1f}%. Hoy: {a['chg_1d']:+.1f}%.")
     if a.get("signal"):
-        out.append(f"→ SEÑAL DE COMPRA «{a['signal']}». Stop orientativo: {p - 2 * a['atr']:.2f} (2 ATR por debajo).")
+        pl = a["plan"]
+        out.append(f"→ SEÑAL DE COMPRA «{a['signal']}». Stop loss {pl['stop']:.2f} ({pl['stop_atr']} ATR), "
+                   f"take profit {pl['tp']:.2f} ({pl['tp_atr']} ATR), plazo máximo {pl['max_days']} días.")
+    elif a.get("blocked_signal"):
+        out.append(f"→ Cumple «{a['blocked_signal']}», pero esa estrategia está SUSPENDIDA por el cerebro "
+                   f"(no ha demostrado ventaja o falla en real). No se envía alerta.")
     else:
+        rmax = (a.get("params") or {}).get("Retroceso en tendencia", {}).get("rsi_max", 35)
         miss = []
-        if a["trend"] == "alcista" and np.isfinite(r) and r >= 35:
-            miss.append(f"para «Retroceso en tendencia» le falta que el RSI baje de 35 (ahora {r:.0f})")
+        if a["trend"] == "alcista" and np.isfinite(r) and r >= rmax:
+            miss.append(f"para «Retroceso en tendencia» le falta que el RSI baje de {rmax} (ahora {r:.0f})")
         if p <= a["hi55"] and np.isfinite(a["hi55"]):
             miss.append(f"para «Ruptura» tendría que superar {a['hi55']:.2f} ({_pct(a['hi55'], p):+.1f}%) con volumen alto")
         if a["trend"] != "alcista":
@@ -225,20 +274,23 @@ def reasoning(a: dict) -> list[str]:
     return out
 
 
-def exit_reason(pos: dict, a: dict) -> str:
+def exit_reason(pos: dict, a: dict, now: float | None = None) -> str:
+    """Mismas salidas que simula el cerebro de acciones: stop, objetivo, tendencia rota y plazo."""
     p = a["price"]
-    if p < pos["stop"]:
-        return f"stop (−2 ATR) en {pos['stop']:.2f}"
-    if p < pos["peak"] - 3 * pos["atr"]:
-        return "trailing (−3 ATR desde el máximo)"
+    now = now or time.time()
+    if p <= pos["stop"]:
+        return f"STOP LOSS en {pos['stop']:.2f}"
+    if pos.get("tp") and p >= pos["tp"]:
+        return f"TAKE PROFIT alcanzado ({pos['tp']:.2f})"
     # un «retroceso» compra precisamente bajo la media de 50: su tendencia se rompe al perder la de 200
     if pos.get("setup") == "Retroceso en tendencia":
         if p < a["sma200"]:
             return "pierde la media de 200 días (tendencia rota)"
     elif p < a["sma50"]:
-        return "pierde la media de 50 días"
-    if a["rsi"] > 80:
-        return f"sobrecompra extrema (RSI {a['rsi']:.0f})"
+        return "pierde la media de 50 días (tendencia rota)"
+    days = pos.get("max_days", 30)
+    if now - pos.get("entry_ts", now) > days * 86400 * 1.45:     # días hábiles -> naturales
+        return f"plazo máximo cumplido ({days} días de mercado)"
     return ""
 
 
@@ -273,6 +325,20 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
         todo = todo[:max_per_run]
     else:
         todo = universe
+    from .stocks_brain import REGIME_SYMBOL, SETUPS, params_for
+    learned = {k: params_for(state_dir, k) for k in SETUPS}
+    market_up = None
+    try:                                         # régimen de mercado: S&P 500 sobre su media de 200 días
+        rb = json.loads((state_dir / "stock_bars" / f"{REGIME_SYMBOL}.json").read_text())
+        rc = np.asarray(rb["c"], float)
+        market_up = bool(rc[-1] > sma(rc, 200)[-1])
+    except (OSError, ValueError, KeyError, IndexError):
+        pass
+    for k, (pp, act, info) in list(learned.items()):
+        if pp.get("regime") and market_up is False:
+            learned[k] = (pp, False, info)       # su regla exige mercado alcista y ahora no lo está
+    bars_dir = state_dir / "stock_bars"
+    bars_dir.mkdir(parents=True, exist_ok=True)
     rows = []
     for sym in todo:
         if pause:
@@ -280,7 +346,14 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
         b = fetcher(http, sym)
         if b is None:
             continue
-        a = analyze(b)
+        try:                                   # histórico para que el cerebro de acciones aprenda
+            k = 1300
+            (bars_dir / f"{sym.replace('.', '_')}.json").write_text(json.dumps(
+                {"ts": b.ts[-k:].tolist(), "o": b.o[-k:].tolist(), "h": b.h[-k:].tolist(), "l": b.l[-k:].tolist(),
+                 "c": b.c[-k:].tolist(), "v": b.v[-k:].tolist()}))
+        except OSError:
+            pass
+        a = analyze(b, learned)
         pos = st["positions"].get(sym)
         status = "vigilando"
         if pos:
@@ -288,33 +361,51 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
             pos["price"] = a["price"]
             why = exit_reason(pos, a)
             if why:
-                ret = (a["price"] / pos["entry"] - 1) * 100
+                ex = a["price"]
+                if why.startswith("STOP"):
+                    ex = min(ex, pos["stop"]) if ex > pos["stop"] else ex
+                ret = (ex / pos["entry"] - 1) * 100
                 st["closed"].append({**pos, "exit": a["price"], "exit_ts": int(time.time()), "reason": why, "ret": ret})
                 st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "VENTA", "price": a["price"],
                                      "reason": why, "ret": ret})
                 del st["positions"][sym]
-                notify(f"🔴 VENDER {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}\nMotivo: {why}\n"
-                       f"Resultado de la alerta: {ret:+.1f}%")
+                fx = eur_rate(http, b.currency)
+                eur = f" ≈ {fmt_eur(a['price'] * fx)}" if fx and b.currency.upper() != "EUR" else ""
+                notify(f"🔴 VENDER {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}{eur}\nMotivo: {why}\n"
+                       f"Resultado de la alerta: {ret:+.1f}% · el cerebro de acciones aprende de este resultado.")
                 status = "venta"
             else:
                 status = "en cartera"
         elif a["signal"] and st.get("last_buy", {}).get(sym) != today:
-            stop = a["price"] - 2 * a["atr"]
+            pl = a["plan"]
             st["positions"][sym] = {"symbol": sym, "name": b.name, "currency": b.currency, "entry": a["price"],
-                                    "entry_ts": int(time.time()), "stop": stop, "peak": a["price"], "atr": a["atr"],
-                                    "setup": a["signal"], "price": a["price"]}
+                                    "entry_ts": int(time.time()), "stop": pl["stop"], "tp": pl["tp"],
+                                    "max_days": pl["max_days"], "peak": a["price"], "atr": a["atr"],
+                                    "setup": a["signal"], "price": a["price"], "expected": pl.get("expected")}
             st.setdefault("last_buy", {})[sym] = today
             st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "COMPRA", "price": a["price"],
-                                 "reason": a["signal"]})
-            notify(f"🟢 COMPRAR {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}\nSeñal: {a['signal']} · "
-                   f"RSI {a['rsi']:.0f} · tendencia {a['trend']}\nStop sugerido: {stop:.2f} (−2 ATR)"
+                                 "reason": a["signal"], "stop": pl["stop"], "tp": pl["tp"]})
+            ex = pl.get("expected") or {}
+            hist = (f"\nEn el histórico (datos no vistos): acierto {ex['win_rate']}% · media {ex['expectancy']:+.2f}% "
+                    f"por operación ({ex['n']} casos)." if ex.get("n") else "")
+            risk = (a["price"] - pl["stop"]) / a["price"] * 100
+            reward = (pl["tp"] - a["price"]) / a["price"] * 100
+            fx = eur_rate(http, b.currency)
+            e = (lambda v: f" ≈ {fmt_eur(v * fx)}") if fx and b.currency.upper() != "EUR" else (lambda v: "")
+            notify(f"🟢 COMPRAR {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}{e(a['price'])}\nSeñal: {a['signal']} · "
+                   f"RSI {a['rsi']:.0f} · tendencia {a['trend']}\n"
+                   f"🛑 Stop loss: {pl['stop']:.2f}{e(pl['stop'])} (−{risk:.1f}%)\n"
+                   f"🎯 Take profit: {pl['tp']:.2f}{e(pl['tp'])} (+{reward:.1f}%)\n"
+                   f"⏳ Plazo máximo: {pl['max_days']} días de mercado{hist}"
                    f"{'' if b.market_open else chr(10) + 'Mercado cerrado: precio del último cierre.'}\n"
+                   f"{chr(10) + 'En euros, el precio en tu broker puede variar un poco (tipo de cambio y horario). Guíate por los porcentajes.' if fx and b.currency.upper() != 'EUR' else ''}\n"
                    f"Es una alerta, no una orden: decides tú en tu broker.")
             status = "compra"
         rows.append({"symbol": sym, "name": b.name, "currency": b.currency, "price": a["price"], "chg_1d": a["chg_1d"],
                      "chg_1m": a["chg_1m"], "rsi": a["rsi"], "trend": a["trend"], "signal": a["signal"],
                      "status": status, "market_open": b.market_open, "checked": int(time.time()),
-                     "reasoning": a["reasoning"],
+                     "reasoning": a["reasoning"], "plan": a.get("plan"),
+                     "eur_rate": eur_rate(http, b.currency) if b.currency.upper() != "EUR" else 1.0,
                      "checks": {k: [[t, bool(ok)] for t, ok in v] for k, v in a["checks"].items()}})
         n = 180
         chart = {"symbol": sym, "name": b.name, "currency": b.currency,
@@ -332,13 +423,41 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
             r["status"] = "vigilando"
     closed = st["closed"]
     rets = [x["ret"] for x in closed]
-    st.update({"ts": int(time.time()), "watchlist": list(merged.values()), "universe": len(universe), "alerts": st["alerts"][-200:], "closed": closed[-200:],
+    st.update({"market_up": market_up, "ts": int(time.time()), "watchlist": list(merged.values()), "universe": len(universe), "alerts": st["alerts"][-200:], "closed": closed[-200:],
                "track": {"n": len(rets), "win_rate": round(100 * np.mean(np.array(rets) > 0), 1) if rets else None,
                          "avg_ret": round(float(np.mean(rets)), 2) if rets else None}})
     tmp = f.with_suffix(".tmp")
     tmp.write_text(json.dumps(st))
     tmp.replace(f)
     return st
+
+
+def learn_daily(state_dir: Path, st: dict, every_h: float = 24, min_stocks: int = 50) -> dict | None:
+    """Una vez al día: el cerebro de acciones aprende de 2 años de histórico y de las alertas reales."""
+    from . import stocks_brain
+    f = state_dir / "stocks_brain.json"
+    try:
+        last = json.loads(f.read_text()).get("ts", 0) if f.exists() else 0
+    except ValueError:
+        last = 0
+    if time.time() - last < every_h * 3600:
+        return None
+    bars = {}
+    for bf in (state_dir / "stock_bars").glob("*.json"):
+        try:
+            bars[bf.stem] = json.loads(bf.read_text())
+        except ValueError:
+            continue
+    if len(bars) < min_stocks:
+        return None
+    t0 = time.time()
+    res = stocks_brain.run(state_dir, bars, st.get("closed", []))
+    if res:
+        log.info("Cerebro de acciones: aprendió de %d acciones en %.0f s", len(bars), time.time() - t0)
+        act = [k for k, v in res["setups"].items() if v.get("active")]
+        notify("🧠 Acciones: aprendizaje diario completado. Estrategias activas: "
+               + (", ".join(act) if act else "ninguna (ninguna demuestra ventaja ahora mismo)") + ".")
+    return res
 
 
 def main():
@@ -361,6 +480,7 @@ def main():
                 log.info("Universo dinámico de Yahoo: %d acciones", len(dyn))
             wl = fixed or list(dict.fromkeys(DEFAULT_WATCHLIST + dyn))
             st = run_once(Path(a.state), wl, http=http, max_per_run=150 if a.loop else 0, pause=1.0 if a.loop else 0)
+            learn_daily(Path(a.state), st)
             log.info("Universo %d acciones · %d con datos · %d alertas abiertas", len(wl), len(st["watchlist"]),
                      len(st["positions"]))
         except Exception:  # noqa: BLE001

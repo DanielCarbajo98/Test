@@ -380,6 +380,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <div id="stkInfo" style="margin-top:10px"></div>
       </div>
     </div>
+    <div class="card-b" id="stkBrain" style="border-top:1px solid var(--border)"></div>
   </section>
 
   <section class="card" style="margin-top:16px">
@@ -518,7 +519,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("openMeter").style.width = (100 * n / mx) + "%";
     $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
 
-    renderChart(); renderAnalyst(); renderContext(); renderTokenList(); renderStocks(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
+    renderChart(); renderAnalyst(); renderContext(); renderTokenList(); renderStocks(); renderStockBrain(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
     const up = S.update || {};
     const upTxt = up.state ? ` · ${up.state}${up.checked_at ? " (comprobado " + ago(S.now - up.checked_at) + ")" : ""}` : "";
     $("foot").textContent = (has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos") + ` · Versión ${S.version || "—"}${upTxt}`;
@@ -708,7 +709,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const total = view.length; view = view.slice(0, 300);
     $("stkTable").innerHTML = (total ? "" : `<div class="empty" style="height:80px">Ninguna acción coincide.</div>`) + `<table><thead><tr><th>Acción</th><th class="num">Precio</th><th class="num">1 día</th><th class="num">1 mes</th><th class="num">RSI</th><th>Tendencia</th><th>Estado</th></tr></thead><tbody>${
       view.map(r => `<tr data-s="${esc(r.symbol)}" class="${r.symbol === selStock ? "on" : ""}"><td><b>${esc(r.symbol)}</b><div class="sub">${esc((r.name || "").slice(0, 26))}</div></td>
-        <td class="num">${r.price.toLocaleString("es-ES", { maximumFractionDigits: 2 })} ${esc(r.currency)}</td><td class="num ${cls(r.chg_1d)}">${pct(r.chg_1d)}</td>
+        <td class="num">${r.price.toLocaleString("es-ES", { maximumFractionDigits: 2 })} ${esc(r.currency)}${r.eur_rate && r.currency !== "EUR" ? `<div class="sub">≈ ${(r.price * r.eur_rate).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</div>` : ""}</td><td class="num ${cls(r.chg_1d)}">${pct(r.chg_1d)}</td>
         <td class="num ${cls(r.chg_1m)}">${pct(r.chg_1m)}</td><td class="num">${r.rsi.toFixed(0)}</td>
         <td class="${r.trend === "alcista" ? "trend-up" : r.trend === "bajista" ? "trend-down" : "flat"}">${esc(r.trend)}</td><td>${tag(r)}</td></tr>`).join("")}</tbody></table>`;
     $("stkTable").querySelectorAll("tr[data-s]").forEach(t => t.onclick = () => { selStock = t.dataset.s; sLoaded = ""; renderStocks(); loadStock(); });
@@ -719,7 +720,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <div class="checks">${cs.map(([l, ok]) => `<div class="chk ${ok ? "ok" : "ko"}"><span class="ic">${ok ? "✓" : "✗"}</span><span>${esc(l)}</span><span></span></div>`).join("")}</div></div>`).join("");
       const hist = (k.alerts || []).filter(a => a.symbol === row.symbol).slice(0, 6).map(a => `<li><time>${dt(a.ts)}</time><div><b class="${a.side === "COMPRA" ? "up" : "down"}">${a.side}</b> a ${a.price.toFixed(2)} · ${esc(a.reason)}${a.ret != null ? ` · <b class="${cls(a.ret)}">${pct(a.ret)}</b>` : ""}</div></li>`).join("");
       const idea = (((S.analyst || {}).review || {}).stock_ideas || []).find(i => i.symbol === row.symbol);
-      $("stkInfo").innerHTML = (pos ? `<div class="verdict yes">● Alerta abierta desde ${pos.entry.toFixed(2)} · ${pct((row.price / pos.entry - 1) * 100)} · stop ${pos.stop.toFixed(2)}</div>` : "")
+      const fx = row.eur_rate && row.currency !== "EUR" ? row.eur_rate : null;
+      const money = v => v == null ? "—" : `${v.toFixed(2)} ${row.currency}${fx ? ` (≈ ${(v * fx).toFixed(2)} €)` : ""}`;
+      $("stkInfo").innerHTML = (pos ? `<div class="verdict yes">● Alerta abierta desde ${money(pos.entry)} · ${pct((row.price / pos.entry - 1) * 100)}<br>🛑 Stop loss ${money(pos.stop)} · 🎯 Take profit ${money(pos.tp)}</div>` : "")
         + (row.reasoning && row.reasoning.length ? `<div style="margin-top:8px"><b style="font-size:12.5px">Análisis</b><ul class="reason">${row.reasoning.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "")
         + (idea ? `<div class="verdict ${idea.action === "comprar" ? "yes" : "no"}" style="margin-top:10px">🤖 Claude: ${esc(idea.action)} · ${esc(idea.reason)}</div>` : "")
         + setups + (hist ? `<ul class="feed" style="margin-top:10px">${hist}</ul>` : "")
@@ -757,6 +760,26 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       slw.timeScale().fitContent();
       $("stkHead").innerHTML = `<b>${esc(d.symbol)}</b><span class="sub">${esc(d.name)} · velas diarias · <span style="color:#3987e5">media 50</span> · <span style="color:#f59e0b">media 200</span></span>`;
     } catch {}
+  }
+
+
+  function renderStockBrain() {
+    const k = S.stocks || {}, b = k.brain, el = $("stkBrain");
+    if (!el) return;
+    if (!b) { el.innerHTML = `<p class="sub" style="margin:0">🧠 El cerebro de acciones aprende una vez al día con 5 años de histórico; aparecerá aquí tras su primer aprendizaje.</p>`; return; }
+    const mk = k.market_up == null ? "" : k.market_up ? '<span class="up">mercado general alcista</span>' : '<span class="down">mercado general bajista (S&P 500 bajo su media de 200 días)</span>';
+    const card = (name, x) => { const o = x.out_of_sample || {}, l = x.live || {}, p = x.params || {};
+      const state = x.active ? '<span class="badge sig">ACTIVA</span>' : x.suspended ? '<span class="badge" style="background:color-mix(in srgb,var(--bad) 22%,transparent);color:var(--bad-text)">SUSPENDIDA</span>' : '<span class="badge no">SIN VENTAJA</span>';
+      return `<div><div style="display:flex;gap:8px;align-items:center"><b>${esc(name)}</b>${state}</div>
+        <div class="kv"><span>Stop loss / take profit</span><b>${p.stop_atr} / ${p.tp_atr} ATR</b><span>Plazo máximo</span><b>${p.max_days} días</b>
+        ${p.rsi_max != null ? `<span>Entra con RSI menor de</span><b>${p.rsi_max}</b>` : ""}${p.rsi_cap != null ? `<span>No entra con RSI mayor de</span><b>${p.rsi_cap}</b>` : ""}
+        <span>Solo con mercado alcista</span><b>${p.regime ? "sí" : "no"}</b>
+        <span>Histórico no visto</span><b class="${cls(o.expectancy || 0)}">${o.n ? `${o.win_rate}% acierto · ${pct(o.expectancy, 2)} · ${o.n} ops` : "—"}</b>
+        <span>Alertas reales cerradas</span><b class="${cls(l.expectancy || 0)}">${l.n ? `${l.win_rate}% acierto · ${pct(l.expectancy, 2)} · ${l.n}` : "aún ninguna"}</b></div>
+        ${x.suspended_why ? `<p class="sub" style="margin:6px 0 0">${esc(x.suspended_why)}</p>` : ""}</div>`; };
+    const setups = Object.entries(b.setups || {}).map(([n, x]) => card(n, x)).join("");
+    el.innerHTML = `<h3 style="margin:0 0 10px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">🧠 Cerebro de acciones · aprendió ${b.ts ? ago(S.now - b.ts) : "—"} con ${(b.meta || {}).stocks || "?"} acciones ${mk ? "· " + mk : ""}</h3>
+      <div class="anl">${setups}<div><b>Lo que ha aprendido</b><ul class="reason">${(b.lessons || []).map(t => `<li>${esc(t)}</li>`).join("")}</ul></div></div>`;
   }
 
   // ---------- mercado en directo (velas) ----------

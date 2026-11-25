@@ -6,5 +6,7 @@ COPY bot ./bot
 COPY research ./research
 EXPOSE 8050
 COPY config.example.yaml ./
+# copia de referencia: el actualizador detecta si docker-compose/Dockerfile cambiaron desde la construcción
+COPY Dockerfile docker-compose.yml /app/baked/
 # config.yaml y .env se montan desde fuera; el estado persiste en el volumen /app/state
 CMD ["python", "-m", "bot.main", "--config", "config.yaml"]

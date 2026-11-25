@@ -5,6 +5,9 @@ x-base: &base
   restart: always            # se levanta solo si falla o si el servidor se reinicia
   init: true                 # gestión correcta de señales (parada limpia)
   env_file: .env
+  entrypoint: ["python", "-m", "bot.bootstrap"]   # instala solo las librerías nuevas al arrancar
+  environment:
+    PYTHONUSERBASE: /deps
   logging:
     driver: json-file
     options: { max-size: "10m", max-file: "3" }
@@ -13,6 +16,8 @@ services:
   bot:                       # el que opera
     <<: *base
     volumes:
+      - pydeps:/deps
+      - ./requirements.txt:/app/requirements-live.txt:ro
       - ./config.yaml:/app/config.yaml:ro
       - ./state:/app/state
       - ./bot:/app/bot:ro
@@ -24,6 +29,8 @@ services:
     ports:
       - "127.0.0.1:8050:8050"
     volumes:
+      - pydeps:/deps
+      - ./requirements.txt:/app/requirements-live.txt:ro
       - ./state:/app/state
       - ./bot:/app/bot:ro
     command: ["python", "-m", "bot.dashboard", "--state", "state", "--host", "0.0.0.0"]
@@ -31,6 +38,8 @@ services:
   brain:                     # aprendizaje continuo: reentrena cada 30 min, reoptimización completa cada 6 h
     <<: *base
     volumes:
+      - pydeps:/deps
+      - ./requirements.txt:/app/requirements-live.txt:ro
       - ./data:/app/data
       - ./data_launches:/app/data_launches
       - ./state:/app/state
@@ -41,6 +50,8 @@ services:
   collector:                 # velas "a futuro" del universo activo
     <<: *base
     volumes:
+      - pydeps:/deps
+      - ./requirements.txt:/app/requirements-live.txt:ro
       - ./data:/app/data
       - ./bot:/app/bot:ro
       - ./research:/app/research:ro
@@ -49,6 +60,8 @@ services:
   launches:                  # lanzamientos al azar (muestra sin sesgo) + sus velas
     <<: *base
     volumes:
+      - pydeps:/deps
+      - ./requirements.txt:/app/requirements-live.txt:ro
       - ./data_launches:/app/data_launches
       - ./bot:/app/bot:ro
       - ./research:/app/research:ro
@@ -57,6 +70,8 @@ services:
   stocks:                    # acciones: alertas de compra/venta por Telegram (cada 15 min)
     <<: *base
     volumes:
+      - pydeps:/deps
+      - ./requirements.txt:/app/requirements-live.txt:ro
       - ./state:/app/state
       - ./bot:/app/bot:ro
     command: ["python", "-m", "bot.stocks", "--state", "state", "--loop", "15"]
@@ -64,6 +79,8 @@ services:
   analyst:                   # analista Claude: revisión del mercado cada hora (necesita ANTHROPIC_API_KEY)
     <<: *base
     volumes:
+      - pydeps:/deps
+      - ./requirements.txt:/app/requirements-live.txt:ro
       - ./config.yaml:/app/config.yaml:ro
       - ./state:/app/state
       - ./bot:/app/bot:ro
@@ -72,5 +89,11 @@ services:
   updater:                   # actualizaciones automáticas desde tu GitHub (cada 30 min, con tests previos)
     <<: *base
     volumes:
+      - pydeps:/deps
+      - ./requirements.txt:/app/requirements-live.txt:ro
       - ./:/work
+      - ./bot:/app/bot:ro
     command: ["python", "-m", "bot.updater", "--work", "/work", "--loop", "30"]
+
+volumes:
+  pydeps: {}     # librerías añadidas por actualizaciones (sin reconstruir la imagen)

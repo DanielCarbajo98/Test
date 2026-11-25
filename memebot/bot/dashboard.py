@@ -101,7 +101,12 @@ def _stocks_view(state: Path) -> dict:
     st = _read_json(state / "stocks.json", {})
     if not st:
         return {}
-    return {"ts": st.get("ts"), "universe": st.get("universe"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
+    sb = _read_json(state / "stocks_brain.json", {})
+    brain = {k: sb.get(k) for k in ("ts", "lessons", "meta")}
+    brain["setups"] = {k: {kk: v.get(kk) for kk in ("params", "in_sample", "out_of_sample", "live", "active",
+                                                   "suspended", "suspended_why", "edge")}
+                       for k, v in (sb.get("setups") or {}).items()}
+    return {"brain": brain if sb else None, "market_up": st.get("market_up"), "ts": st.get("ts"), "universe": st.get("universe"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
             "alerts": st.get("alerts", [])[-40:][::-1], "closed": st.get("closed", [])[-40:][::-1],
             "track": st.get("track", {})}
 

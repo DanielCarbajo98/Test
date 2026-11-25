@@ -31,8 +31,10 @@ CODE_DIRS = ["bot", "research", "tests", "deploy", "docs"]
 CODE_FILES = ["README.md", "GUIA_50EUR.md", "TU_PARTE.md", "config.example.yaml", "config.50eur.yaml",
               "requirements-dev.txt", "INICIAR-Windows.bat", "CONFIGURAR-Windows.bat", "PARAR-Windows.bat",
               "INICIAR-Mac.command", "CONFIGURAR-Mac.command", "PARAR-Mac.command", ".gitattributes"]
-# cambios en estos archivos exigen reconstruir/relanzar Docker: no se aplican solos
+# requirements.txt: las librerías nuevas las instala cada servicio al arrancar (bot/bootstrap.py).
+# Dockerfile / docker-compose.yml: cambian la estructura de Docker y necesitan INICIAR.
 REBUILD_FILES = ["requirements.txt", "Dockerfile", "docker-compose.yml"]
+STRUCTURE_FILES = ["Dockerfile", "docker-compose.yml"]
 NEVER_TOUCH = {".env", "config.yaml", "state", "data", "data_launches", ".update"}
 
 
@@ -84,11 +86,21 @@ def run_tests(root: Path) -> tuple[bool, str]:
     return r.returncode == 0, " | ".join(tail)
 
 
+def bootstrap_active() -> bool:
+    return os.getenv("PYTHONUSERBASE") == "/deps"
+
+
 def image_outdated(work: Path) -> bool:
-    """¿Las librerías del programa instalado (imagen Docker) son más antiguas que las del código actual?"""
-    img = Path("/app/requirements.txt")
-    disk = work / "requirements.txt"
-    return img.exists() and disk.exists() and img.read_bytes() != disk.read_bytes()
+    """¿Hace falta INICIAR? Sí si la estructura de Docker cambió desde que se construyó la imagen (o, sin
+    instalación automática de librerías, si cambiaron las librerías)."""
+    baked = Path("/app/baked")
+    files = STRUCTURE_FILES + ([] if bootstrap_active() else ["requirements.txt"])
+    for f in files:
+        img = (baked / f) if f in STRUCTURE_FILES else Path("/app/requirements.txt")
+        disk = work / f
+        if img.exists() and disk.exists() and img.read_bytes() != disk.read_bytes():
+            return True
+    return False
 
 
 def apply(new: Path, cur: Path, sha: str):
@@ -150,9 +162,13 @@ def check_once(work: Path, repo: str, branch: str, token: str, test: bool = True
             apply(root, work, sha)
             status.update({"state": "actualizado", "applied_at": int(time.time()), "current": sha, "tests": out,
                            "files": rebuild})
-            if rebuild:
-                notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Trae librerías nuevas: "
-                       f"haz doble clic en INICIAR cuando puedas para completar la instalación.")
+            structural = [f for f in rebuild if f in STRUCTURE_FILES or not bootstrap_active()]
+            if structural:
+                notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Trae cambios de Docker "
+                       f"({', '.join(structural)}): haz doble clic en INICIAR cuando puedas para completarla.")
+            elif rebuild:
+                notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Instala sus librerías nuevas "
+                       f"y se reinicia solo.")
             else:
                 notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Se reinicia solo.")
         shutil.rmtree(work / ".update", ignore_errors=True)
