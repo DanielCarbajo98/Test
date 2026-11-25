@@ -42,7 +42,7 @@
 ## 4. Arrancar
 ```bash
 cd memebot
-python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements-dev.txt
 cp .env.example .env              # rellena las claves
 cp config.50eur.yaml config.yaml  # perfil de 50 €, empieza en mode: paper
 

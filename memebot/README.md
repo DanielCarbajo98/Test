@@ -103,7 +103,7 @@ obligatorio. Para verlo con datos de ejemplo: `python -m research.demo_state --o
 ```bash
 cd memebot
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 cp .env.example .env            # rellenar después
 python -m pytest -q             # deben pasar todos los tests
 ```
