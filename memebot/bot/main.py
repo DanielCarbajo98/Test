@@ -99,6 +99,18 @@ class Bot:
         b = self.cfg.brain
         return b.enabled and self.brain.champion is not None and (self.cfg.mode == "paper" or b.auto_apply_live)
 
+    def live_filters(self):
+        """Con el cerebro al mando, el prefiltro deja pasar lo mismo con lo que el cerebro aprendió
+        (volumen ≥ 10 k$/h, ≥ 15 min de vida, sin edad máxima); él decide con sus datos. La liquidez mínima
+        (seguridad) y los DEX permitidos siguen siendo los de tu config.yaml."""
+        f = self.cfg.filters
+        if not self.brain_active():
+            return f
+        import dataclasses
+        return dataclasses.replace(f, min_volume_h1_usd=min(f.min_volume_h1_usd, 10_000),
+                                   min_txns_h1=min(f.min_txns_h1, 60), min_age_minutes=min(f.min_age_minutes, 15),
+                                   max_age_minutes=max(f.max_age_minutes, 90 * 24 * 60))
+
     def exit_cfg(self) -> ExitCfg:
         if self.brain_active():
             ov = self.brain.exits()
@@ -382,11 +394,15 @@ class Bot:
                  and not self.pf.in_cooldown(a, c.risk.cooldown_minutes)][: c.scanner.max_candidates]
         snaps = self.dex.best_pairs(addrs, boosted)
 
-        passed = []
+        passed, why_out = [], {}
+        filt = self.live_filters()
         for s in snaps.values():
-            reasons = prefilter(s, c.filters)
+            reasons = prefilter(s, filt)
             if reasons:
                 log.debug("%s descartado: %s", s.symbol, "; ".join(reasons))
+                for r in reasons:                   # para el panel: qué filtro descarta más monedas
+                    k = r.split(" ")[0] if not r.startswith("volumen") else "volumen"
+                    why_out[k] = why_out.get(k, 0) + 1
             else:
                 passed.append(s)
         # Por turnos: primero los que llevan más tiempo sin analizarse; a igualdad, los más activos.
@@ -394,7 +410,10 @@ class Bot:
         passed.sort(key=lambda x: (self._last_analyzed.get(x.pair_address, 0), -rank(x)))
         log.info("Candidatos: %d descubiertos, %d con datos, %d pasan el prefiltro", len(addrs), len(snaps), len(passed))
         self.last_scan = {"ts": int(now), "discovered": len(addrs), "with_data": len(snaps),
-                          "prefilter": len(passed), "analyzed": 0, "signals": 0,
+                          "prefilter": len(passed), "analyzed": 0, "signals": 0, "rejected": why_out,
+                          "filters": {"min_liq": filt.min_liquidity_usd, "min_vol_h1": filt.min_volume_h1_usd,
+                                      "min_txns_h1": filt.min_txns_h1, "max_age_h": filt.max_age_minutes / 60,
+                                      "relaxed": filt is not c.filters},
                           "queue": max(0, len(passed) - c.strategy.max_ohlcv_per_cycle)}
 
         for s in passed[: c.strategy.max_ohlcv_per_cycle]:

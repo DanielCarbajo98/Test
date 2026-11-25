@@ -411,6 +411,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       <div class="card-h"><h2>Escáner y actividad</h2></div>
       <div class="card-b">
         <div class="funnel" id="funnel"></div>
+        <p class="sub" id="funnelWhy" style="margin:8px 0 0"></p>
         <ul class="feed" id="feed"></ul>
       </div>
     </div>
@@ -1150,6 +1151,12 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const sc = (S.status || {}).last_scan || {};
     const cells = [["Descubiertos", sc.discovered], ["Con datos", sc.with_data], ["Prefiltro", sc.prefilter], ["Analizados", sc.analyzed], ["Señales", sc.signals]];
     $("funnel").innerHTML = cells.map(([k, v]) => `<div><b>${v ?? "—"}</b><span>${k}</span></div>`).join("");
+    const rj = Object.entries(sc.rejected || {}).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const names = { liquidez: "liquidez baja", edad: "edad fuera de rango", volumen: "poco volumen en 1 h", pocas: "pocas operaciones en 1 h",
+      dex: "DEX no permitido", FDV: "capitalización muy alta", parece: "stablecoin", sin: "sin precio", "presión": "poca presión compradora" };
+    const fl = sc.filters || {};
+    $("funnelWhy").innerHTML = rj.length ? `Descartadas por: ${rj.map(([k, n]) => `${esc(names[k] || k)} <b>${n}</b>`).join(" · ")}.
+      Filtro ${fl.relaxed ? "del cerebro" : "de tu config"}: liquidez ≥ ${usd(fl.min_liq || 0, 0)}, volumen 1 h ≥ ${usd(fl.min_vol_h1 || 0, 0)}, ≥ ${fl.min_txns_h1 ?? "—"} operaciones/h, edad ≤ ${Math.round(fl.max_age_h || 0)} h.` : "";
     const ev = ((S.status || {}).events || []).map(e => ({ ts: e.ts, html: esc(e.text).replace(/https:\/\/dexscreener\.com\/\S+/g, u => `<a href="${u}" target="_blank" rel="noopener">gráfico ↗</a>`) }));
     const dec = (S.decisions || []).slice(0, 12).map(d => ({ ts: d.ts, html: `${d.signal ? '<span class="up">✓ Señal</span>' : '<span class="flat">✗ Sin señal</span>'} · <b>${esc(d.symbol)}</b>
       <span class="sub">${d.ret_60m == null ? "sin velas disponibles (se reintenta)" : `1h ${pct(d.ret_60m)} · aceleración ${(+d.accel).toFixed(2)}`} · liquidez ${d.liq ? usd(d.liq, 0) : "—"}</span>` }));
