@@ -199,6 +199,9 @@ def main():
             try:
                 st = check_once(Path(a.work), repo, branch, token)
                 log.info("Estado: %s", st.get("state"))
+                if st.get("state") == "actualizado" and a.loop:
+                    log.info("Reiniciando el actualizador con su código nuevo.")
+                    sys.exit(0)            # Docker (restart: always) lo vuelve a levantar
             except Exception as e:  # noqa: BLE001
                 log.warning("No se pudo comprobar actualizaciones: %s", e)
         if not a.loop:
