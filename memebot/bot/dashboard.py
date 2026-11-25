@@ -141,6 +141,8 @@ def trade_detail(state: Path, mint: str, client=None) -> dict | None:
     hit = _TRADE_CACHE.get(mint)
     if hit and time.time() - hit[0] < 60:
         return {**hit[1], "trade": trade}
+    disk_f = state / "trade_charts" / f"{mint}.json"
+    disk = _read_json(disk_f, {})
     http = client or httpx.Client(timeout=15, headers={"User-Agent": "Mozilla/5.0 (compatible; MemeBot/1.0)"})
     out = {"price_now": None, "liquidity": None, "pool": None, "candles": [], "tf": None, "alive": False}
     try:
@@ -176,6 +178,25 @@ def trade_detail(state: Path, mint: str, client=None) -> dict | None:
             out["tf"] = f"{agg} {'h' if tf == 'hour' else 'min'}"
         except (httpx.HTTPError, ValueError, TypeError):
             pass
+    if out["candles"]:
+        out["source"] = "live"
+        try:                                     # guardar en disco: la próxima vez no depende de GeckoTerminal
+            disk_f.parent.mkdir(exist_ok=True)
+            disk_f.write_text(json.dumps({"ts": int(time.time()), "pool": out["pool"], "source": "live",
+                                          "candles": out["candles"], "tf": out["tf"]}))
+        except OSError:
+            pass
+    elif disk.get("candles"):                    # GeckoTerminal saturado: velas guardadas (del panel o del bot)
+        out.update(candles=disk["candles"], tf=disk.get("tf") or "1 min", source="bot" if disk.get("source") == "bot" else "cache",
+                   saved_min=int((time.time() - disk.get("ts", time.time())) / 60))
+        out["pool"] = out["pool"] or disk.get("pool")
+    else:
+        for cf in (state / "charts").glob("*.json") if (state / "charts").exists() else []:
+            c = _read_json(cf, {})
+            if c.get("mint") == mint and c.get("candles"):
+                out.update(candles=c["candles"], tf="1 min", source="bot",
+                           saved_min=int((time.time() - c.get("ts", time.time())) / 60))
+                break
     if out["candles"] or not out["alive"]:        # sin velas por un fallo momentáneo: no guardar, reintentar luego
         _TRADE_CACHE[mint] = (time.time(), out)
     return {**out, "trade": trade}

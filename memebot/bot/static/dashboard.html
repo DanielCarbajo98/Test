@@ -428,6 +428,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><h3 id="tTitle" style="margin:0"></h3>
     <span class="sub" id="tSub"></span><button class="btn icon-btn" id="tClose" style="margin-left:auto" aria-label="Cerrar">✕</button></div>
   <div id="tChart" style="height:360px"></div>
+  <div id="tNote" class="sub" style="margin-top:6px"></div>
   <div id="tInfo" style="margin-top:12px"></div>
 </div></div>
 
@@ -1082,7 +1083,10 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       sells.forEach((f, i) => ser.createPriceLine({ price: f.price, color: "#f59e0b", lineWidth: 1, lineStyle: 2, axisLabelVisible: i === sells.length - 1, title: "Tu venta" }));
       if (d.price_now) ser.createPriceLine({ price: d.price_now, color: "#a3a3a3", lineWidth: 1, lineStyle: 1, axisLabelVisible: true, title: "Ahora" });
       tlw.timeScale().fitContent();
+      $("tNote").textContent = d.source && d.source !== "live"
+        ? `GeckoTerminal está saturado: velas guardadas hace ${d.saved_min ?? 0} min${d.source === "bot" ? " por el bot" : ""}. Se actualizarán solas en cuanto responda.` : "";
     } else {
+      $("tNote").textContent = "";
       $("tChart").innerHTML = `<div class="empty">${d.alive ? "No se pudieron descargar las velas ahora mismo (límite de peticiones). Cierra y vuelve a abrir en unos segundos." : "Este token ya no tiene liquidez ni datos (probablemente ha muerto o hizo rug)."}</div>`;
     }
     const nowVal = d.price_now != null ? t.qty * d.price_now : (d.alive ? null : 0);

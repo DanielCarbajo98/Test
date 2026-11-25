@@ -77,6 +77,27 @@ def test_trade_detail_chart_and_value_now(tmp_path):
     assert d["pool"] == "POOL1" and d["price_now"] == 0.12 and len(d["candles"]) == 50
     assert t["qty"] * d["price_now"] == 120          # mantenerlo valdría 120 $ frente a los 60 $ obtenidos
     assert trade_detail(tmp_path, "OTRO") is None
+    # GeckoTerminal saturado: usa las velas guardadas en disco en la consulta anterior
+    _TRADE_CACHE.clear()
+
+    def busy(req):
+        if "dexscreener" in str(req.url):
+            return handler(req)
+        return httpx.Response(429)
+    import bot.dashboard as dash
+    sleep = dash.time.sleep
+    dash.time.sleep = lambda s: None
+    try:
+        d2 = trade_detail(tmp_path, "MINT1", client=httpx.Client(transport=httpx.MockTransport(busy)))
+        assert len(d2["candles"]) == 50 and d2["source"] == "cache"
+        (tmp_path / "trade_charts" / "MINT1.json").unlink()          # sin caché: usa el gráfico guardado por el bot
+        (tmp_path / "charts").mkdir()
+        (tmp_path / "charts" / "POOL1.json").write_text(json.dumps({"mint": "MINT1", "ts": 1, "candles": [[1, 1, 1, 1, 1, 1]] * 7}))
+        _TRADE_CACHE.clear()
+        d3 = trade_detail(tmp_path, "MINT1", client=httpx.Client(transport=httpx.MockTransport(busy)))
+        assert len(d3["candles"]) == 7 and d3["source"] == "bot"
+    finally:
+        dash.time.sleep = sleep
 
 
 def test_api_is_valid_json_even_with_infinite_profit_factor(tmp_path):

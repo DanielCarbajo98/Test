@@ -150,6 +150,7 @@ class Bot:
             pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, reason, fill.tx)
             self.notify.send(self._sell_msg(pos.symbol, fill, reason, pnl, final=True))
             self.pending_reclaim[mint] = 0
+            self._archive_chart(pos.pool, mint)
 
     # ------------------------------------------------------------------ salidas
     def manage_positions(self):
@@ -177,6 +178,7 @@ class Bot:
             self.notify.send(self._sell_msg(pos.symbol, fill, d.reason, pnl, final=mint not in self.pf.positions))
             if mint not in self.pf.positions:
                 self.pending_reclaim[mint] = 0
+                self._archive_chart(pos.pool, mint)
         self.pf.save()
 
     def reclaim(self):
@@ -234,6 +236,20 @@ class Bot:
                              "value": f"{100 * pred:+.1f}%", "rule": f"≥ {100 * thr:+.1f}%"})
             return rows
         return explain(self.cfg.strategy.name, feat, self.cfg.strategy.params)
+
+    def _archive_chart(self, pool: str | None, mint: str):
+        """Al cerrar una operación guarda sus velas, para que el panel pueda enseñarla aunque GeckoTerminal
+        esté saturado (los gráficos en directo se borran al rato)."""
+        try:
+            src = self.pf.dir / "charts" / f"{pool}.json"
+            if pool and src.exists():
+                d = self.pf.dir / "trade_charts"
+                d.mkdir(exist_ok=True)
+                c = json.loads(src.read_text())
+                (d / f"{mint}.json").write_text(json.dumps({"ts": int(time.time()), "pool": pool, "source": "bot",
+                                                            "candles": c.get("candles", []), "tf": "1 min"}))
+        except (OSError, ValueError) as e:
+            log.warning("No se pudo guardar el gráfico de %s: %s", mint, e)
 
     def _save_chart(self, pool: str, mint: str, symbol: str, rows: list, signal: bool, feat: dict,
                     checks: list[dict], pred: float | None, extra: dict | None = None):
@@ -332,6 +348,7 @@ class Bot:
         pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, reason, fill.tx)
         self.notify.send(self._sell_msg(pos.symbol, fill, reason, pnl, final=True))
         self.pending_reclaim[mint] = 0
+        self._archive_chart(pos.pool, mint)
 
     @staticmethod
     def _sell_msg(symbol: str, fill, reason: str, pnl: float, final: bool) -> str:
