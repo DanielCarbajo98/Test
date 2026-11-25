@@ -346,6 +346,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <div class="label">Saldo total</div>
         <div class="hero-value" id="equity">—</div>
         <div class="delta" id="equityDelta"></div>
+        <div class="sub" id="jointSplit" style="margin-top:8px"></div>
       </div>
       <div class="hero-foot">
         <div><span class="label">Capital inicial</span><b id="startEq">—</b></div>
@@ -564,8 +565,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     else banner.style.display = "none";
 
     // saldo
-    const eq = st.equity ?? 0, start = st.start_equity ?? 0;
-    const invested = (st.positions || []).reduce((a, p) => a + p.value, 0);
+    const J = st.joint;                                  // saldo conjunto cripto + acciones (simulado)
+    const eq = J ? J.equity : (st.equity ?? 0), start = st.start_equity ?? 0;
+    const invested = (st.positions || []).reduce((a, p) => a + p.value, 0) + (J ? J.stocks_invested_usd : 0);
     $("equity").textContent = has ? usd(eq) : "—";
     const dTot = eq - start, dPct = start ? 100 * dTot / start : 0;
     $("equityDelta").className = "delta " + cls(dTot);
@@ -573,10 +575,13 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("startEq").textContent = has ? usd(start) : "—";
     $("invested").textContent = has ? usd(invested) : "—";
     $("uptime").textContent = has ? dur(S.now - st.started_at) : "—";
+    document.querySelector(".hero .label").textContent = J ? "Saldo conjunto · cripto + acciones" : "Saldo total";
+    $("jointSplit").innerHTML = J && has ? `Cripto <b>${usd(J.crypto_equity)}</b> · Acciones <b class="${cls(J.stocks_pnl_usd)}">${sgnUsd(J.stocks_pnl_usd)}</b> de resultado (${usd(J.stocks_invested_usd)} invertidos)` : "";
 
     // tiles
-    $("cash").textContent = has ? usd(st.cash) : "—";
-    $("cashS").textContent = has && eq ? `${(100 * st.cash / eq).toFixed(0)}% del saldo` : "";
+    const cash = J ? J.cash : st.cash;
+    $("cash").textContent = has ? usd(cash) : "—";
+    $("cashS").textContent = has && eq ? `${(100 * cash / eq).toFixed(0)}% del saldo${J ? " · compartida con acciones" : ""}` : "";
     const dp = st.daily_pnl ?? 0;
     $("daily").textContent = has ? sgnUsd(dp) : "—"; $("daily").className = "v " + cls(dp);
     const limit = (st.day_start_equity || start) * (st.daily_loss_limit_pct || 5) / 100;
@@ -880,9 +885,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <div><b class="${cls(p.realized)}">${eur(p.realized)}</b><span>Cerradas (${p.closed})</span></div>
         <div><b class="${cls(p.open_pnl)}">${eur(p.open_pnl)}</b><span>Abiertas (${p.open}${p.pending_open ? `, ${p.pending_open} esperando la apertura` : ""})${p.fees_open != null ? `: ${eur(p.move_open)} por precio y ${eur(-p.fees_open)} de comisiones` : ""}</span></div>
         <div><b>${p.win_rate != null ? p.win_rate + "%" : "—"}</b><span>Acierto</span></div>
-        <div><b>${p.per_alert.toFixed(0)} €</b><span>por alerta · costes de ${p.broker || "tu broker"}</span></div></div>
+        <div><b>${p.per_alert.toFixed(0)} €</b><span>por compra automática · ${p.cash != null ? `liquidez ${p.joint ? "conjunta " : ""}${eur(p.cash).replace("+", "")}` : `costes de ${p.broker || "tu broker"}`}</span></div></div>
       ${(k.open_alerts || []).length || (k.closed || []).length ? `<p class="hint">Pulsa una acción para ver sus velas en directo (con pre-market) y tu entrada, stop, objetivo y salida.</p>` : ""}
-      <p class="sub" style="margin:0 0 10px">Lo que habría pasado invirtiendo ${p.per_alert.toFixed(0)} € en cada alerta de compra, con la comisión de tu broker. Precios en la moneda de cada acción.</p>
+      <p class="sub" style="margin:0 0 10px">🤖 El bot compra y vende solo (simulado) con cada señal${p.joint ? ", usando el mismo saldo que la cripto" : ""}. Comisiones de ${esc(p.broker || "tu broker")}. Precios en la moneda de cada acción; resultados en euros.</p>
       ${open ? `<div class="table-wrap"><table><thead><tr><th>Abierta</th><th>Desde</th><th class="num">Entrada</th><th class="num">Ahora</th><th class="num">Stop / objetivo</th><th class="num">Resultado</th></tr></thead><tbody>${open}</tbody></table></div>` : ""}
       ${closed ? `<div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Cerrada</th><th>Cuándo</th><th class="num">Entrada</th><th class="num">Salida</th><th>Motivo</th><th class="num">Resultado</th></tr></thead><tbody>${closed}</tbody></table></div>` : ""}`;
   }

@@ -317,7 +317,8 @@ def notify(text: str):
             pass
 
 
-PAPER_EUR = float(os.getenv("STOCKS_PAPER_EUR", "100"))      # € simulados por cada alerta de compra
+PAPER_EUR = float(os.getenv("STOCKS_PAPER_EUR", "500"))      # € que invierte la cuenta simulada en cada compra
+CAPITAL_EUR = float(os.getenv("STOCKS_CAPITAL_EUR", "10000"))  # capital inicial de la cuenta simulada de acciones
 BROKER_FEE_EUR = float(os.getenv("STOCKS_FEE_EUR", "1"))      # (antiguo) comisión fija si no se sabe el valor
 
 
@@ -333,6 +334,33 @@ def paper_pnl(ret_pct: float, amount: float = PAPER_EUR, fee: float | None = Non
     return amount * ret_pct / 100 - costs
 
 
+def account(st: dict) -> dict:
+    """Cuenta simulada de acciones: compra y vende sola con cada señal. Se crea con CAPITAL_EUR; las alertas
+    abiertas de antes se descuentan de la liquidez inicial."""
+    acc = st.get("account")
+    if not acc:
+        used = sum(p.get("amount", PAPER_EUR) for p in (st.get("positions") or {}).values())
+        acc = st["account"] = {"start": CAPITAL_EUR, "cash": CAPITAL_EUR - used, "since": int(time.time()), "history": []}
+    return acc
+
+
+def cash_eur(state_dir: Path, st: dict) -> float:
+    """Liquidez para comprar: la del saldo conjunto con cripto (modo simulado) o la de la cuenta propia."""
+    from . import joint
+    if joint.enabled():
+        c = joint.stocks_cash_eur(state_dir, st)
+        if c is not None:
+            return c
+    return account(st)["cash"]
+
+
+def position_value(p: dict) -> float:
+    """Lo que darían hoy por la posición, ya descontadas las comisiones de compra y venta."""
+    amt = p.get("amount", PAPER_EUR)
+    r = 0.0 if p.get("pending_open") else (p.get("price", p["entry"]) / p["entry"] - 1) * 100
+    return amt + paper_pnl(r, amt, fees_total=p.get("fees_eur"))
+
+
 def paper_summary(st: dict) -> dict:
     opened = list((st.get("positions") or {}).values())
     closed = st.get("closed") or []
@@ -343,7 +371,12 @@ def paper_summary(st: dict) -> dict:
     wins = [x for x in realized if x > 0]
     from . import brokers
     bk = brokers.BROKERS[brokers.broker_key()]
+    acc = account(st)
+    equity = acc["cash"] + sum(position_value(p) for p in opened)
     return {"per_alert": PAPER_EUR, "fee": BROKER_FEE_EUR, "broker": bk["name"], "broker_note": bk["note"],
+            "capital": acc["start"], "cash": round(acc["cash"], 2), "equity": round(equity, 2),
+            "ret_pct": round((equity / acc["start"] - 1) * 100, 2) if acc["start"] else None,
+            "history": acc.get("history", [])[-500:],
             "open": len(opened), "fees_open": round(fees_open, 2), "move_open": round(open_pnl + fees_open, 2),
             "pending_open": sum(1 for p in opened if p.get("pending_open")),
             "invested_open": round(sum(p.get("amount", PAPER_EUR) for p in opened), 2),
@@ -452,6 +485,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                 why = exit_reason(cand, a) or ("abre por debajo del stop de la alerta" if a["price"] <= pos["stop"] else "")
                 if why:                     # en la apertura ya no se cumple: no se compra (sin comisiones)
                     del st["positions"][sym]
+                    account(st)["cash"] += pos.get("amount", PAPER_EUR)        # no llegó a comprarse
                     st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "CANCELADA", "price": a["price"],
                                          "reason": why})
                     notify(f"📈 ACCIONES · ⚪ ALERTA CANCELADA · {sym}\n"
@@ -486,14 +520,16 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                 st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "VENTA", "price": a["price"],
                                      "reason": why, "ret": ret})
                 del st["positions"][sym]
+                account(st)["cash"] += pos.get("amount", PAPER_EUR) + pnl       # venta automática simulada
                 fx = eur_rate(http, b.currency)
                 eur = f" ≈ {fmt_eur(a['price'] * fx)}" if fx and b.currency.upper() != "EUR" else ""
                 head = (f"📈 ACCIONES · ✅ CIERRE CON BENEFICIO · VENDER {sym}" if pnl >= 0 else
                         f"📈 ACCIONES · ❌ CIERRE CON PÉRDIDA · VENDER {sym}")
                 notify(f"{head}\n{b.name} a ~{a['price']:.2f} {b.currency}{eur}"
                        f"{' (pre-market)' if a.get('session') == 'pre' else ' (after-hours)' if a.get('session') == 'post' else ''}\nMotivo: {why}\n"
-                       f"Resultado de la alerta: {ret:+.1f}% · con {pos.get('amount', PAPER_EUR):.0f} € habrías "
-                       f"{'ganado' if pnl >= 0 else 'perdido'} {abs(pnl):.2f} € (con comisiones).\n"
+                       f"🤖 Venta automática simulada: {ret:+.1f}% · {'+' if pnl >= 0 else '−'}{abs(pnl):.2f} € con "
+                       f"{pos.get('amount', PAPER_EUR):.0f} € (con comisiones).\n"
+                       f"Liquidez disponible: {fmt_eur(cash_eur(state_dir, st))}.\n"
                        f"El cerebro de acciones aprende de este resultado.")
                 status = "venta"
             else:
@@ -536,7 +572,13 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
             if sym in by_sym:
                 by_sym[sym]["status"] = "señal (silenciada)" if muted else "señal (límite diario)"
             continue
+        acc = account(st)
+        if cash_eur(state_dir, st) < PAPER_EUR:                       # sin liquidez: no compra (sí lo apunta)
+            if sym in by_sym:
+                by_sym[sym]["status"] = "señal (sin liquidez)"
+            continue
         daily["n"] += 1
+        acc["cash"] -= PAPER_EUR                                      # compra automática simulada
         pl = a["plan"]
         st["positions"][sym] = {"symbol": sym, "name": b.name, "currency": b.currency, "entry": a["price"],
                                 "entry_ts": int(time.time()), "stop": pl["stop"], "tp": pl["tp"],
@@ -563,8 +605,9 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                f"⏳ Plazo máximo: {pl['max_days']} días de mercado{hist}"
                f"{'' if b.market_open else chr(10) + ('Precio de PRE-MARKET: la cartera simulada compra ya a este precio.' if a.get('session') == 'pre' else 'Precio de AFTER-HOURS: la cartera simulada compra ya a este precio.' if a.get('session') == 'post' else 'Mercado cerrado: la cartera simulada comprará en cuanto se pueda operar (pre-market o apertura), con stop y objetivo ajustados.')}\n"
                f"{cap_line}"
+               f"🤖 Compra automática simulada: {PAPER_EUR:.0f} € · liquidez restante {fmt_eur(cash_eur(state_dir, st))}.\n"
                f"Costes con {paper_summary(st)['broker']} (comisión, divisa e impuestos, ida y vuelta): "
-               f"~{fmt_eur(st['positions'][sym]['fees_eur'])} con {PAPER_EUR:.0f} €.\n"
+               f"~{fmt_eur(st['positions'][sym]['fees_eur'])}.\n"
                f"Es una alerta, no una orden: decides tú en tu broker.")
         if sym in by_sym:
             by_sym[sym]["status"] = "compra"
@@ -585,7 +628,22 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
             r["status"] = "vigilando"
     closed = st["closed"]
     rets = [x["ret"] for x in closed]
+    acc = account(st)
+    eq = acc["cash"] + sum(position_value(p) for p in st["positions"].values())
+    h = acc.setdefault("history", [])
+    if not h or time.time() - h[-1][0] >= 900:                       # un punto cada 15 min para la gráfica
+        h.append([int(time.time()), round(eq, 2)])
+    acc["history"] = h[-3000:]
+    try:                                                              # cambio $/€ para el saldo conjunto
+        r = eur_rate(http, "USD")
+        if r:
+            st["usd_per_eur"] = round(1 / r, 5)
+    except Exception:  # noqa: BLE001
+        pass
     st["paper"] = paper_summary(st)
+    from . import joint
+    jc = joint.stocks_cash_eur(state_dir, st) if joint.enabled() else None
+    st["paper"].update(joint=jc is not None, cash=round(jc if jc is not None else acc["cash"], 2))
     st.update({"market_up": market_up, "ts": int(time.time()), "watchlist": list(merged.values()), "universe": len(universe), "alerts": st["alerts"][-200:], "closed": closed[-200:],
                "track": {"n": len(rets), "win_rate": round(100 * np.mean(np.array(rets) > 0), 1) if rets else None,
                          "avg_ret": round(float(np.mean(rets)), 2) if rets else None}})

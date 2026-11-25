@@ -99,6 +99,17 @@ class Bot:
         b = self.cfg.brain
         return b.enabled and self.brain.champion is not None and (self.cfg.mode == "paper" or b.auto_apply_live)
 
+    def joint_view(self) -> dict | None:
+        """Saldo conjunto cripto + acciones (bot/joint.py). Solo en modo simulado."""
+        from . import joint
+        if self.cfg.mode != "paper" or not joint.enabled():
+            return None
+        try:
+            return joint.crypto_view(self.pf.dir, self.pf.cash, self.pf.equity())
+        except Exception as e:  # noqa: BLE001
+            log.warning("Saldo conjunto: %s", e)
+            return None
+
     def live_filters(self):
         """Con el cerebro al mando, el prefiltro deja pasar lo mismo con lo que el cerebro aprendió
         (volumen ≥ 10 k$/h, ≥ 15 min de vida, sin edad máxima); él decide con sus datos. La liquidez mínima
@@ -467,7 +478,11 @@ class Bot:
                     self.notify.send(f"🤖 Claude veta la compra de {s.symbol}: {verdict.get('reason', '')}")
                     self.pf.cooldowns[s.token_address] = time.time()
                     continue
-            size = position_size_usd(self.pf.equity(), self.pf.cash, s.liquidity_usd, self.exit_cfg().stop_loss_pct, c.risk)
+            eq_sz, cash_sz = self.pf.equity(), self.pf.cash
+            jv = self.joint_view()
+            if jv:                              # saldo conjunto con las acciones (solo simulado)
+                eq_sz, cash_sz = jv["equity"], max(0.0, jv["cash"])
+            size = position_size_usd(eq_sz, cash_sz, s.liquidity_usd, self.exit_cfg().stop_loss_pct, c.risk)
             size = round(size * max(0.0, min(1.0, mult)), 2)
             if size < 5:
                 log.info("Tamaño insuficiente para %s (%.2f USD)", s.symbol, size)
@@ -533,6 +548,7 @@ class Bot:
                 "liquidity": self.liquidity.get(m, p.entry_liquidity),
             })
         eq = self.pf.equity()
+        jv = self.joint_view()
         status = {
             "ts": int(now), "started_at": int(self.started_at), "mode": self.cfg.mode,
             "strategy": self.strategy_label(), "paused": self.paused,
@@ -547,6 +563,7 @@ class Bot:
             "interval": self.cfg.scanner.interval_seconds,
             "risk_off": self.risk_off,
             "analyst_enabled": bool(self.cfg.analyst.enabled and self.analyst.enabled),
+            "joint": jv,
         }
         try:
             tmp = self.pf.dir / "status.tmp"
@@ -559,7 +576,7 @@ class Bot:
                 with f.open("a") as fh:
                     if new:
                         fh.write("ts,equity,cash\n")
-                    fh.write(f"{int(now)},{eq:.4f},{self.pf.cash:.4f}\n")
+                    fh.write(f"{int(now)},{(jv or {}).get('equity', eq):.4f},{(jv or {}).get('cash', self.pf.cash):.4f}\n")
         except OSError as e:
             log.warning("No se pudo escribir el estado: %s", e)
 

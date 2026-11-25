@@ -81,9 +81,10 @@ def daily_summary(state: Path, now: float | None = None) -> str:
     day = madrid_now(now).strftime("%Y-%m-%d")
     lines = [f"📊 RESUMEN DEL DÍA · {madrid_now(now).strftime('%d/%m')}"]
     if st:
-        eq, start = st.get("equity", 0), st.get("start_equity") or 0
+        eq, start = (st.get("joint") or {}).get("equity", st.get("equity", 0)), st.get("start_equity") or 0
         tot = (eq / start - 1) * 100 if start else 0
-        lines.append(f"🪙 CRIPTO ({'simulado' if st.get('mode') == 'paper' else 'REAL'}): saldo ${eq:,.2f} "
+        lines.append(f"{'💼 SALDO CONJUNTO (cripto + acciones)' if st.get('joint') else '🪙 CRIPTO'} "
+                     f"({'simulado' if st.get('mode') == 'paper' else 'REAL'}): ${eq:,.2f} "
                      f"({tot:+.1f}% desde el inicio) · hoy {st.get('daily_pnl', 0):+.2f} $")
         lines.append(f"   Posiciones abiertas: {len(st.get('positions', []))} · estrategia: {st.get('strategy', '—')}")
     f = state / "trades.csv"
