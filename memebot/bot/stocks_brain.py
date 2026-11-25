@@ -41,6 +41,15 @@ def cost_per_side(position_eur: float | None = None, fee_eur: float | None = Non
     return SPREAD + (fee / pos if pos > 0 else 0.0)
 
 
+MODEL_VERSION = 3                  # súbelo al cambiar cómo se aprende: obliga a reaprender al momento
+
+
+def is_current(meta: dict) -> bool:
+    """¿Lo aprendido corresponde a esta versión, a tu broker y a tu importe por operación?"""
+    return (meta.get("model") == MODEL_VERSION and meta.get("broker") == brokers.broker_key()
+            and float(meta.get("position_eur") or -1) == float(os.getenv("STOCKS_PAPER_EUR", "100")))
+
+
 SIZES_EUR = [100, 250, 500, 1000, 2500, 5000]
 SETUPS = ["Retroceso en tendencia", "Ruptura"]
 DEFAULT_PARAMS = {
@@ -229,7 +238,7 @@ def optimize(bars: dict[str, dict], cost: float | None = None, amount: float | N
                       "regions": regions if edge else [], "by_region": by_region,
                       "by_size": by_size, "by_broker": by_broker}
     b = brokers.BROKERS[broker]
-    res["_meta"] = {"stocks": len(inds), "split_ts": int(split), "ts": int(time.time()), "position_eur": amount,
+    res["_meta"] = {"model": MODEL_VERSION, "stocks": len(inds), "split_ts": int(split), "ts": int(time.time()), "position_eur": amount,
                     "broker": broker, "broker_name": b["name"], "broker_note": b["note"]}
     return res
 
@@ -328,6 +337,8 @@ def params_for(state_dir: Path, setup: str) -> tuple[dict, bool, dict]:
     try:
         d = json.loads((state_dir / "stocks_brain.json").read_text())
         s = d["setups"][setup]
+        if "meta" in d and not is_current(d["meta"]):
+            return {**DEFAULT_PARAMS[setup], **s["params"]}, False, s    # aprendido con otros costes: en pausa
         return {**DEFAULT_PARAMS[setup], **s["params"]}, bool(s.get("active")), s
     except (OSError, ValueError, KeyError):
         return dict(DEFAULT_PARAMS[setup]), False, {}      # sin aprendizaje todavía: no se envían alertas

@@ -23,3 +23,20 @@ def test_alerts_only_in_regions_where_the_strategy_wins(tmp_path):
     s = st.run_once(tmp_path, ["TEST", "TEST.DE"], http=object(), fetcher=lambda h, sym: bars(pull))
     assert set(s["positions"]) == {"TEST.DE"}                   # la de EE. UU. queda bloqueada
     assert s["positions"]["TEST.DE"]["fees_eur"] >= 0
+
+
+def test_brain_learned_with_old_costs_is_paused_and_relearned(tmp_path, monkeypatch):
+    import json
+    import time
+    from bot import stocks as st
+    old = {"ts": int(time.time()), "meta": {"stocks": 147}, "setups": {
+        k: {"params": v, "active": True} for k, v in stocks_brain.DEFAULT_PARAMS.items()}}
+    (tmp_path / "stocks_brain.json").write_text(json.dumps(old))
+    assert stocks_brain.params_for(tmp_path, "Ruptura")[1] is False          # no alerta con lo aprendido antes
+    called = []
+    monkeypatch.setattr(stocks_brain, "run", lambda *a: called.append(1) or {})
+    (tmp_path / "stock_bars").mkdir()
+    for k in range(3):
+        (tmp_path / "stock_bars" / f"S{k}.json").write_text("{}")
+    st.learn_daily(tmp_path, {}, min_stocks=1)
+    assert called                                                           # reaprende aunque no hayan pasado 24 h

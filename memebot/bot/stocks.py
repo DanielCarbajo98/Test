@@ -523,10 +523,11 @@ def learn_daily(state_dir: Path, st: dict, every_h: float = 24, min_stocks: int 
     from . import stocks_brain
     f = state_dir / "stocks_brain.json"
     try:
-        last = json.loads(f.read_text()).get("ts", 0) if f.exists() else 0
+        prev = json.loads(f.read_text()) if f.exists() else {}
+        last = prev.get("ts", 0)
     except ValueError:
-        last = 0
-    if time.time() - last < every_h * 3600:
+        prev, last = {}, 0
+    if time.time() - last < every_h * 3600 and stocks_brain.is_current(prev.get("meta") or {}):
         return None
     bars = {}
     for bf in (state_dir / "stock_bars").glob("*.json"):
