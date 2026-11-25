@@ -4,6 +4,7 @@
 # Puedes ejecutarlo las veces que quieras: no borra nada y solo hace lo que falte.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+NO_SETUP=0; [ "${1:-}" = "--no-setup" ] && NO_SETUP=1     # mudanza: la configuración ya viene en .env
 B="\033[1m"; G="\033[32m"; X="\033[0m"
 
 echo -e "${B}[1/5] Docker${X}"
@@ -34,7 +35,8 @@ fi
 echo -e "${B}[3/5] Construyendo el programa (2-5 min la primera vez)${X}"
 docker compose build -q
 
-if ! grep -q "^WALLET_PRIVATE_KEY=." .env; then
+chmod 600 .env
+if [ "$NO_SETUP" = 0 ] && ! grep -q "^WALLET_PRIVATE_KEY=." .env && ! grep -q "^TELEGRAM_BOT_TOKEN=." .env; then
   echo -e "${B}[4/5] Asistente de configuración${X}"
   docker compose run --rm --no-deps -v "$PWD":/work -w /work bot python -m bot.setup
 else

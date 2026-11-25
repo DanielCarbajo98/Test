@@ -30,7 +30,8 @@ API = "https://api.github.com"
 CODE_DIRS = ["bot", "research", "tests", "deploy", "docs"]
 CODE_FILES = ["README.md", "GUIA_50EUR.md", "TU_PARTE.md", "config.example.yaml", "config.50eur.yaml",
               "requirements-dev.txt", "INICIAR-Windows.bat", "CONFIGURAR-Windows.bat", "PARAR-Windows.bat",
-              "INICIAR-Mac.command", "CONFIGURAR-Mac.command", "PARAR-Mac.command", ".gitattributes"]
+              "INICIAR-Mac.command", "CONFIGURAR-Mac.command", "PARAR-Mac.command", ".gitattributes",
+              "MUDAR-A-SERVIDOR-Windows.bat"]
 # requirements.txt: las librerías nuevas las instala cada servicio al arrancar (bot/bootstrap.py).
 # Dockerfile / docker-compose.yml: cambian la estructura de Docker y necesitan INICIAR.
 REBUILD_FILES = ["requirements.txt", "Dockerfile", "docker-compose.yml"]

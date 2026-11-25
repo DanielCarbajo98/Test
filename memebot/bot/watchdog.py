@@ -68,7 +68,7 @@ def check_health(state: Path, memo: dict, now: float | None = None, send=notify)
         if age > max_min and name not in down:
             down[name] = now
             send(f"⚠️ VIGILANTE · El {name} no da señales desde hace {age:.0f} min. "
-                 f"Comprueba que Docker Desktop está abierto y el ordenador no se ha dormido.")
+                 f"Comprueba que el servidor (o el PC) está encendido y Docker funcionando.")
         elif age <= max_min and name in down:
             mins = (now - down.pop(name)) / 60
             send(f"✅ VIGILANTE · El {name} vuelve a funcionar (estuvo parado unos {mins:.0f} min).")
