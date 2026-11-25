@@ -475,10 +475,8 @@ class Bot:
 
     def daily_summary(self):
         day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        if day != self._last_summary_day and datetime.now(timezone.utc).hour == 0:
-            self._last_summary_day = day
-            self.notify.send(f"📊 Resumen: equity ${self.pf.equity():.2f}, caja ${self.pf.cash:.2f}, "
-                             f"{len(self.pf.positions)} posiciones abiertas")
+        # el resumen diario completo lo envía el vigilante (bot/watchdog.py) a las 21:00
+        self._last_summary_day = day
 
     def write_status(self):
         """state/status.json + state/equity.csv: lo que lee el panel."""

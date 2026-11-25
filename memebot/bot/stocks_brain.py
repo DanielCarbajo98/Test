@@ -22,7 +22,21 @@ import numpy as np
 
 from .stocks import atr, rsi, sma
 
-COST = 0.0015
+import os
+
+SPREAD = 0.001                     # diferencial de compra/venta y deslizamiento, por lado
+COST = 0.0015                      # (compatibilidad) coste por lado sin comisión fija
+
+
+def cost_per_side(position_eur: float | None = None, fee_eur: float | None = None) -> float:
+    """Coste por lado con TU broker: comisión fija / importe + diferencial.
+    Trade Republic: 1 € por orden -> con 100 € es un 1 % por lado (2 % ida y vuelta)."""
+    pos = position_eur if position_eur is not None else float(os.getenv("STOCKS_PAPER_EUR", "100"))
+    fee = fee_eur if fee_eur is not None else float(os.getenv("STOCKS_FEE_EUR", "1"))
+    return SPREAD + (fee / pos if pos > 0 else 0.0)
+
+
+SIZES_EUR = [100, 250, 500, 1000, 2500, 5000]
 SETUPS = ["Retroceso en tendencia", "Ruptura"]
 DEFAULT_PARAMS = {
     "Retroceso en tendencia": {"rsi_max": 35, "stop_atr": 2.0, "tp_atr": 3.0, "max_days": 20, "regime": 0},
@@ -82,7 +96,7 @@ def signals(ind: dict, setup: str, p: dict) -> np.ndarray:
             & (np.abs(ind["chg"]) <= 15))
 
 
-def simulate(ind: dict, setup: str, p: dict) -> list[tuple[float, float, str]]:
+def simulate(ind: dict, setup: str, p: dict, cost: float = COST) -> list[tuple[float, float, str]]:
     """Operaciones (ts_entrada, retorno, motivo). Entrada en la apertura del día siguiente a la señal."""
     sig = np.flatnonzero(signals(ind, setup, p))
     o, h, lo, c, a = ind["o"], ind["h"], ind["l"], ind["c"], ind["atr"]
@@ -93,7 +107,7 @@ def simulate(ind: dict, setup: str, p: dict) -> list[tuple[float, float, str]]:
         e = i + 1
         if e >= n or e < free:
             continue
-        entry = o[e] * (1 + COST)
+        entry = o[e] * (1 + cost)
         stop, tp = entry - p["stop_atr"] * a[i], entry + p["tp_atr"] * a[i]
         reason, px, j = "plazo", c[min(n - 1, e + p["max_days"])], min(n - 1, e + p["max_days"])
         for k in range(e, min(n, e + p["max_days"] + 1)):
@@ -106,7 +120,7 @@ def simulate(ind: dict, setup: str, p: dict) -> list[tuple[float, float, str]]:
             if np.isfinite(trend[k]) and c[k] < trend[k] and k > e:
                 px, reason, j = c[k], "tendencia rota", k
                 break
-        out.append((float(ind["ts"][e]), (px * (1 - COST)) / entry - 1, reason))
+        out.append((float(ind["ts"][e]), (px * (1 - cost)) / entry - 1, reason))
         free = j + 1
     return out
 
@@ -121,7 +135,9 @@ def _stats(r: list[float]) -> dict:
 
 
 # --------------------------------------------------------------------------- aprendizaje
-def optimize(bars: dict[str, dict]) -> dict:
+def optimize(bars: dict[str, dict], cost: float | None = None) -> dict:
+    """Aprende con los costes REALES del usuario (comisión fija según el importe por operación)."""
+    cost = cost_per_side() if cost is None else cost
     inds = {s: indicators(b) for s, b in bars.items() if len(b.get("c", [])) >= 260}
     if len(inds) < 20:
         return {}
@@ -136,7 +152,7 @@ def optimize(bars: dict[str, dict]) -> dict:
         keys = list(GRID[setup])
         for vals in itertools.product(*(GRID[setup][k] for k in keys)):
             p = dict(zip(keys, vals))
-            trades = [t for ind in inds.values() for t in simulate(ind, setup, p)]
+            trades = [t for ind in inds.values() for t in simulate(ind, setup, p, cost)]
             ins = [t[1] for t in trades if t[0] < split]
             if len(ins) < 50:
                 continue
@@ -153,8 +169,18 @@ def optimize(bars: dict[str, dict]) -> dict:
         for t in oos:
             reasons[t[2]] = reasons.get(t[2], 0) + 1
         edge = so["n"] >= MIN_TRADES_OOS and so["expectancy"] is not None and so["expectancy"] > 0 and (so["lcb"] or -1) > -0.5
-        res[setup] = {"params": p, "in_sample": si, "out_of_sample": so, "exit_reasons_oos": reasons, "edge": edge}
-    res["_meta"] = {"stocks": len(inds), "split_ts": int(split), "ts": int(time.time())}
+        # ¿a partir de qué importe por operación compensa? (misma regla, distintas comisiones)
+        fee = float(os.getenv("STOCKS_FEE_EUR", "1"))
+        by_size = {}
+        for size in SIZES_EUR:
+            c2 = cost_per_side(size, fee)
+            r2 = [t[1] for ind in inds.values() for t in simulate(ind, setup, p, c2) if t[0] >= split]
+            by_size[str(size)] = _stats(r2)
+        res[setup] = {"params": p, "in_sample": si, "out_of_sample": so, "exit_reasons_oos": reasons, "edge": edge,
+                      "cost_per_side_pct": round(100 * cost, 3), "by_size": by_size}
+    res["_meta"] = {"stocks": len(inds), "split_ts": int(split), "ts": int(time.time()),
+                    "position_eur": float(os.getenv("STOCKS_PAPER_EUR", "100")),
+                    "fee_eur": float(os.getenv("STOCKS_FEE_EUR", "1")), "cost_per_side_pct": round(100 * cost, 3)}
     return res
 
 
@@ -189,6 +215,15 @@ def lessons(learned: dict, fb: dict) -> list[str]:
                 top = max(er, key=er.get)
                 out.append(f"«{setup}»: la salida más frecuente es «{top}» ({er[top]} de {sum(er.values())}).")
         f = fb.get(setup) or {}
+        bs = L.get("by_size") or {}
+        good = [int(k) for k, v in bs.items() if (v.get("expectancy") or -1) > 0 and v.get("n", 0) >= MIN_TRADES_OOS]
+        if bs:
+            if good:
+                out.append(f"«{setup}»: con tus comisiones, compensa a partir de ~{min(good)} € por operación "
+                           f"(por debajo, la comisión se come la ganancia).")
+            else:
+                out.append(f"«{setup}»: con tus comisiones no compensa con ningún importe probado (hasta "
+                           f"{max(int(k) for k in bs)} €).")
         if p.get("regime"):
             out.append(f"«{setup}» funciona mejor comprando solo cuando el mercado general (S&P 500) está en tendencia "
                        f"alcista (sobre su media de 200 días).")

@@ -187,20 +187,28 @@ def main():
     token = os.getenv("GITHUB_TOKEN", "")
     repo = os.getenv("UPDATE_REPO", "danielcarbajo98/test")
     branch = os.getenv("UPDATE_BRANCH", "claude/bold-johnson-evz8g1")
+    from . import watchdog
     if not token:
         log.info("Sin GITHUB_TOKEN en .env: actualizaciones automáticas desactivadas (usa CONFIGURAR para activarlas).")
-        while a.loop:                     # no salir: Docker lo reiniciaría en bucle
-            time.sleep(3600)
-        return
+    state = Path(a.work) / "state"
+    memo: dict = {}
+    last_check = 0.0
     while True:
-        try:
-            st = check_once(Path(a.work), repo, branch, token)
-            log.info("Estado: %s", st.get("state"))
-        except Exception as e:  # noqa: BLE001
-            log.warning("No se pudo comprobar actualizaciones: %s", e)
+        if token and time.time() - last_check >= (a.loop or 0) * 60:
+            last_check = time.time()
+            try:
+                st = check_once(Path(a.work), repo, branch, token)
+                log.info("Estado: %s", st.get("state"))
+            except Exception as e:  # noqa: BLE001
+                log.warning("No se pudo comprobar actualizaciones: %s", e)
         if not a.loop:
             break
-        time.sleep(a.loop * 60)
+        try:                                   # vigilante (cada minuto) y resumen diario de las 21:00
+            watchdog.check_health(state, memo)
+            watchdog.maybe_daily_summary(state, memo)
+        except Exception as e:  # noqa: BLE001
+            log.warning("Vigilante: %s", e)
+        time.sleep(60)
 
 
 if __name__ == "__main__":
