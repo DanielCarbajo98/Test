@@ -17,7 +17,8 @@ import httpx
 log = logging.getLogger("reports")
 API = "https://api.github.com"
 BRANCH = "bot-reports"
-REPORT_HOUR = 21                    # hora de España; se sube una vez al día a partir de esta hora
+REPORT_HOUR = 21                    # hora de España; el informe del día se guarda a partir de esta hora
+EVERY_H = 3                         # además, reports/latest.json se actualiza cada 3 horas
 
 
 def _read(p: Path) -> dict:
@@ -131,10 +132,14 @@ def maybe_publish(state: Path, repo: str, base: str, token: str, notify, now: fl
     mark = state / "report_sent.json"
     info = _read(mark)
     first = not info                                # el primero se sube al arrancar: así se comprueba el token
-    if (m.hour < REPORT_HOUR and not first) or info.get("day") == day or time.time() - info.get("failed_at", 0) < 3 * 3600:
+    if time.time() - info.get("failed_at", 0) < 3 * 3600:
+        return False
+    daily = m.hour >= REPORT_HOUR and info.get("day") != day        # el del día, a partir de las 21:00
+    every = time.time() - info.get("ts", 0) >= EVERY_H * 3600      # y el último estado cada pocas horas
+    if not (first or daily or every):
         return False
     try:
-        publish(state, repo, base, token, http, day)
+        publish(state, repo, base, token, http, day if daily else "")
     except httpx.HTTPStatusError as e:
         code = e.response.status_code
         info["failed_at"] = int(time.time())
@@ -151,7 +156,7 @@ def maybe_publish(state: Path, repo: str, base: str, token: str, notify, now: fl
         mark.write_text(json.dumps(info))
         log.warning("No se pudo subir el informe: %s", e)
         return False
-    mark.write_text(json.dumps({"day": day if m.hour >= REPORT_HOUR else "", "ts": int(time.time())}))
+    mark.write_text(json.dumps({"day": day if daily else info.get("day", ""), "ts": int(time.time())}))
     log.info("Informe diario subido a la rama %s", BRANCH)
     if first:
         notify("✅ Primer informe subido a GitHub (rama bot-reports): el token tiene permiso de escritura y la "
