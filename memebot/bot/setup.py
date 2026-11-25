@@ -197,6 +197,28 @@ def main():
         else:
             bad("Token de Telegram no válido; se omite.")
 
+    # 4b. Actualizaciones automáticas ----------------------------------------
+    print(f"\n{B}Actualizaciones automáticas (recomendado){X}")
+    print("  Con un token de GitHub de SOLO LECTURA, el bot se actualiza solo cuando haya mejoras.")
+    print("  Créalo en github.com/settings/personal-access-tokens/new → Only select repositories → test")
+    print("  → Permissions → Contents: Read-only → Generate token.")
+    while True:
+        tok = ask("Token de GitHub (Enter para omitir)", secret=True) or env.get("GITHUB_TOKEN", "")
+        if not tok:
+            warn("Sin token: tendrás que actualizar a mano descargando el ZIP.")
+            break
+        try:
+            r = httpx.get("https://api.github.com/repos/danielcarbajo98/test/commits/claude/bold-johnson-evz8g1",
+                          headers={"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json"}, timeout=15)
+            good = r.status_code == 200
+        except httpx.HTTPError:
+            good = False
+        if good:
+            env["GITHUB_TOKEN"] = tok
+            ok("Actualizaciones automáticas activadas")
+            break
+        bad("GitHub rechaza ese token (¿repositorio «test» y Contents: Read-only?). Prueba otra vez o pulsa Enter.")
+
     # 5. Perfil y modo ------------------------------------------------------
     print(f"\n{B}5. Capital y modo{X}")
     while True:

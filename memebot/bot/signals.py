@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import math
+
 import numpy as np
 
 
@@ -189,3 +191,68 @@ def latest_signal(strategy: str, rows: list[list[float]], created_at: int, suppl
     sig = STRATEGIES[strategy](f, params)
     last = {k: float(v[-1]) for k, v in f.items()}
     return bool(sig[-1]), last
+
+
+# --------------------------------------------------------------------------- explicación (para el panel)
+def _fmt_usd(v: float) -> str:
+    return f"{v / 1e6:.1f} M$" if v >= 1e6 else f"{v / 1e3:.0f} k$"
+
+
+def explain(strategy: str, f: dict, p: dict) -> list[dict]:
+    """Condiciones de la estrategia en la última vela: [{label, ok, value, rule}] para mostrar en el panel.
+
+    `f` son las features de la última vela (valores escalares, como devuelve latest_signal).
+    Refleja exactamente las condiciones de las funciones de estrategia de arriba.
+    """
+    g = lambda k, d=0.0: float(f.get(k, d))  # noqa: E731
+    rows: list[tuple[str, bool, str, str]] = []
+
+    def rng(label, k, lo, hi, fmt=lambda v: f"{v:.0f}"):
+        v = g(k)
+        rows.append((label, lo <= v <= hi, fmt(v), f"entre {fmt(lo)} y {fmt(hi)}"))
+
+    def ge(label, k, lo, fmt=lambda v: f"{v:.0f}"):
+        v = g(k)
+        rows.append((label, v >= lo, fmt(v), f"≥ {fmt(lo)}"))
+
+    pct = lambda v: f"{v:+.1f}%"  # noqa: E731
+    if strategy == "momentum":
+        rng("Edad del token (min)", "age_min", p.get("min_age", 30), p.get("max_age", 4320))
+        ge("Volumen última hora", "vol_60m", p.get("min_vol_60m", 50_000), _fmt_usd)
+        rng("Subida última hora", "ret_60m", p.get("min_ret_60m", 5), p.get("max_ret_60m", 150), pct)
+        ge("Variación últimos 5 min", "ret_5m", p.get("min_ret_5m", -3), pct)
+        ge("Aceleración del volumen", "accel", p.get("min_accel", 1.0), lambda v: f"{v:.2f}x")
+        ge("Minutos activos en 1 h", "active_60m", p.get("min_active", 40))
+        rng("Capitalización (FDV)", "fdv", p.get("min_fdv", 100_000), p.get("max_fdv", 50_000_000), _fmt_usd)
+    elif strategy == "early":
+        rng("Edad del token (min)", "age_min", p.get("min_age", 3), p.get("max_age", 30))
+        ge("Volumen últimos 5 min", "vol_5m", p.get("min_vol_5m", 15_000), _fmt_usd)
+        ge("Subida últimos 5 min", "ret_5m", p.get("min_ret_5m", 10), pct)
+        ge("Capitalización (FDV)", "fdv", p.get("min_fdv", 30_000), _fmt_usd)
+    elif strategy == "dip":
+        rng("Edad del token (min)", "age_min", p.get("min_age", 120), p.get("max_age", 4320))
+        v = g("drawdown_6h")
+        lim = -p.get("min_drawdown", 45)
+        rows.append(("Caída desde el máximo de 6 h", v <= lim, pct(v), f"≤ {pct(lim)}"))
+        ge("Volumen última hora", "vol_60m", p.get("min_vol_60m", 30_000), _fmt_usd)
+        ge("Rebote últimos 5 min", "ret_5m", p.get("min_bounce", 3), pct)
+        ge("Minutos activos en 1 h", "active_60m", p.get("min_active", 40))
+        ge("Capitalización (FDV)", "fdv", p.get("min_fdv", 200_000), _fmt_usd)
+    elif strategy == "breakout":
+        ge("Edad del token (min)", "age_min", p.get("min_age", 120))
+        hp = g("high_prev_3h", float("inf"))
+        brk = (g("price") / hp - 1) * 100 if math.isfinite(hp) and hp > 0 else -100.0
+        need = p.get("min_break", 0)
+        rows.append(("Rompe el máximo de 3 h", brk > need, pct(brk), f"> {pct(need)}"))
+        ge("Volumen última hora", "vol_60m", p.get("min_vol_60m", 50_000), _fmt_usd)
+        ge("Aceleración del volumen", "accel", p.get("min_accel", 1.5), lambda v: f"{v:.2f}x")
+        v = g("ret_60m")
+        rows.append(("Subida última hora (no parabólica)", v <= p.get("max_ret_60m", 80), pct(v),
+                     f"≤ {pct(p.get('max_ret_60m', 80))}"))
+        ge("Minutos activos en 1 h", "active_60m", p.get("min_active", 40))
+        ge("Capitalización (FDV)", "fdv", p.get("min_fdv", 150_000), _fmt_usd)
+    else:  # baseline
+        ge("Edad del token (min)", "age_min", 30)
+        ge("Volumen última hora", "vol_60m", p.get("min_vol_60m", 50_000), _fmt_usd)
+        ge("Minutos activos en 1 h", "active_60m", 40)
+    return [{"label": a, "ok": bool(b), "value": c, "rule": d} for a, b, c, d in rows]

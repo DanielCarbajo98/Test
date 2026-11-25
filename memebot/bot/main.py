@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 
 import httpx
 
+from . import version
 from .brain import BrainRuntime
 from .config import Config, ExitCfg, load_config
 from .executor import JupiterExecutor, PaperExecutor, Quoter
@@ -29,7 +30,7 @@ from .portfolio import Portfolio
 from .risk import can_open, evaluate_exit, position_size_usd
 from .safety import SafetyChecker, SolanaRPC
 from .scanner import DexScreener
-from .signals import latest_signal
+from .signals import explain, latest_signal
 from .strategy import prefilter, rank
 
 log = logging.getLogger("memebot")
@@ -69,6 +70,11 @@ class Bot:
         self.notify = Notifier(cfg.telegram_token, cfg.telegram_chat_id)
         self._last_summary_day = ""
         self._last_entry_scan = 0.0
+        self._last_analyzed: dict[str, float] = {}
+        self._chart_index: dict[str, dict] = {}
+        self._analysis: dict[str, tuple] = {}     # pool -> (signal, feat, checks, pred) del último análisis
+        self._disc: tuple = ()
+        self._disc_ts = 0.0
         self._last_equity_log = 0.0
         self.started_at = time.time()
         self.last_scan: dict = {}
@@ -182,16 +188,86 @@ class Bot:
                 del self.pending_reclaim[mint]
 
     # ------------------------------------------------------------------ entradas
+    def _discover(self) -> tuple[list[str], set[str]]:
+        """Universo: DexScreener (perfiles/boosts) + GeckoTerminal (tendencia y más activos). Caché 2 min."""
+        c = self.cfg
+        if time.time() - self._disc_ts < c.scanner.discovery_cache_seconds and self._disc:
+            return self._disc
+        addrs, boosted = self.dex.latest_token_addresses(c.scanner.include_boosted, c.scanner.include_profiles)
+        if c.scanner.include_gecko:
+            addrs += [m for m in discover(self.candles, DEFAULT_SOURCES) if m not in addrs]
+        self._disc, self._disc_ts = (addrs, boosted), time.time()
+        return self._disc
+
+    def _explain(self, feat: dict, pred: float | None) -> list[dict]:
+        """Qué condiciones cumple y cuáles no la estrategia activa (para el panel)."""
+        if not feat:
+            return [{"label": "Velas de 1 minuto", "ok": False, "value": "no disponibles", "rule": "se reintenta"}]
+        if self.brain_active():
+            champ = self.brain.champion
+            if champ["kind"] == "rule":
+                return explain(champ["strategy"], feat, champ.get("params", {}))
+            rows = [
+                {"label": "Volumen última hora", "ok": feat.get("vol_60m", 0) >= 10_000,
+                 "value": f"{feat.get('vol_60m', 0) / 1e3:.0f} k$", "rule": "≥ 10 k$"},
+                {"label": "Minutos activos en 1 h", "ok": feat.get("active_60m", 0) >= 20,
+                 "value": f"{feat.get('active_60m', 0):.0f}", "rule": "≥ 20"},
+            ]
+            if pred is not None:
+                thr = champ.get("threshold", 0)
+                rows.append({"label": "Resultado esperado por el modelo", "ok": pred >= thr,
+                             "value": f"{100 * pred:+.1f}%", "rule": f"≥ {100 * thr:+.1f}%"})
+            return rows
+        return explain(self.cfg.strategy.name, feat, self.cfg.strategy.params)
+
+    def _save_chart(self, pool: str, mint: str, symbol: str, rows: list, signal: bool, feat: dict,
+                    checks: list[dict], pred: float | None, extra: dict | None = None):
+        """Guarda velas + análisis para el gráfico en directo del panel (sin peticiones extra)."""
+        if not rows:
+            return
+        try:
+            d = self.pf.dir / "charts"
+            d.mkdir(exist_ok=True)
+            data = {"pool": pool, "mint": mint, "symbol": symbol, "ts": int(time.time()), "signal": signal,
+                    "strategy": self.strategy_label(), "checks": checks, "pred": pred,
+                    "features": {k: round(v, 6) for k, v in feat.items() if k != "valid"},
+                    "candles": rows[-420:], **(extra or {})}
+            tmp = d / f"{pool}.tmp"
+            tmp.write_text(json.dumps(data))
+            tmp.replace(d / f"{pool}.json")
+            self._chart_index[pool] = {"pool": pool, "mint": mint, "symbol": symbol, "ts": data["ts"],
+                                       "signal": signal, "position": bool((extra or {}).get("position")),
+                                       "failed": sum(1 for c in checks if not c["ok"]), "checks": len(checks),
+                                       "price": float(rows[-1][4])}
+            keep = {p.pool for p in self.pf.positions.values()}
+            for k in sorted(self._chart_index, key=lambda k: self._chart_index[k]["ts"])[:-60]:
+                if k not in keep:                # máximo 60 gráficos guardados
+                    self._chart_index.pop(k, None)
+                    (d / f"{k}.json").unlink(missing_ok=True)
+            for k, v in self._chart_index.items():
+                v["position"] = k in keep
+            tmp = d / "index.tmp"
+            tmp.write_text(json.dumps(list(self._chart_index.values())))
+            tmp.replace(d / "index.json")
+        except OSError as e:
+            log.debug("No se pudo guardar el gráfico: %s", e)
+
+    def refresh_position_charts(self):
+        """Velas de las posiciones abiertas (para ver en directo dónde está cada una)."""
+        for mint, pos in self.pf.positions.items():
+            if not pos.pool:
+                continue
+            rows = self.candles.minute(pos.pool, limit=240)
+            sig, feat, checks, pred = self._analysis.get(pos.pool, (False, {}, [], None))
+            self._save_chart(pos.pool, mint, pos.symbol, rows, sig, feat, checks, pred, {"position": True})
+
     def find_entries(self):
         c = self.cfg
         ok, why = can_open(len(self.pf.positions), self.pf.daily_pnl(), self.pf.start_equity_today(), c.risk,
                            self.pf.equity())
         if not ok:
-            log.info("No se abren posiciones: %s", why)
-            return
-        addrs, boosted = self.dex.latest_token_addresses(c.scanner.include_boosted, c.scanner.include_profiles)
-        if c.scanner.include_gecko:
-            addrs += [m for m in discover(self.candles, DEFAULT_SOURCES) if m not in addrs]
+            log.info("No se abren posiciones (%s); se sigue analizando el mercado", why)
+        addrs, boosted = self._discover()
         addrs = [a for a in addrs if a not in self.pf.positions
                  and not self.pf.in_cooldown(a, c.risk.cooldown_minutes)][: c.scanner.max_candidates]
         snaps = self.dex.best_pairs(addrs, boosted)
@@ -203,15 +279,17 @@ class Bot:
                 log.debug("%s descartado: %s", s.symbol, "; ".join(reasons))
             else:
                 passed.append(s)
-        passed.sort(key=rank, reverse=True)
+        # Por turnos: primero los que llevan más tiempo sin analizarse; a igualdad, los más activos.
+        now = time.time()
+        passed.sort(key=lambda x: (self._last_analyzed.get(x.pair_address, 0), -rank(x)))
         log.info("Candidatos: %d descubiertos, %d con datos, %d pasan el prefiltro", len(addrs), len(snaps), len(passed))
-        self.last_scan = {"ts": int(time.time()), "discovered": len(addrs), "with_data": len(snaps),
-                          "prefilter": len(passed), "analyzed": 0, "signals": 0}
+        self.last_scan = {"ts": int(now), "discovered": len(addrs), "with_data": len(snaps),
+                          "prefilter": len(passed), "analyzed": 0, "signals": 0,
+                          "queue": max(0, len(passed) - c.strategy.max_ohlcv_per_cycle)}
 
         for s in passed[: c.strategy.max_ohlcv_per_cycle]:
-            if len(self.pf.positions) >= c.risk.max_open_positions:
-                break
             rows = self.candles.minute(s.pair_address)
+            self._last_analyzed[s.pair_address] = time.time()
             supply = s.fdv / s.price_usd
             created = int(time.time() - s.age_minutes * 60)
             pred = None
@@ -221,12 +299,16 @@ class Bot:
                 signal, feat = latest_signal(c.strategy.name, rows, created, supply, c.strategy.params)
             if pred is not None:
                 feat["ml_pred"] = pred
-            self._log_decision(s, signal, feat)
+            checks = self._explain(feat, pred)
+            self._analysis[s.pair_address] = (signal, feat, checks, pred)
+            if len(self._analysis) > 300:
+                self._analysis.pop(next(iter(self._analysis)))
+            self._log_decision(s, signal, feat, checks)
+            self._save_chart(s.pair_address, s.token_address, s.symbol, rows, signal, feat, checks, pred,
+                             {"liquidity": s.liquidity_usd, "fdv": s.fdv})
             self.last_scan["analyzed"] += 1
             self.last_scan["signals"] += int(signal)
-            if not signal:
-                log.debug("%s sin señal %s (ret60 %.1f%%, accel %.2f)", s.symbol, c.strategy.name,
-                          feat.get("ret_60m", 0), feat.get("accel", 0))
+            if not signal or not ok or len(self.pf.positions) >= c.risk.max_open_positions:
                 continue
             rep = self.safety.check(s)
             if not rep.ok:
@@ -254,7 +336,7 @@ class Bot:
                 f"https://dexscreener.com/solana/{s.pair_address}")
         self.pf.save()
 
-    def _log_decision(self, s, signal: bool, feat: dict):
+    def _log_decision(self, s, signal: bool, feat: dict, checks: list | None = None):
         """Registro de cada candidato evaluado (para validar filtros en tiempo real a posteriori)."""
         try:
             with open(self.pf.dir / "decisions.jsonl", "a") as fh:
@@ -262,6 +344,7 @@ class Bot:
                                      "symbol": s.symbol, "signal": signal, "liq": s.liquidity_usd, "fdv": s.fdv,
                                      "buys_m5": s.buys_m5, "sells_m5": s.sells_m5, "buys_h1": s.buys_h1,
                                      "sells_h1": s.sells_h1, "price": s.price_usd,
+                                     "failed": [x["label"] for x in (checks or []) if not x["ok"]],
                                      **{k: round(v, 4) for k, v in feat.items() if k != "valid"}}) + "\n")
         except OSError:
             pass
@@ -335,6 +418,7 @@ class Bot:
                                 time.time() - self._last_entry_scan >= self.cfg.scanner.entry_interval_seconds):
             self._last_entry_scan = time.time()
             self.find_entries()
+            self.refresh_position_charts()
         self.daily_summary()
         self.write_status()
         log.info("Equity ${:.2f} | caja ${:.2f} | posiciones {} | PnL hoy ${:+.2f}".format(
@@ -350,6 +434,10 @@ class Bot:
                 log.exception("Error en ciclo")
             if once:
                 return
+            if version.changed():
+                self.notify.send(f"🔄 Nueva versión instalada ({version.read()[:7]}): reiniciando el bot…")
+                self.pf.save()
+                return                      # Docker lo vuelve a arrancar con el código nuevo
             time.sleep(max(1.0, self.cfg.scanner.interval_seconds - (time.time() - t0)))
 
 

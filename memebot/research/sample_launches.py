@@ -24,8 +24,9 @@ log = logging.getLogger("launches")
 def sample(g: Gecko, out: Path, minutes: float, every: float):
     idx_file = out / "pools.json"
     index = json.loads(idx_file.read_text()) if idx_file.exists() else {}
+    from bot import version
     end = time.time() + minutes * 60
-    while time.time() < end:
+    while time.time() < end and not version.changed():
         try:
             data = g.get(f"{G}/new_pools", {"page": 1}).get("data", [])
         except Exception as e:  # noqa: BLE001

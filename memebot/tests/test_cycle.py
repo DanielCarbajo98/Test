@@ -74,6 +74,12 @@ def test_full_cycle_buy_then_take_profit(tmp_path, monkeypatch):
     assert "MINT" in bot.pf.positions
     p = bot.pf.positions["MINT"]
     assert p.cost_usd == 40 and bot.pf.cash == 1000 - p.cost_usd
+    # el gráfico en directo y su análisis quedan guardados para el panel
+    import json
+    idx = json.loads((tmp_path / "charts" / "index.json").read_text())
+    assert idx and idx[0]["symbol"] == "MEME" and idx[0]["position"]
+    chart = json.loads((tmp_path / "charts" / f"{idx[0]['pool']}.json").read_text())
+    assert chart["candles"] and chart["checks"] and all(c["ok"] for c in chart["checks"])
 
     state["price"] = 0.0025      # +150%: primer take profit (vende 50%)
     bot.cycle(force_entries=True)

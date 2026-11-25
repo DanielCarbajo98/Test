@@ -27,9 +27,11 @@ from urllib.parse import parse_qs, urlparse
 
 from dotenv import load_dotenv
 
+from . import version
 from .history import positions, summarize
 
 STATIC = Path(__file__).parent / "static" / "dashboard.html"
+VENDOR = Path(__file__).parent / "static" / "vendor"
 MAX_POINTS = 1500
 
 
@@ -65,6 +67,34 @@ def equity_series(state: Path) -> list[list[float]]:
         step = len(pts) / MAX_POINTS
         pts = [pts[int(i * step)] for i in range(MAX_POINTS)] + [pts[-1]]
     return pts
+
+
+def chart_list(state: Path) -> list[dict]:
+    """Tokens con gráfico disponible: primero posiciones abiertas, luego señales, luego lo más reciente."""
+    idx = _read_json(state / "charts" / "index.json", [])
+    return sorted(idx, key=lambda c: (not c.get("position"), not c.get("signal"), -c.get("ts", 0)))
+
+
+def chart_detail(state: Path, pool: str) -> dict | None:
+    if not pool or not all(ch.isalnum() for ch in pool):
+        return None
+    data = _read_json(state / "charts" / f"{pool}.json", None)
+    if data is None:
+        return None
+    mint = data.get("mint", "")
+    trades = []
+    f = state / "trades.csv"
+    if f.exists() and mint:
+        with f.open() as fh:
+            for r in csv.DictReader(fh):
+                if r.get("mint") == mint:
+                    trades.append({"ts": r["ts"], "side": r["side"], "price": float(r["price"]),
+                                   "usd": float(r["usd"]), "reason": r["reason"]})
+    status = _read_json(state / "status.json", {})
+    pos = next((p for p in status.get("positions", []) if p.get("mint") == mint), None)
+    exits = (_read_json(state / "brain.json", {}).get("champion") or {}).get("exits_bt")
+    data.update({"trades": trades, "position": pos, "exits": exits})
+    return data
 
 
 def build_state(state: Path) -> dict:
@@ -104,6 +134,8 @@ def build_state(state: Path) -> dict:
         "closed": [{k: v for k, v in c.items() if k != "reasons"} | {"reason": (c["reasons"] or ["?"])[-1]}
                    for c in closed[::-1][:100]],
         "stats": stats, "fills": fills, "decisions": decisions, "brain": brain_view if brain else None,
+        "charts": chart_list(state)[:40],
+        "version": version.read()[:7], "update": _read_json(state / "update.json", {}),
         "control": {"paused": bool(control.get("paused", status.get("paused", False))),
                     "close_all_pending": bool(control.get("close_all"))},
     }
@@ -136,6 +168,14 @@ def make_handler(state: Path, token: str):
             self._send(code, json.dumps(obj).encode(), "application/json")
 
         def do_GET(self):  # noqa: N802
+            path = urlparse(self.path).path
+            if path.startswith("/vendor/"):          # librería pública de gráficos: sin token
+                name = path.rsplit("/", 1)[-1]
+                f = VENDOR / name
+                if name and f.is_file() and f.parent == VENDOR:
+                    ctype = "application/javascript" if name.endswith(".js") else "text/plain; charset=utf-8"
+                    return self._send(200, f.read_bytes(), ctype)
+                return self._send(404, b"no encontrado", "text/plain")
             if not self._authorized():
                 return self._send(HTTPStatus.UNAUTHORIZED, b"token requerido", "text/plain")
             path = urlparse(self.path).path
@@ -143,6 +183,10 @@ def make_handler(state: Path, token: str):
                 return self._send(200, STATIC.read_bytes(), "text/html; charset=utf-8")
             if path == "/api/state":
                 return self._json(build_state(state))
+            if path == "/api/chart":
+                pool = (parse_qs(urlparse(self.path).query).get("pool") or [""])[0]
+                d = chart_detail(state, pool)
+                return self._json(d) if d else self._json({"error": "sin gráfico"}, 404)
             self._send(404, b"no encontrado", "text/plain")
 
         def do_POST(self):  # noqa: N802
@@ -181,6 +225,14 @@ def serve(state: str, host: str, port: int, token: str):
     httpd = ThreadingHTTPServer((host, port), make_handler(st, token))
     url = f"http://{'127.0.0.1' if host in ('0.0.0.0', '::') else host}:{port}/" + (f"?token={token}" if token else "")
     print(f"Panel en {url}  (estado: {st.resolve()})")
+    import threading
+
+    def watch():                        # reinicio automático tras una actualización
+        while True:
+            time.sleep(20)
+            if version.changed():
+                os._exit(0)
+    threading.Thread(target=watch, daemon=True).start()
     httpd.serve_forever()
 
 

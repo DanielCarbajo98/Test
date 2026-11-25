@@ -193,6 +193,44 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   .funnel { grid-template-columns: repeat(3, 1fr); }
   .actions { width: 100%; } .actions .btn { flex: 1; justify-content: center; } .actions .icon-btn { flex: none; }
 }
+
+/* ---------- mercado en directo ---------- */
+.live { display: grid; grid-template-columns: 220px minmax(0, 1fr) 290px; gap: 0; min-height: 460px; }
+.live > * { min-width: 0; }
+.tlist { border-right: 1px solid var(--border); overflow-y: auto; max-height: 520px; }
+.tlist button { display: flex; width: 100%; align-items: center; gap: 10px; padding: 10px 14px; border: 0; border-bottom: 1px solid var(--border);
+  background: transparent; color: var(--text); cursor: pointer; text-align: left; font: inherit; }
+.tlist button:hover { background: var(--surface-2); }
+.tlist button.on { background: var(--accent-soft); }
+.tlist .meta { display: grid; gap: 1px; min-width: 0; flex: 1; }
+.tlist .meta b { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tlist .meta span { font-size: 11.5px; color: var(--muted); }
+.badge { font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 6px; white-space: nowrap; }
+.badge.pos { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent); }
+.badge.sig { background: color-mix(in srgb, var(--good) 22%, transparent); color: var(--good-text); }
+.badge.no { background: var(--surface-2); color: var(--muted); }
+.cwrap { position: relative; padding: 12px 14px; display: grid; grid-template-rows: auto 1fr auto; gap: 8px; }
+.chead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.chead b { font-size: 18px; font-weight: 650; }
+.chead .px { font-size: 15px; font-variant-numeric: tabular-nums; }
+.chead a { font-size: 12px; color: var(--muted); }
+#candle { height: 380px; min-width: 0; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 5px; }
+.legend i.d { border-top-style: dashed; }
+.analysis { border-left: 1px solid var(--border); padding: 14px; display: grid; align-content: start; gap: 12px; overflow-y: auto; max-height: 520px; }
+.verdict { padding: 12px; border-radius: 12px; font-weight: 650; display: flex; gap: 8px; align-items: center; }
+.verdict.yes { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good-text); }
+.verdict.no { background: var(--surface-2); color: var(--text-2); }
+.checks { display: grid; gap: 2px; }
+.chk { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; align-items: start; }
+.chk:last-child { border-bottom: 0; }
+.chk .r { color: var(--muted); font-size: 11.5px; display: block; }
+.chk .v { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; white-space: nowrap; }
+.chk .ic { font-weight: 700; }
+.chk.ok .ic { color: var(--good-text); } .chk.ko .ic { color: var(--bad-text); }
+@media (max-width: 1100px) { .live { grid-template-columns: 1fr; } .tlist { border-right: 0; border-bottom: 1px solid var(--border); max-height: 180px; }
+  .analysis { border-left: 0; border-top: 1px solid var(--border); max-height: none; } }
 </style>
 </head>
 <body>
@@ -251,6 +289,19 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     <div class="card-b"><div class="chart" id="chart"></div></div>
   </section>
 
+  <section class="card" style="margin-top:16px" id="liveCard">
+    <div class="card-h"><h2>Mercado en directo</h2><span class="sub" id="liveSub" style="margin-left:auto"></span></div>
+    <div class="live" style="margin-top:12px; border-top:1px solid var(--border)">
+      <div class="tlist" id="tlist"></div>
+      <div class="cwrap">
+        <div class="chead" id="chead"></div>
+        <div id="candle"><div class="empty">Elige un token de la lista para ver sus velas en directo.</div></div>
+        <div class="legend" id="clegend"></div>
+      </div>
+      <div class="analysis" id="analysis"></div>
+    </div>
+  </section>
+
   <section class="card" style="margin-top:16px">
     <div class="card-h"><h2>Cerebro</h2><span class="pill" id="brainPill" style="margin-left:auto">—</span></div>
     <div class="card-b" id="brain"></div>
@@ -286,6 +337,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 </div></div>
 <div class="toast" id="toast"></div>
 
+<script src="vendor/lightweight-charts.js"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -385,8 +437,10 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("openMeter").style.width = (100 * n / mx) + "%";
     $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
 
-    renderChart(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
-    $("foot").textContent = has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos";
+    renderChart(); renderTokenList(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
+    const up = S.update || {};
+    const upTxt = up.state ? ` · ${up.state}${up.checked_at ? " (comprobado " + ago(S.now - up.checked_at) + ")" : ""}` : "";
+    $("foot").textContent = (has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos") + ` · Versión ${S.version || "—"}${upTxt}`;
   }
 
   // ---------- gráfico de saldo ----------
@@ -480,6 +534,129 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       <div><h3>Qué factores pesan más</h3>${impHtml}${cands}</div></div>`;
   }
 
+
+  // ---------- mercado en directo (velas) ----------
+  let selPool = null, lw = null, cs = null, vs = null, lines = [], lastChartKey = "";
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  function precisionFor(p) { if (!p || p <= 0) return 6; return Math.min(12, Math.max(2, Math.ceil(-Math.log10(p)) + 3)); }
+  function renderTokenList() {
+    const list = S.charts || [];
+    $("liveSub").textContent = list.length ? `${list.length} tokens analizados recientemente` : "";
+    if (!list.length) { $("tlist").innerHTML = `<div class="empty" style="height:120px">Aún sin análisis. Aparecen en el primer minuto.</div>`; return; }
+    if (!selPool || !list.some(c => c.pool === selPool)) selPool = list[0].pool;
+    $("tlist").innerHTML = list.map(c => {
+      const b = c.position ? '<span class="badge pos">En cartera</span>' : c.signal ? '<span class="badge sig">Señal</span>'
+        : `<span class="badge no">${c.checks ? (c.checks - c.failed) + "/" + c.checks : "—"}</span>`;
+      return `<button data-pool="${esc(c.pool)}" class="${c.pool === selPool ? "on" : ""}">${avatar(c.symbol)}<span class="meta"><b>${esc(c.symbol)}</b><span>${price(c.price)} · ${ago(S.now - c.ts)}</span></span>${b}</button>`;
+    }).join("");
+    $("tlist").querySelectorAll("button").forEach(b => b.onclick = () => { selPool = b.dataset.pool; lastChartKey = ""; renderTokenList(); loadChart(); });
+  }
+  function ensureChart() {
+    if (lw || !window.LightweightCharts) return;
+    const el = $("candle"); el.innerHTML = "";
+    lw = LightweightCharts.createChart(el, {
+      autoSize: true,
+      layout: { background: { type: "solid", color: "transparent" }, textColor: css("--muted"), fontFamily: css("--font") },
+      grid: { vertLines: { color: css("--grid") }, horzLines: { color: css("--grid") } },
+      rightPriceScale: { borderColor: css("--border") },
+      timeScale: { borderColor: css("--border"), timeVisible: true, secondsVisible: false,
+        tickMarkFormatter: (t, type) => { const d = new Date(t * 1000);
+          return type <= 2 ? d.toLocaleDateString("es-ES", { day: "2-digit", month: "short" }) : d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }); } },
+      crosshair: { mode: 0 },
+      localization: { timeFormatter: t => new Date(t * 1000).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) },
+    });
+    cs = lw.addCandlestickSeries({ upColor: "#16a34a", downColor: "#dc2626", borderVisible: false, wickUpColor: "#16a34a", wickDownColor: "#dc2626" });
+    vs = lw.addHistogramSeries({ priceFormat: { type: "volume" }, priceScaleId: "vol", color: "rgba(120,120,120,.35)" });
+    lw.priceScale("vol").applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
+  }
+  async function loadChart() {
+    if (!selPool) return;
+    try {
+      const r = await fetch("api/chart" + (location.search ? location.search + "&" : "?") + "pool=" + encodeURIComponent(selPool), { headers: H, cache: "no-store" });
+      if (!r.ok) return;
+      drawChart(await r.json());
+    } catch {}
+  }
+  function drawChart(d) {
+    const pos = d.position;
+    const last = d.candles.length ? d.candles[d.candles.length - 1][4] : 0;
+    const nowPx = pos ? pos.price : last;
+    const first = d.candles.length ? d.candles[Math.max(0, d.candles.length - 61)][4] : 0;
+    const ch = first ? 100 * (last / first - 1) : 0;
+    $("chead").innerHTML = `<b>${esc(d.symbol)}</b><span class="px">${price(nowPx)}</span><span class="${cls(ch)}">${pct(ch)} 1 h</span>
+      <a href="${dexLink(d.mint, d.pool)}" target="_blank" rel="noopener">DexScreener ↗</a><span class="sub">analizado ${ago(S.now - d.ts)}</span>`;
+    if (!window.LightweightCharts) { $("candle").innerHTML = `<div class="empty">No se pudo cargar la librería de gráficos.</div>`; renderAnalysis(d); return; }
+    ensureChart();
+    const prec = precisionFor(last);
+    cs.applyOptions({ priceFormat: { type: "price", precision: prec, minMove: Math.pow(10, -prec) } });
+    const seen = new Set();
+    const candles = [], vols = [];
+    for (const c of d.candles) {
+      if (seen.has(c[0])) continue; seen.add(c[0]);
+      candles.push({ time: c[0], open: c[1], high: c[2], low: c[3], close: c[4] });
+      vols.push({ time: c[0], value: c[5], color: c[4] >= c[1] ? "rgba(22,163,74,.35)" : "rgba(220,38,38,.35)" });
+    }
+    cs.setData(candles); vs.setData(vols);
+    // marcas de compras y ventas del bot
+    const t0 = candles.length ? candles[0].time : 0, t1 = candles.length ? candles[candles.length - 1].time : 0;
+    const snap = t => { const m = Math.floor(t / 60) * 60; return Math.min(Math.max(m, t0), t1); };
+    const markers = (d.trades || []).map(tr => {
+      const t = snap(Math.floor(Date.parse(tr.ts) / 1000));
+      return tr.side === "BUY"
+        ? { time: t, position: "belowBar", color: "#3987e5", shape: "arrowUp", text: `COMPRA $${tr.usd.toFixed(2)}` }
+        : { time: t, position: "aboveBar", color: "#f59e0b", shape: "arrowDown", text: `VENTA · ${tr.reason.split(" ").slice(0, 2).join(" ")}` };
+    }).filter(m => m.time >= t0 && m.time <= t1).sort((a, b) => a.time - b.time);
+    cs.setMarkers(markers);
+    // líneas de precio: entrada, stop, objetivos y máximo
+    lines.forEach(l => cs.removePriceLine(l)); lines = [];
+    const legend = [];
+    const add = (p, color, title, dashed) => { if (!p) return; lines.push(cs.createPriceLine({ price: p, color, lineWidth: 1, lineStyle: dashed ? 2 : 0, axisLabelVisible: true, title }));
+      legend.push(`<span><i class="${dashed ? "d" : ""}" style="border-color:${color}"></i>${title}</span>`); };
+    if (pos) {
+      add(pos.entry_price, "#3987e5", "Entrada");
+      add(pos.stop, "#dc2626", pos.tp_hit ? "Stop (en entrada)" : "Stop loss", true);
+      const tps = (d.exits && d.exits.tp) || [[100, 50], [300, 25]];
+      tps.forEach(([g], i) => { if (i >= pos.tp_hit) add(pos.entry_price * (1 + g / 100), "#16a34a", `Objetivo +${g}%`, true); });
+      if (pos.peak > pos.entry_price * 1.01) add(pos.peak, "#a3a3a3", "Máximo", true);
+      // la última vela sigue al precio en vivo
+      if (candles.length && pos.price) {
+        const lc = candles[candles.length - 1];
+        cs.update({ ...lc, close: pos.price, high: Math.max(lc.high, pos.price), low: Math.min(lc.low, pos.price) });
+      }
+    }
+    legend.unshift(`<span><i style="border-color:#3987e5"></i>▲ compra del bot</span>`, `<span><i style="border-color:#f59e0b"></i>▼ venta del bot</span>`);
+    $("clegend").innerHTML = legend.join("");
+    const key = selPool + ":" + candles.length;
+    if (key !== lastChartKey && !lastChartKey.startsWith(selPool + ":")) lw.timeScale().fitContent();
+    lastChartKey = key;
+    renderAnalysis(d);
+  }
+  function renderAnalysis(d) {
+    const pos = d.position, checks = d.checks || [];
+    let html = "";
+    if (pos) {
+      html += `<div class="verdict yes">● En cartera · ${sgnUsd(pos.pnl_usd)} (${pct(pos.pnl_pct)})</div>
+        <div class="kv"><span>Entrada</span><b>${price(pos.entry_price)}</b><span>Precio</span><b>${price(pos.price)}</b>
+        <span>Stop</span><b>${price(pos.stop)}</b><span>Máximo</span><b>${price(pos.peak)}</b><span>Tiempo</span><b>${dur(S.now - pos.opened_at)}</b></div>`;
+    } else {
+      const ok = d.signal;
+      html += `<div class="verdict ${ok ? "yes" : "no"}">${ok ? "✓ Señal de compra" : "✗ Sin señal de compra"}</div>`;
+    }
+    if (checks.length) {
+      const n = checks.filter(c => c.ok).length;
+      html += `<div><h3 style="margin:0 0 6px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Condiciones · ${n}/${checks.length}</h3><div class="checks">${
+        checks.map(c => `<div class="chk ${c.ok ? "ok" : "ko"}"><span class="ic">${c.ok ? "✓" : "✗"}</span><span>${esc(c.label)}<span class="r">necesita ${esc(c.rule)}</span></span><span class="v">${esc(c.value)}</span></div>`).join("")}</div></div>`;
+    }
+    const f = d.features || {};
+    if (f.vol_60m != null) {
+      html += `<div class="kv"><span>Liquidez</span><b>${(d.liquidity || (pos && pos.liquidity)) ? usd(d.liquidity || pos.liquidity, 0) : "—"}</b><span>Capitalización</span><b>${f.fdv ? usd(f.fdv, 0) : "—"}</b>
+        <span>Volumen 1 h</span><b>${usd(f.vol_60m, 0)}</b><span>Subida 1 h</span><b class="${cls(f.ret_60m)}">${pct(f.ret_60m)}</b>
+        <span>Caída desde máx. 6 h</span><b>${pct(f.drawdown_6h)}</b><span>Edad</span><b>${dur((f.age_min || 0) * 60)}</b></div>`;
+    }
+    html += `<p class="sub" style="margin:0">Estrategia: ${esc(d.strategy || "—")}. Se vuelve a analizar cada pocos minutos.</p>`;
+    $("analysis").innerHTML = html;
+  }
+
   // ---------- posiciones ----------
   function renderPositions() {
     const ps = (S.status || {}).positions || [];
@@ -565,9 +742,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
     const nx = cur === "light" ? "dark" : "light"; document.documentElement.dataset.theme = nx;
     try { localStorage.setItem("memebot-theme", nx); } catch {} if (S) renderChart();
+    if (lw) { lw.remove(); lw = null; lines = []; lastChartKey = ""; loadChart(); }
   };
   addEventListener("resize", () => S && renderChart());
   load(); setInterval(load, 3000);
+  setTimeout(loadChart, 800); setInterval(loadChart, 5000);
 })();
 </script>
 </body>

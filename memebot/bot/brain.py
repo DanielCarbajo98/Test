@@ -452,7 +452,12 @@ def main():
         k += 1
         if not period:
             break
-        time.sleep(max(30, period - (time.time() - t0)))
+        from . import version
+        end = time.time() + max(30, period - (time.time() - t0))
+        while time.time() < end:
+            if version.changed():
+                return                  # Docker lo reinicia con el código nuevo
+            time.sleep(15)
 
 
 if __name__ == "__main__":

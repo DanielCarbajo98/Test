@@ -11,19 +11,20 @@ state_dir: state
 scanner:
   interval_seconds: 10
   entry_interval_seconds: 60
-  max_candidates: 60
+  max_candidates: 200
+  discovery_cache_seconds: 120
   include_gecko: true
   include_boosted: true
   include_profiles: true
 filters:
   min_liquidity_usd: 40000
-  max_liquidity_usd: 5000000
+  max_liquidity_usd: 100000000
   min_age_minutes: 30
   max_age_minutes: 4320
   min_volume_h1_usd: 30000
   min_txns_h1: 200
   min_buy_ratio_m5: 0.0
-  max_fdv_usd: 50000000
+  max_fdv_usd: 1000000000
   allowed_dexes:
   - raydium
   - pumpswap

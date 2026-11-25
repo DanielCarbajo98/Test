@@ -15,6 +15,8 @@ services:
     volumes:
       - ./config.yaml:/app/config.yaml:ro
       - ./state:/app/state
+      - ./bot:/app/bot:ro
+      - ./research:/app/research:ro
     command: ["python", "-m", "bot.main", "--config", "config.yaml"]
 
   panel:                     # http://127.0.0.1:8050 (en el servidor: túnel SSH)
@@ -23,6 +25,7 @@ services:
       - "127.0.0.1:8050:8050"
     volumes:
       - ./state:/app/state
+      - ./bot:/app/bot:ro
     command: ["python", "-m", "bot.dashboard", "--state", "state", "--host", "0.0.0.0"]
 
   brain:                     # aprendizaje continuo: reentrena cada 30 min, reoptimización completa cada 6 h
@@ -31,16 +34,28 @@ services:
       - ./data:/app/data
       - ./data_launches:/app/data_launches
       - ./state:/app/state
+      - ./bot:/app/bot:ro
+      - ./research:/app/research:ro
     command: ["python", "-m", "bot.brain", "--data", "data,data_launches", "--state", "state", "--every-min", "30", "--full-every", "12"]
 
   collector:                 # velas "a futuro" del universo activo
     <<: *base
     volumes:
       - ./data:/app/data
+      - ./bot:/app/bot:ro
+      - ./research:/app/research:ro
     command: ["python", "-m", "research.collect", "--loop", "15", "--out", "data"]
 
   launches:                  # lanzamientos al azar (muestra sin sesgo) + sus velas
     <<: *base
     volumes:
       - ./data_launches:/app/data_launches
+      - ./bot:/app/bot:ro
+      - ./research:/app/research:ro
     command: ["sh", "-c", "while true; do python -m research.sample_launches --minutes 60 --every 180; python -m research.sample_launches --fetch; done"]
+
+  updater:                   # actualizaciones automáticas desde tu GitHub (cada 30 min, con tests previos)
+    <<: *base
+    volumes:
+      - ./:/work
+    command: ["python", "-m", "bot.updater", "--work", "/work", "--loop", "30"]

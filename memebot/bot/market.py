@@ -77,5 +77,7 @@ def discover(c: "Candles", sources: list[tuple[str, dict]]) -> list[str]:
     return mints
 
 
-DEFAULT_SOURCES = [("trending_pools", {"duration": "1h"}), ("trending_pools", {"duration": "6h"}),
-                   ("pools", {"sort": "h24_tx_count_desc"})]
+DEFAULT_SOURCES = [("trending_pools", {"duration": "5m"}), ("trending_pools", {"duration": "1h"}),
+                   ("trending_pools", {"duration": "6h"}), ("trending_pools", {"duration": "24h"}),
+                   ("pools", {"sort": "h24_volume_usd_desc"}), ("pools", {"sort": "h24_tx_count_desc"}),
+                   ("pools", {"sort": "h24_volume_usd_desc", "page": 2}), ("pools", {"sort": "h24_tx_count_desc", "page": 2})]

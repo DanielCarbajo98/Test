@@ -13,7 +13,8 @@ from dotenv import load_dotenv
 class ScannerCfg:
     interval_seconds: int = 20          # revisión de posiciones abiertas
     entry_interval_seconds: int = 60    # búsqueda de entradas
-    max_candidates: int = 60
+    max_candidates: int = 200
+    discovery_cache_seconds: int = 120  # la lista de tokens se refresca cada 2 min (ahorra cupo de API)
     include_gecko: bool = True
     include_boosted: bool = True
     include_profiles: bool = True
@@ -23,13 +24,13 @@ class ScannerCfg:
 class FilterCfg:
     """Prefiltro en tiempo real (DexScreener) antes de descargar velas."""
     min_liquidity_usd: float = 40_000
-    max_liquidity_usd: float = 5_000_000
+    max_liquidity_usd: float = 100_000_000
     min_age_minutes: float = 30
     max_age_minutes: float = 72 * 60
     min_volume_h1_usd: float = 30_000
     min_txns_h1: int = 200
     min_buy_ratio_m5: float = 0.0     # 0 = desactivado (no se puede backtestear)
-    max_fdv_usd: float = 50_000_000
+    max_fdv_usd: float = 1_000_000_000   # memecoins y también tokens más grandes
     allowed_dexes: list[str] = field(default_factory=lambda: ["raydium", "pumpswap", "meteora", "orca"])
 
 

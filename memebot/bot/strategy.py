@@ -33,6 +33,8 @@ def prefilter(s: PairSnapshot, f: FilterCfg) -> list[str]:
         r.append("presión compradora 5m insuficiente")
     if s.fdv and s.fdv > f.max_fdv_usd:
         r.append("FDV demasiado alta")
+    if 0.97 <= s.price_usd <= 1.03 and abs(s.change_h24) < 2 and abs(s.change_h1) < 1:
+        r.append("parece una stablecoin (no se mueve)")
     if s.price_usd <= 0 or s.fdv <= 0:
         r.append("sin precio/FDV")
     return r

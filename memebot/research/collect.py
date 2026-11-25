@@ -185,7 +185,12 @@ def main():
         collect_round(g, out, a.pages, a.hours, a.max_pools)
         if not a.loop:
             break
-        time.sleep(max(0, a.loop * 60 - (time.time() - t0)))
+        from bot import version
+        end = time.time() + max(0, a.loop * 60 - (time.time() - t0))
+        while time.time() < end:
+            if version.changed():
+                return
+            time.sleep(15)
 
 
 if __name__ == "__main__":
