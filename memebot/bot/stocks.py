@@ -746,6 +746,66 @@ def learn_daily(state_dir: Path, st: dict, every_h: float = 24, min_stocks: int 
     return res
 
 
+def live_tick(state_dir: Path, http: httpx.Client, ext_fetcher=fetch_ext) -> int:
+    """Cada minuto, entre los análisis completos: precio en directo (con pre-market/after-hours) de las posiciones
+    abiertas. Las valora y, si tocan stop u objetivo, las vende en ese momento. Devuelve cuántas actualizó."""
+    f = state_dir / "stocks.json"
+    try:
+        st = json.loads(f.read_text())
+    except (OSError, ValueError):
+        return 0
+    pos_all = st.get("positions") or {}
+    if not pos_all:
+        return 0
+    rows = {r["symbol"]: r for r in st.get("watchlist") or []}
+    n = 0
+    for sym in list(pos_all):
+        pos = pos_all[sym]
+        ext = ext_fetcher(http, sym)
+        if not ext or ext["session"] == "closed" or time.time() - ext["ts"] > 1200 or ext["price"] <= 0:
+            continue
+        px, ses = ext["price"], ext["session"]
+        n += 1
+        if pos.get("pending_open"):                 # se puede operar: compra al precio de ahora, mismo riesgo
+            d = px - pos["entry"]
+            pos.update(entry=px, price=px, peak=px, stop=pos["stop"] + d, tp=(pos["tp"] + d) if pos.get("tp") else None,
+                       entry_ts=int(time.time()), pending_open=False, entry_session=ses, price_session=ses)
+            continue
+        pos["price"], pos["price_session"], pos["live_ts"] = px, ses, int(time.time())
+        pos["peak"] = max(pos.get("peak", px), px)
+        if sym in rows:
+            rows[sym]["price"] = px
+        why = ""
+        if px <= pos["stop"]:
+            why = f"STOP LOSS en {pos['stop']:.2f}"
+        elif pos.get("tp") and px >= pos["tp"]:
+            why = f"TAKE PROFIT alcanzado ({pos['tp']:.2f})"
+        if not why:
+            continue
+        ret = (px / pos["entry"] - 1) * 100
+        amt = pos.get("amount", PAPER_EUR)
+        pnl = paper_pnl(ret, amt, fees_total=pos.get("fees_eur"))
+        st["closed"].append({**pos, "symbol": sym, "exit": px, "exit_ts": int(time.time()), "reason": why, "ret": ret,
+                             "pnl_eur": round(pnl, 2)})
+        st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "VENTA", "price": px, "reason": why, "ret": ret})
+        del pos_all[sym]
+        account(st)["cash"] += amt + pnl
+        if sym in rows:
+            rows[sym]["status"] = "venta"
+        head = (f"📈 ACCIONES · ✅ CIERRE CON BENEFICIO · VENDER {sym}" if pnl >= 0 else
+                f"📈 ACCIONES · ❌ CIERRE CON PÉRDIDA · VENDER {sym}")
+        tag = {"pre": " (pre-market)", "post": " (after-hours)"}.get(ses, "")
+        notify(f"{head}\n{pos.get('name', sym)} a ~{px:.2f} {pos.get('currency', '')}{tag}\nMotivo: {why} (en directo)\n"
+               f"🤖 Venta automática simulada: {ret:+.1f}% · {'+' if pnl >= 0 else '−'}{abs(pnl):.2f} € con {amt:.0f} € "
+               f"(con comisiones).\nLiquidez disponible: {fmt_eur(cash_eur(state_dir, st))}.")
+    st["paper"] = {**(st.get("paper") or {}), **paper_summary(st)}
+    st["live_ts"] = int(time.time())
+    tmp = f.with_suffix(".live.tmp")
+    tmp.write_text(json.dumps(st, default=float))
+    tmp.replace(f)
+    return n
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--state", default="state")
@@ -774,10 +834,18 @@ def main():
         if not a.loop:
             break
         end = time.time() + a.loop * 60
+        live_every = float(os.getenv("STOCKS_LIVE_SECONDS", "60"))     # posiciones abiertas en tiempo real
+        next_live = time.time() + live_every
         while time.time() < end:
             if version.changed():
                 return
-            time.sleep(15)
+            if time.time() >= next_live:
+                next_live = time.time() + live_every
+                try:
+                    live_tick(Path(a.state), http)
+                except Exception:  # noqa: BLE001
+                    log.exception("Fallo actualizando las posiciones en directo")
+            time.sleep(5)
 
 
 if __name__ == "__main__":

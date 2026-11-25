@@ -107,7 +107,7 @@ def _stocks_view(state: Path) -> dict:
                                                    "suspended", "suspended_why", "edge")}
                        for k, v in (sb.get("setups") or {}).items()}
     opened = [dict(p, symbol=s) for s, p in (st.get("positions") or {}).items()]
-    return {"paper": st.get("paper"), "open_alerts": opened, "brain": brain if sb else None, "market_up": st.get("market_up"), "ts": st.get("ts"), "universe": st.get("universe"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
+    return {"paper": st.get("paper"), "open_alerts": opened, "brain": brain if sb else None, "market_up": st.get("market_up"), "ts": st.get("ts"), "live_ts": st.get("live_ts"), "universe": st.get("universe"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
             "alerts": st.get("alerts", [])[-40:][::-1], "closed": st.get("closed", [])[-40:][::-1],
             "track": st.get("track", {})}
 

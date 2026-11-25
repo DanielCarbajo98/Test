@@ -789,7 +789,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const k = S.stocks || {}, wl = k.watchlist || [];
     if (!wl.length) { $("stkTable").innerHTML = `<div class="empty" style="height:120px">El análisis de acciones aparece a los pocos minutos de arrancar (servicio «stocks»).</div>`; $("stkSub").textContent = ""; return; }
     const tr = k.track || {};
-    $("stkSub").textContent = `${wl.length}${k.universe && k.universe > wl.length ? " de " + k.universe : ""} acciones analizadas · ${Object.keys(k.positions || {}).length} alertas abiertas` + (tr.n ? ` · historial: ${tr.n} cerradas, acierto ${tr.win_rate}%, media ${pct(tr.avg_ret)}` : "") + ` · ${ago(S.now - k.ts)}`;
+    $("stkSub").textContent = `${wl.length}${k.universe && k.universe > wl.length ? " de " + k.universe : ""} acciones analizadas · ${Object.keys(k.positions || {}).length} alertas abiertas` + (tr.n ? ` · historial: ${tr.n} cerradas, acierto ${tr.win_rate}%, media ${pct(tr.avg_ret)}` : "") + ` · análisis ${ago(S.now - k.ts)}` + (k.live_ts ? ` · precios en directo ${ago(S.now - k.live_ts)}` : "");
     if (!selStock || !wl.some(r => r.symbol === selStock)) selStock = (wl.find(r => r.status !== "vigilando") || wl[0]).symbol;
     const tag = r => r.status === "en cartera" ? '<span class="badge pos">Alerta abierta</span>' : r.status === "compra" ? '<span class="badge sig">COMPRAR</span>'
       : r.status === "venta" ? '<span class="badge" style="background:color-mix(in srgb,var(--bad) 22%,transparent);color:var(--bad-text)">VENDER</span>' : '<span class="badge no">Vigilando</span>';
@@ -1154,7 +1154,8 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       return { a, amt, r, pnl, dist };
     }).sort((x, y) => y.pnl - x.pnl);
     const tot = rows.reduce((s, x) => s + x.pnl, 0), inv = rows.reduce((s, x) => s + x.amt, 0);
-    $("resStkSub").innerHTML = `${rows.length} abiertas · ${inv.toLocaleString("es-ES", { maximumFractionDigits: 0 })} € invertidos · <span class="${cls(tot)}">${eur(tot)}</span>`;
+    const lt = Math.max(k.live_ts || 0, k.ts || 0);
+    $("resStkSub").innerHTML = `${rows.length} abiertas · ${inv.toLocaleString("es-ES", { maximumFractionDigits: 0 })} € invertidos · <span class="${cls(tot)}">${eur(tot)}</span>${lt ? ` · <span class="sub">precios ${ago(S.now - lt)}</span>` : ""}`;
     $("resStocks").innerHTML = `<table><thead><tr><th>Acción</th><th>Estrategia</th><th class="num">Invertido</th><th class="num">Entrada</th><th class="num">Ahora</th>
       <th class="num">Resultado</th><th class="num">Al stop</th><th class="num">Desde</th></tr></thead><tbody>${rows.map(({ a, amt, r, pnl, dist }) => `
       <tr class="click" data-sym="${esc(a.symbol)}" title="Ver velas en directo"><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.name || "")}</div></td>

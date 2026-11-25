@@ -188,3 +188,19 @@ def test_premarket_price_buys_and_values(tmp_path):
     activate_all(other)
     s2 = st.run_once(other, ["TEST"], http=object(), fetcher=lambda h, sym: shut, ext_fetcher=stale)
     assert s2["positions"]["TEST"]["pending_open"]
+
+
+def test_live_tick_values_and_sells_at_stop_in_real_time(tmp_path):
+    import time as _t
+    activate_all(tmp_path)
+    pull = list(np.linspace(100, 200, 260)) + [200 - 3 * i for i in range(1, 8)]
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: bars(pull))
+    p = s["positions"]["TEST"]
+    up = lambda price, ses="regular": (lambda h, sym: {"price": price, "ts": int(_t.time()), "session": ses})  # noqa: E731
+    assert st.live_tick(tmp_path, None, up(p["entry"] + 1, "pre")) == 1
+    d = json.loads((tmp_path / "stocks.json").read_text())
+    assert d["positions"]["TEST"]["price"] == p["entry"] + 1 and d["positions"]["TEST"]["price_session"] == "pre"
+    assert st.live_tick(tmp_path, None, up(1.0, "closed")) == 0          # bolsa cerrada: no toca nada
+    st.live_tick(tmp_path, None, up(p["stop"] - 0.5))                     # toca el stop: vende ya
+    d = json.loads((tmp_path / "stocks.json").read_text())
+    assert "TEST" not in d["positions"] and d["closed"][-1]["reason"].startswith("STOP")
