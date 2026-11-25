@@ -239,8 +239,23 @@ def main():
     if live_ok and yes("¿Empezar YA con dinero real? (recomendado: no, primero paper)", False):
         mode = "live"
     cfg["mode"] = mode
+    old_capital = None
+    if cfg_f.exists():
+        try:
+            old_capital = float((yaml.safe_load(cfg_f.read_text()) or {}).get("risk", {}).get("starting_equity_usd"))
+        except (TypeError, ValueError):
+            old_capital = None
     cfg_f.write_text("# Generado por bot/setup.py\n" + yaml.safe_dump(cfg, sort_keys=False, allow_unicode=True))
     ok(f"config.yaml: capital {capital:g} USDC, modo {mode.upper()}")
+    pf = root / "state" / "portfolio.json"
+    if mode == "paper" and pf.exists() and old_capital is not None and abs(old_capital - capital) > 0.01:
+        if yes(f"¿Reiniciar la simulación con {capital:g} $ en vez de {old_capital:g} $? (se guarda una copia)"):
+            stamp = time.strftime("%Y%m%d-%H%M%S")
+            for name in ("portfolio.json", "trades.csv", "equity.csv"):
+                f = root / "state" / name
+                if f.exists():
+                    f.rename(f.with_name(f"{f.stem}.antes-{stamp}{f.suffix}"))
+            ok("Simulación reiniciada con el nuevo capital")
 
     env.setdefault("DASHBOARD_TOKEN", secrets.token_urlsafe(24))
     if env_f.exists():
