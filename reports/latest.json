@@ -1,28 +1,44 @@
 {
- "generated_at": 1795590982,
+ "generated_at": 1795616995,
  "days": 30,
- "version": "b20cd8ce045c",
+ "version": "0a2f035b28f5",
  "crypto": {
   "status": {
    "mode": "paper",
    "strategy": "momentum",
    "paused": false,
-   "equity": 10147.266523401979,
+   "equity": 9848.929624379492,
    "start_equity": 10000.0,
-   "daily_pnl": 166.15811378,
+   "daily_pnl": -241.22248723,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795590899,
+    "ts": 1795616903,
     "discovered": 200,
-    "with_data": 200,
-    "prefilter": 2,
-    "analyzed": 2,
+    "with_data": 198,
+    "prefilter": 0,
+    "analyzed": 0,
     "signals": 0,
+    "rejected": {
+     "liquidez": 95,
+     "edad": 160,
+     "volumen": 165,
+     "pocas": 145,
+     "dex": 22,
+     "sin": 6,
+     "FDV": 4
+    },
+    "filters": {
+     "min_liq": 40000,
+     "min_vol_h1": 30000,
+     "min_txns_h1": 200,
+     "max_age_h": 72.0,
+     "relaxed": false
+    },
     "queue": 0
    },
    "interval": 20
   },
-  "open_positions": 1,
+  "open_positions": 2,
   "closed_last_days": [
    {
     "symbol": "BOOBS",
@@ -90,33 +106,77 @@
     "reasons": [
      "stop loss -29.1%"
     ]
+   },
+   {
+    "symbol": "PERRO",
+    "opened": "2026-11-25T07:01:52+00:00",
+    "closed": "2026-11-25T07:35:24+00:00",
+    "ret": -0.2613961519486926,
+    "cost": 405.4,
+    "got": 299.43,
+    "reasons": [
+     "stop loss -25.4%"
+    ]
+   },
+   {
+    "symbol": "4CHAN",
+    "opened": "2026-11-25T08:40:33+00:00",
+    "closed": "2026-11-25T09:37:16+00:00",
+    "ret": -0.2924877612385379,
+    "cost": 402.41,
+    "got": 284.71,
+    "reasons": [
+     "stop loss -27.4%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T08:54:44+00:00",
+    "closed": "2026-11-25T10:24:56+00:00",
+    "ret": -0.16638789724642378,
+    "cost": 400.57,
+    "got": 333.92,
+    "reasons": [
+     "time stop (90 min, -15.9%)"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-25T10:40:18+00:00",
+    "closed": "2026-11-25T11:36:20+00:00",
+    "ret": -0.2963572386907324,
+    "cost": 395.03,
+    "got": 277.96,
+    "reasons": [
+     "stop loss -26.8%"
+    ]
    }
   ],
   "closed_stats": {
-   "n": 6,
-   "win_rate": 33.3,
-   "avg_ret_pct": 7.07
+   "n": 10,
+   "win_rate": 20.0,
+   "avg_ret_pct": -5.92
   }
  },
  "crypto_brain": {
-  "status": "recopilando",
-  "status_text": "Recopilando datos: 1.967 ejemplos de 3.000 y 74 tokens de 60 necesarios antes de decidir nada.",
-  "samples": 1967,
-  "pools": 74,
+  "status": "defensivo",
+  "status_text": "Ninguna estrategia demuestra ventaja en datos no vistos. Modo defensivo: en real no se abren posiciones.",
+  "samples": 4751,
+  "pools": 113,
   "version": 0,
   "reality": {
-   "n": 6,
-   "expectancy": 7.07,
-   "win_rate": 33.3,
+   "n": 10,
+   "expectancy": -5.92,
+   "win_rate": 20.0,
    "expected": null,
    "by_exit": {
     "stop": {
-     "n": 3,
-     "avg": -30.2
+     "n": 6,
+     "avg": -29.3
     },
     "time": {
-     "n": 1,
-     "avg": -0.4
+     "n": 2,
+     "avg": -8.5
     },
     "trailing": {
      "n": 2,
@@ -129,138 +189,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795590970,
+  "updated_at": 1795616989,
   "history": [
-   {
-    "ts": 1795570196,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795570562,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795570593,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795570596,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795570630,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795570646,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795572103,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795572119,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795573920,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795575721,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 18,
-    "pools": 2,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795577522,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 20,
-    "pools": 3,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795579323,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 20,
-    "pools": 3,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795581124,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 20,
-    "pools": 3,
-    "mode": "rápido"
-   },
    {
     "ts": 1795582925,
     "decision": "recopilando",
@@ -350,24 +280,303 @@
     "samples": 1967,
     "pools": 74,
     "mode": "completo"
+   },
+   {
+    "ts": 1795590989,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1967,
+    "pools": 74,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795592792,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1967,
+    "pools": 74,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795592810,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1967,
+    "pools": 74,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795592861,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1967,
+    "pools": 74,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795594663,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 2295,
+    "pools": 74,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795594727,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 2364,
+    "pools": 74,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795596529,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 2571,
+    "pools": 81,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795598332,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 2809,
+    "pools": 90,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795600135,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 2809,
+    "pools": 91,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795601938,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 2987,
+    "pools": 93,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795603744,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 3391,
+    "pools": 93,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": []
+   },
+   {
+    "ts": 1795604022,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 3478,
+    "pools": 94,
+    "mode": "completo",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": []
+   },
+   {
+    "ts": 1795605830,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -2.8,
+    "samples": 3693,
+    "pools": 100,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "ml",
+      "e": 3.36,
+      "n": 42
+     }
+    ]
+   },
+   {
+    "ts": 1795605898,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -2.8,
+    "samples": 3693,
+    "pools": 100,
+    "mode": "completo",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "ml",
+      "e": 3.36,
+      "n": 42
+     }
+    ]
+   },
+   {
+    "ts": 1795607706,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 4010,
+    "pools": 101,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": []
+   },
+   {
+    "ts": 1795609513,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 4121,
+    "pools": 103,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": []
+   },
+   {
+    "ts": 1795611322,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -15.76,
+    "samples": 4191,
+    "pools": 107,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "ml",
+      "e": -9.33,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795613128,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 4535,
+    "pools": 107,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": []
+   },
+   {
+    "ts": 1795614935,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 4689,
+    "pools": 108,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": []
+   },
+   {
+    "ts": 1795615185,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 4689,
+    "pools": 109,
+    "mode": "completo",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": []
+   },
+   {
+    "ts": 1795616993,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 4751,
+    "pools": 113,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": []
    }
   ]
  },
  "stocks": {
   "paper": {
-   "per_alert": 100.0,
+   "per_alert": 500.0,
    "fee": 1.0,
    "broker": "XTB",
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
-   "open": 18,
-   "invested_open": 1800.0,
-   "open_pnl": -36.0,
-   "realized": -4.0,
-   "total": -40.0,
-   "closed": 2,
+   "capital": 10000.0,
+   "cash": -1817.44,
+   "equity": 9920.45,
+   "ret_pct": -0.8,
+   "history": [
+    [
+     1795615348,
+     9923.57
+    ],
+    [
+     1795616419,
+     9920.45
+    ]
+   ],
+   "open": 32,
+   "fees_open": 30.3,
+   "move_open": -49.25,
+   "pending_open": 0,
+   "invested_open": 10000.0,
+   "open_pnl": -79.55,
+   "realized": -24.03,
+   "total": -103.58,
+   "closed": 4,
    "win_rate": 0.0,
    "best": -2.0,
-   "worst": -2.0
+   "worst": -13.7,
+   "joint": true
   },
   "universe": 528,
   "market_up": false,
@@ -403,35 +612,210 @@
     "exit_ts": 1795572107,
     "reason": "sobrecompra (RSI 83)",
     "ret": 0.0
+   },
+   {
+    "symbol": "NTNX",
+    "name": "Nutanix, Inc.",
+    "currency": "USD",
+    "entry": 54.59,
+    "entry_ts": 1795572416,
+    "stop": 48.80588625226702,
+    "peak": 54.59,
+    "atr": 2.89205687386649,
+    "setup": "Retroceso en tendencia",
+    "price": 47.6577,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 47.6577,
+    "exit_ts": 1795609058,
+    "reason": "STOP LOSS en 48.81",
+    "ret": -12.698845942480318,
+    "pnl_eur": -13.7
+   },
+   {
+    "symbol": "P",
+    "name": "Everpure, Inc.",
+    "currency": "USD",
+    "entry": 92.2,
+    "entry_ts": 1795594909,
+    "stop": 58.63428584507534,
+    "tp": 148.14285692487445,
+    "max_days": 20,
+    "peak": 92.2,
+    "atr": 11.188571384974889,
+    "setup": "Retroceso en tendencia",
+    "price": 87.2869,
+    "expected": {
+     "n": 1556,
+     "win_rate": 42.2,
+     "expectancy": 0.78,
+     "lcb": 0.45
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 87.2869,
+    "exit_ts": 1795609070,
+    "reason": "pierde la media de 200 días (tendencia rota)",
+    "ret": -5.328741865509756,
+    "pnl_eur": -6.33
    }
   ],
   "brain_meta": {
-   "stocks": 147,
-   "split_ts": 1749130200,
-   "ts": 1795586789
+   "model": 4,
+   "stocks": 509,
+   "split_ts": 1749562200,
+   "ts": 1795593016,
+   "position_eur": 100.0,
+   "broker": "xtb",
+   "broker_name": "XTB",
+   "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar"
   },
   "setups": {
    "Retroceso en tendencia": {
     "params": {
-     "rsi_max": 30,
-     "stop_atr": 2.0,
+     "rsi_max": 40,
+     "stop_atr": 3.0,
      "tp_atr": 5.0,
-     "max_days": 10,
+     "max_days": 20,
      "regime": 0
     },
     "active": true,
-    "edge": 1.0,
+    "edge": true,
+    "regions": [
+     "US"
+    ],
     "in_sample": {
-     "n": 136,
-     "win_rate": 52.2,
-     "expectancy": 1.7,
-     "lcb": 1.09
+     "n": 3110,
+     "win_rate": 40.4,
+     "expectancy": 0.22,
+     "lcb": 0.02
     },
     "out_of_sample": {
-     "n": 82,
-     "win_rate": 43.9,
-     "expectancy": 1.04,
-     "lcb": 0.21
+     "n": 1556,
+     "win_rate": 42.2,
+     "expectancy": 0.78,
+     "lcb": 0.45
+    },
+    "out_of_sample_all": {
+     "n": 1877,
+     "win_rate": 42.2,
+     "expectancy": Infinity,
+     "lcb": NaN
+    },
+    "by_region": {
+     "EU": {
+      "in_sample": {
+       "n": 584,
+       "win_rate": 46.4,
+       "expectancy": 0.7,
+       "lcb": 0.41
+      },
+      "out_of_sample": {
+       "n": 321,
+       "win_rate": 42.4,
+       "expectancy": Infinity,
+       "lcb": NaN
+      },
+      "edge": false
+     },
+     "US": {
+      "in_sample": {
+       "n": 2526,
+       "win_rate": 39.0,
+       "expectancy": 0.1,
+       "lcb": -0.13
+      },
+      "out_of_sample": {
+       "n": 1556,
+       "win_rate": 42.2,
+       "expectancy": 0.78,
+       "lcb": 0.45
+      },
+      "edge": true
+     }
+    },
+    "by_broker": {
+     "trade_republic": {
+      "all": {
+       "n": 1576,
+       "win_rate": 37.8,
+       "expectancy": -0.19,
+       "lcb": -0.51
+      },
+      "EU": {
+       "n": 0,
+       "win_rate": null,
+       "expectancy": null,
+       "lcb": null
+      },
+      "US": {
+       "n": 1576,
+       "win_rate": 37.8,
+       "expectancy": -0.19,
+       "lcb": -0.51
+      }
+     },
+     "xtb": {
+      "all": {
+       "n": 1556,
+       "win_rate": 42.2,
+       "expectancy": 0.78,
+       "lcb": 0.45
+      },
+      "EU": {
+       "n": 0,
+       "win_rate": null,
+       "expectancy": null,
+       "lcb": null
+      },
+      "US": {
+       "n": 1556,
+       "win_rate": 42.2,
+       "expectancy": 0.78,
+       "lcb": 0.45
+      }
+     },
+     "degiro": {
+      "all": {
+       "n": 1639,
+       "win_rate": 31.3,
+       "expectancy": -2.73,
+       "lcb": -3.04
+      },
+      "EU": {
+       "n": 0,
+       "win_rate": null,
+       "expectancy": null,
+       "lcb": null
+      },
+      "US": {
+       "n": 1639,
+       "win_rate": 31.3,
+       "expectancy": -2.73,
+       "lcb": -3.04
+      }
+     },
+     "ibkr": {
+      "all": {
+       "n": 1553,
+       "win_rate": 42.7,
+       "expectancy": 1.04,
+       "lcb": 0.71
+      },
+      "EU": {
+       "n": 0,
+       "win_rate": null,
+       "expectancy": null,
+       "lcb": null
+      },
+      "US": {
+       "n": 1553,
+       "win_rate": 42.7,
+       "expectancy": 1.04,
+       "lcb": 0.71
+      }
+     }
     },
     "live": {
      "n": 0,
@@ -442,33 +826,157 @@
     "suspended": false,
     "suspended_why": "",
     "exit_reasons_oos": {
-     "stop": 13,
-     "objetivo": 3,
-     "tendencia rota": 19,
-     "plazo": 47
+     "plazo": 650,
+     "tendencia rota": 529,
+     "stop": 184,
+     "objetivo": 193
     }
    },
    "Ruptura": {
     "params": {
-     "rsi_cap": 70,
+     "rsi_cap": 80,
      "stop_atr": 3.0,
-     "tp_atr": 3.0,
-     "max_days": 30,
+     "tp_atr": 6.0,
+     "max_days": 15,
      "regime": 0
     },
     "active": true,
-    "edge": 1.0,
+    "edge": true,
+    "regions": [
+     "EU",
+     "US"
+    ],
     "in_sample": {
-     "n": 295,
-     "win_rate": 55.3,
-     "expectancy": 1.6,
-     "lcb": 1.09
+     "n": 2195,
+     "win_rate": 45.2,
+     "expectancy": -0.38,
+     "lcb": -0.61
     },
     "out_of_sample": {
-     "n": 177,
-     "win_rate": 50.8,
-     "expectancy": 0.58,
-     "lcb": -0.17
+     "n": 1370,
+     "win_rate": 48.0,
+     "expectancy": 0.95,
+     "lcb": 0.38
+    },
+    "out_of_sample_all": {
+     "n": 1370,
+     "win_rate": 48.0,
+     "expectancy": 0.95,
+     "lcb": 0.38
+    },
+    "by_region": {
+     "EU": {
+      "in_sample": {
+       "n": 393,
+       "win_rate": 51.9,
+       "expectancy": 0.35,
+       "lcb": 0.05
+      },
+      "out_of_sample": {
+       "n": 199,
+       "win_rate": 45.2,
+       "expectancy": -1.16,
+       "lcb": -2.16
+      },
+      "edge": false
+     },
+     "US": {
+      "in_sample": {
+       "n": 1802,
+       "win_rate": 43.8,
+       "expectancy": -0.54,
+       "lcb": -0.82
+      },
+      "out_of_sample": {
+       "n": 1171,
+       "win_rate": 48.4,
+       "expectancy": 1.31,
+       "lcb": 0.67
+      },
+      "edge": false
+     }
+    },
+    "by_broker": {
+     "trade_republic": {
+      "all": {
+       "n": 1369,
+       "win_rate": 42.9,
+       "expectancy": -0.09,
+       "lcb": -0.65
+      },
+      "EU": {
+       "n": 198,
+       "win_rate": 34.8,
+       "expectancy": -2.66,
+       "lcb": -3.51
+      },
+      "US": {
+       "n": 1171,
+       "win_rate": 44.2,
+       "expectancy": 0.34,
+       "lcb": -0.3
+      }
+     },
+     "xtb": {
+      "all": {
+       "n": 1370,
+       "win_rate": 48.0,
+       "expectancy": 0.95,
+       "lcb": 0.38
+      },
+      "EU": {
+       "n": 199,
+       "win_rate": 45.2,
+       "expectancy": -1.16,
+       "lcb": -2.16
+      },
+      "US": {
+       "n": 1171,
+       "win_rate": 48.4,
+       "expectancy": 1.31,
+       "lcb": 0.67
+      }
+     },
+     "degiro": {
+      "all": {
+       "n": 1379,
+       "win_rate": 33.4,
+       "expectancy": -2.52,
+       "lcb": -3.06
+      },
+      "EU": {
+       "n": 201,
+       "win_rate": 23.9,
+       "expectancy": -4.08,
+       "lcb": -4.74
+      },
+      "US": {
+       "n": 1178,
+       "win_rate": 35.0,
+       "expectancy": -2.25,
+       "lcb": -2.87
+      }
+     },
+     "ibkr": {
+      "all": {
+       "n": 1369,
+       "win_rate": 46.1,
+       "expectancy": 0.76,
+       "lcb": 0.19
+      },
+      "EU": {
+       "n": 198,
+       "win_rate": 26.8,
+       "expectancy": -4.11,
+       "lcb": -4.94
+      },
+      "US": {
+       "n": 1171,
+       "win_rate": 49.4,
+       "expectancy": 1.58,
+       "lcb": 0.94
+      }
+     }
     },
     "live": {
      "n": 2,
@@ -479,19 +987,192 @@
     "suspended": false,
     "suspended_why": "",
     "exit_reasons_oos": {
-     "objetivo": 82,
-     "plazo": 11,
-     "tendencia rota": 32,
-     "stop": 52
+     "plazo": 749,
+     "objetivo": 165,
+     "stop": 379,
+     "tendencia rota": 77
+    }
+   },
+   "Momentum": {
+    "params": {
+     "mom_min": 50,
+     "ret21_max": 20,
+     "stop_atr": 4.0,
+     "tp_atr": 10.0,
+     "max_days": 60,
+     "regime": 0
+    },
+    "active": true,
+    "edge": true,
+    "regions": [
+     "EU",
+     "US"
+    ],
+    "in_sample": {
+     "n": 980,
+     "win_rate": 39.7,
+     "expectancy": 1.68,
+     "lcb": 0.8
+    },
+    "out_of_sample": {
+     "n": 934,
+     "win_rate": 45.7,
+     "expectancy": 6.73,
+     "lcb": 5.7
+    },
+    "out_of_sample_all": {
+     "n": 934,
+     "win_rate": 45.7,
+     "expectancy": 6.73,
+     "lcb": 5.7
+    },
+    "by_region": {
+     "EU": {
+      "in_sample": {
+       "n": 38,
+       "win_rate": 42.1,
+       "expectancy": 0.41,
+       "lcb": -1.94
+      },
+      "out_of_sample": {
+       "n": 46,
+       "win_rate": 52.2,
+       "expectancy": 3.63,
+       "lcb": 0.95
+      },
+      "edge": true
+     },
+     "US": {
+      "in_sample": {
+       "n": 942,
+       "win_rate": 39.6,
+       "expectancy": 1.73,
+       "lcb": 0.82
+      },
+      "out_of_sample": {
+       "n": 888,
+       "win_rate": 45.4,
+       "expectancy": 6.89,
+       "lcb": 5.82
+      },
+      "edge": true
+     }
+    },
+    "by_broker": {
+     "trade_republic": {
+      "all": {
+       "n": 941,
+       "win_rate": 44.5,
+       "expectancy": 5.59,
+       "lcb": 4.56
+      },
+      "EU": {
+       "n": 46,
+       "win_rate": 45.7,
+       "expectancy": 1.36,
+       "lcb": -1.29
+      },
+      "US": {
+       "n": 895,
+       "win_rate": 44.5,
+       "expectancy": 5.81,
+       "lcb": 4.74
+      }
+     },
+     "xtb": {
+      "all": {
+       "n": 934,
+       "win_rate": 45.7,
+       "expectancy": 6.73,
+       "lcb": 5.7
+      },
+      "EU": {
+       "n": 46,
+       "win_rate": 52.2,
+       "expectancy": 3.63,
+       "lcb": 0.95
+      },
+      "US": {
+       "n": 888,
+       "win_rate": 45.4,
+       "expectancy": 6.89,
+       "lcb": 5.82
+      }
+     },
+     "degiro": {
+      "all": {
+       "n": 950,
+       "win_rate": 41.3,
+       "expectancy": 2.89,
+       "lcb": 1.9
+      },
+      "EU": {
+       "n": 46,
+       "win_rate": 41.3,
+       "expectancy": -0.71,
+       "lcb": -3.34
+      },
+      "US": {
+       "n": 904,
+       "win_rate": 41.3,
+       "expectancy": 3.07,
+       "lcb": 2.04
+      }
+     },
+     "ibkr": {
+      "all": {
+       "n": 932,
+       "win_rate": 45.4,
+       "expectancy": 6.77,
+       "lcb": 5.73
+      },
+      "EU": {
+       "n": 46,
+       "win_rate": 41.3,
+       "expectancy": -0.31,
+       "lcb": -2.95
+      },
+      "US": {
+       "n": 886,
+       "win_rate": 45.6,
+       "expectancy": 7.14,
+       "lcb": 6.05
+      }
+     }
+    },
+    "live": {
+     "n": 0,
+     "win_rate": null,
+     "expectancy": null,
+     "lcb": null
+    },
+    "suspended": false,
+    "suspended_why": "",
+    "exit_reasons_oos": {
+     "plazo": 343,
+     "stop": 263,
+     "tendencia rota": 153,
+     "objetivo": 175
     }
    }
   },
   "lessons": [
-   "«Retroceso en tendencia»: con stop a 2.0 ATR, objetivo a 5.0 ATR y plazo de 10 días, en datos recientes no vistos acierta el 43.9% con +1.04% de media por operación (82 operaciones).",
-   "«Retroceso en tendencia»: la salida más frecuente es «plazo» (47 de 82).",
-   "«Ruptura»: con stop a 3.0 ATR, objetivo a 3.0 ATR y plazo de 30 días, en datos recientes no vistos acierta el 50.8% con +0.58% de media por operación (177 operaciones).",
-   "«Ruptura»: la salida más frecuente es «objetivo» (82 de 177).",
-   "«Ruptura» en real: 2 alertas cerradas, acierto 0.0%, media +0.00%."
+   "«Retroceso en tendencia»: con stop a 3.0 ATR, objetivo a 5.0 ATR y plazo de 20 días, en datos recientes no vistos acierta el 42.2% con +0.78% de media por operación (1556 operaciones).",
+   "«Retroceso en tendencia»: la salida más frecuente es «plazo» (650 de 1556).",
+   "«Retroceso en tendencia»: solo se activa en EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +inf%).",
+   "«Retroceso en tendencia» por broker (media por operación con 100 €): Interactive Brokers +1.04% · XTB +0.78% · Trade Republic -0.19% · DEGIRO -2.73%.",
+   "«Retroceso en tendencia»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia).",
+   "«Ruptura»: con stop a 3.0 ATR, objetivo a 6.0 ATR y plazo de 15 días, en datos recientes no vistos acierta el 48.0% con +0.95% de media por operación (1370 operaciones).",
+   "«Ruptura»: la salida más frecuente es «plazo» (749 de 1370).",
+   "«Ruptura»: solo se activa en Europa (euros), EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +0.95%).",
+   "«Ruptura» por broker (media por operación con 100 €): XTB +0.95% · Interactive Brokers +0.76% · Trade Republic -0.09% · DEGIRO -2.52%.",
+   "«Ruptura»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia).",
+   "«Ruptura» en real: 2 alertas cerradas, acierto 0.0%, media +0.00%.",
+   "«Momentum»: con stop a 4.0 ATR, objetivo a 10.0 ATR y plazo de 60 días, en datos recientes no vistos acierta el 45.7% con +6.73% de media por operación (934 operaciones).",
+   "«Momentum»: la salida más frecuente es «plazo» (343 de 934).",
+   "«Momentum»: solo se activa en Europa (euros), EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +6.73%).",
+   "«Momentum» por broker (media por operación con 100 €): Interactive Brokers +6.77% · XTB +6.73% · Trade Republic +5.59% · DEGIRO +2.89%.",
+   "«Momentum»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia)."
   ],
   "history": [
    {
@@ -504,22 +1185,255 @@
      "active": true,
      "oos_exp": 0.58
     }
+   },
+   {
+    "ts": 1795593016,
+    "Retroceso en tendencia": {
+     "active": true,
+     "oos_exp": 0.78
+    },
+    "Ruptura": {
+     "active": true,
+     "oos_exp": 0.95
+    },
+    "Momentum": {
+     "active": true,
+     "oos_exp": 6.73
+    }
    }
   ]
  },
  "hunter": {
-  "summary": null,
-  "closed": {},
-  "study": {},
-  "copy": {},
+  "summary": {
+   "cazador": {
+    "equity": 933.87,
+    "pnl": -66.13,
+    "open": 23,
+    "closed": 7,
+    "win_rate": 0.0,
+    "best_x": 0.47,
+    "worst_pct": -100.0,
+    "mean_pct": -73.77
+   },
+   "copia": {
+    "equity": 1000.0,
+    "pnl": 0.0,
+    "open": 0,
+    "closed": 0,
+    "win_rate": null,
+    "best_x": null,
+    "worst_pct": null,
+    "mean_pct": null
+   }
+  },
+  "closed": {
+   "cazador": [
+    {
+     "pair": "BLNhMTG8SR8eRQ2v3eicSfEwFen2Scve8fUr2jpFfNtm",
+     "mint": "9coSqc3mskpSQyi4bYNGKfz9PvLYbRrgAgepHirFpump",
+     "name": "thesisdog / SOL",
+     "source": "cazador",
+     "entry": 5.13352e-06,
+     "qty": 1947981.1123751346,
+     "cost_usd": 10.0,
+     "got_usd": 4.661499322102573,
+     "ts": 1795592127,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.467e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.467e-06,
+     "exit_ts": 1795594724,
+     "reason": "stop −50 %",
+     "ret": -0.5338500677897426
+    },
+    {
+     "pair": "HyjECZY2g6qSauWMFPomSB8KyBVGLhk9WAGH2EVhtGrS",
+     "mint": "6G7ehCjCTTvbs54Fz6LJVqeBatki86WRbxEv7FF7pump",
+     "name": "Solchan / SOL",
+     "source": "cazador",
+     "entry": 1.04545e-05,
+     "qty": 956525.8979386868,
+     "cost_usd": 10.0,
+     "got_usd": 4.210493089100387,
+     "ts": 1795601979,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.538e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.538e-06,
+     "exit_ts": 1795602459,
+     "reason": "stop −50 %",
+     "ret": -0.5789506910899613
+    },
+    {
+     "pair": "GR7rrZn91gSxqxLBGT7Dy1LrH5hzfWY4mUU9Srvpa3bX",
+     "mint": "QmHu6ZedPYW2g5emx7LQH2yvEc5kgD5QisRVHigQwqr",
+     "name": "BEAST / SOL",
+     "source": "cazador",
+     "entry": 0.000416944,
+     "qty": 23984.036225488315,
+     "cost_usd": 10.0,
+     "got_usd": 3.022060516520204e-05,
+     "ts": 1795602879,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.299e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.299e-09,
+     "exit_ts": 1795602999,
+     "reason": "stop −50 %",
+     "ret": -0.9999969779394835
+    },
+    {
+     "pair": "6nPXuavczX5AULariRGwobX5NCYWM7r4jRTG9BZ9BcVR",
+     "mint": "CFJ2xJujNgpqYuyuCyZQMrMFjUeu5zfVHKpeqetjpump",
+     "name": "SpaceX / SOL",
+     "source": "cazador",
+     "entry": 4.43621e-05,
+     "qty": 225417.6425372108,
+     "cost_usd": 10.0,
+     "got_usd": 0.2914672659770389,
+     "ts": 1795601979,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.333e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.333e-06,
+     "exit_ts": 1795603419,
+     "reason": "stop −50 %",
+     "ret": -0.9708532734022961
+    },
+    {
+     "pair": "4taCHgZPGAzYYjjQbmchMPCXeb51naUGeCkS2JAWKAH3",
+     "mint": "ERuCea3td9k7Vdn1VjMcpJa7eugDkYdVFbggx8PDpump",
+     "name": "ZELENSKY / SOL",
+     "source": "cazador",
+     "entry": 6.79697e-06,
+     "qty": 1471243.8042245295,
+     "cost_usd": 10.0,
+     "got_usd": 4.571022087783232,
+     "ts": 1795603659,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.203e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.203e-06,
+     "exit_ts": 1795607202,
+     "reason": "stop −50 %",
+     "ret": -0.5428977912216768
+    },
+    {
+     "pair": "8uW6RdR38ArwZM8PwHNAECvBTBSeC1Htrk97HF31W9qg",
+     "mint": "3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f",
+     "name": "BASKET / SOL",
+     "source": "cazador",
+     "entry": 0.00250599,
+     "qty": 3990.4389083755323,
+     "cost_usd": 10.0,
+     "got_usd": 0.003645449502990834,
+     "ts": 1795603239,
+     "half": false,
+     "peak": 1.0,
+     "last": 9.418e-07,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 9.418e-07,
+     "exit_ts": 1795607502,
+     "reason": "stop −50 %",
+     "ret": -0.999635455049701
+    },
+    {
+     "pair": "6VUsq4qfdd873DtUBrrnLQkvqQMSaJ2Kajh7zAbZPYwe",
+     "mint": "bP1DFPhYnNe5FAREKTRLdpcRZZ8DiCrhqbBPw95pump",
+     "name": "CatTok / SOL",
+     "source": "cazador",
+     "entry": 0.000114227,
+     "qty": 87544.97623153895,
+     "cost_usd": 10.0,
+     "got_usd": 4.619573305785848,
+     "ts": 1795615002,
+     "half": false,
+     "peak": 1.0,
+     "last": 5.44e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 5.44e-05,
+     "exit_ts": 1795615236,
+     "reason": "stop −50 %",
+     "ret": -0.5380426694214152
+    }
+   ],
+   "copia": []
+  },
+  "study": {
+   "ts": 1795615178,
+   "launches": 59,
+   "cost_side_pct": 3.0,
+   "distribution": {
+    "n": 57,
+    "entry_min": 5,
+    "reach_2x": 22.8,
+    "reach_5x": 5.3,
+    "reach_10x": 0.0,
+    "reach_100x": 0.0,
+    "dead_24h": 19.3,
+    "below_entry_24h": 71.9
+   },
+   "distribution_30": {
+    "n": 59,
+    "entry_min": 30,
+    "reach_2x": 5.1,
+    "reach_5x": 1.7,
+    "reach_10x": 1.7,
+    "reach_100x": 0.0,
+    "dead_24h": 5.1,
+    "below_entry_24h": 40.7
+   },
+   "edge": false,
+   "note": "Pocos lanzamientos con resultado conocido (59 de 100 mínimos)."
+  },
+  "copy": {
+   "ts": 1795615178,
+   "pools": 0,
+   "observations": 0,
+   "bots_excluded": 0,
+   "delay_s": 60,
+   "edge": false,
+   "note": "Aún pocos datos: 0 lanzamientos con resultado conocido y 0 compras.",
+   "rpc": true
+  },
   "traders": {
-   "tally": null,
+   "tally": {
+    "bot": 18,
+    "pocos datos": 7,
+    "pierde": 6
+   },
    "skilled": {}
   }
  },
  "updates": {
   "state": "al día",
-  "current": "b20cd8ce045c5e4b2a7894d99813174635327ae7",
-  "applied_at": 1795590981
+  "current": "0a2f035b28f5b7772f93389ed14d59099fff38e1",
+  "applied_at": 1795616994
  }
 }
