@@ -1,0 +1,525 @@
+{
+ "generated_at": 1795590982,
+ "days": 30,
+ "version": "b20cd8ce045c",
+ "crypto": {
+  "status": {
+   "mode": "paper",
+   "strategy": "momentum",
+   "paused": false,
+   "equity": 10147.266523401979,
+   "start_equity": 10000.0,
+   "daily_pnl": 166.15811378,
+   "risk_off": "",
+   "last_scan": {
+    "ts": 1795590899,
+    "discovered": 200,
+    "with_data": 200,
+    "prefilter": 2,
+    "analyzed": 2,
+    "signals": 0,
+    "queue": 0
+   },
+   "interval": 20
+  },
+  "open_positions": 1,
+  "closed_last_days": [
+   {
+    "symbol": "BOOBS",
+    "opened": "2026-11-25T02:34:17+00:00",
+    "closed": "2026-11-25T02:43:52+00:00",
+    "ret": -0.2687357302355923,
+    "cost": 398.57,
+    "got": 291.46,
+    "reasons": [
+     "stop loss -25.5%"
+    ]
+   },
+   {
+    "symbol": "DongCoin",
+    "opened": "2026-11-25T02:48:14+00:00",
+    "closed": "2026-11-25T03:06:06+00:00",
+    "ret": -0.29970914196880794,
+    "cost": 398.82,
+    "got": 279.29,
+    "reasons": [
+     "stop loss -27.9%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T02:23:40+00:00",
+    "closed": "2026-11-25T03:53:42+00:00",
+    "ret": -0.004052836985890096,
+    "cost": 399.72,
+    "got": 398.1,
+    "reasons": [
+     "time stop (90 min, -1.4%)"
+    ]
+   },
+   {
+    "symbol": "GROKIA",
+    "opened": "2026-11-25T02:48:03+00:00",
+    "closed": "2026-11-25T03:54:44+00:00",
+    "ret": 0.17601925680758224,
+    "cost": 398.82,
+    "got": 469.02,
+    "reasons": [
+     "trailing stop (pico 0.00443)"
+    ]
+   },
+   {
+    "symbol": "4CHAN",
+    "opened": "2026-11-25T02:02:31+00:00",
+    "closed": "2026-11-25T04:51:11+00:00",
+    "ret": 1.1584249999999998,
+    "cost": 400.0,
+    "got": 863.3699999999999,
+    "reasons": [
+     "take profit +110%",
+     "trailing stop (pico 0.00179)"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-25T06:39:38+00:00",
+    "closed": "2026-11-25T06:41:55+00:00",
+    "ret": -0.3375706557337279,
+    "cost": 412.21,
+    "got": 273.06,
+    "reasons": [
+     "stop loss -29.1%"
+    ]
+   }
+  ],
+  "closed_stats": {
+   "n": 6,
+   "win_rate": 33.3,
+   "avg_ret_pct": 7.07
+  }
+ },
+ "crypto_brain": {
+  "status": "recopilando",
+  "status_text": "Recopilando datos: 1.967 ejemplos de 3.000 y 74 tokens de 60 necesarios antes de decidir nada.",
+  "samples": 1967,
+  "pools": 74,
+  "version": 0,
+  "reality": {
+   "n": 6,
+   "expectancy": 7.07,
+   "win_rate": 33.3,
+   "expected": null,
+   "by_exit": {
+    "stop": {
+     "n": 3,
+     "avg": -30.2
+    },
+    "time": {
+     "n": 1,
+     "avg": -0.4
+    },
+    "trailing": {
+     "n": 2,
+     "avg": 66.7
+    }
+   }
+  },
+  "cost_penalty": 0.0,
+  "needs": {
+   "samples": 3000,
+   "pools": 60
+  },
+  "updated_at": 1795590970,
+  "history": [
+   {
+    "ts": 1795570196,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795570562,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795570593,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795570596,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795570630,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795570646,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795572103,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795572119,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795573920,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795575721,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 18,
+    "pools": 2,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795577522,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 20,
+    "pools": 3,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795579323,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 20,
+    "pools": 3,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795581124,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 20,
+    "pools": 3,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795582925,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 459,
+    "pools": 11,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795584727,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 872,
+    "pools": 35,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795585523,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 974,
+    "pools": 45,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795585540,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 974,
+    "pools": 45,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795587342,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1036,
+    "pools": 45,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795587360,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1036,
+    "pools": 45,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795589162,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1249,
+    "pools": 56,
+    "mode": "rápido"
+   },
+   {
+    "ts": 1795589165,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1249,
+    "pools": 56,
+    "mode": "completo"
+   },
+   {
+    "ts": 1795590971,
+    "decision": "recopilando",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 1967,
+    "pools": 74,
+    "mode": "completo"
+   }
+  ]
+ },
+ "stocks": {
+  "paper": {
+   "per_alert": 100.0,
+   "fee": 1.0,
+   "broker": "XTB",
+   "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
+   "open": 18,
+   "invested_open": 1800.0,
+   "open_pnl": -36.0,
+   "realized": -4.0,
+   "total": -40.0,
+   "closed": 2,
+   "win_rate": 0.0,
+   "best": -2.0,
+   "worst": -2.0
+  },
+  "universe": 528,
+  "market_up": false,
+  "closed": [
+   {
+    "symbol": "SAN.PA",
+    "name": "Sanofi",
+    "currency": "EUR",
+    "entry": 93.58,
+    "entry_ts": 1795570768,
+    "stop": 88.94571175711495,
+    "peak": 93.58,
+    "atr": 2.317144121442522,
+    "setup": "Ruptura",
+    "price": 93.58,
+    "exit": 93.58,
+    "exit_ts": 1795572105,
+    "reason": "sobrecompra (RSI 77)",
+    "ret": 0.0
+   },
+   {
+    "symbol": "INSM",
+    "name": "Insmed Incorporated",
+    "currency": "USD",
+    "entry": 170.15,
+    "entry_ts": 1795570786,
+    "stop": 153.64571555001396,
+    "peak": 170.15,
+    "atr": 8.252142224993024,
+    "setup": "Ruptura",
+    "price": 170.15,
+    "exit": 170.15,
+    "exit_ts": 1795572107,
+    "reason": "sobrecompra (RSI 83)",
+    "ret": 0.0
+   }
+  ],
+  "brain_meta": {
+   "stocks": 147,
+   "split_ts": 1749130200,
+   "ts": 1795586789
+  },
+  "setups": {
+   "Retroceso en tendencia": {
+    "params": {
+     "rsi_max": 30,
+     "stop_atr": 2.0,
+     "tp_atr": 5.0,
+     "max_days": 10,
+     "regime": 0
+    },
+    "active": true,
+    "edge": 1.0,
+    "in_sample": {
+     "n": 136,
+     "win_rate": 52.2,
+     "expectancy": 1.7,
+     "lcb": 1.09
+    },
+    "out_of_sample": {
+     "n": 82,
+     "win_rate": 43.9,
+     "expectancy": 1.04,
+     "lcb": 0.21
+    },
+    "live": {
+     "n": 0,
+     "win_rate": null,
+     "expectancy": null,
+     "lcb": null
+    },
+    "suspended": false,
+    "suspended_why": "",
+    "exit_reasons_oos": {
+     "stop": 13,
+     "objetivo": 3,
+     "tendencia rota": 19,
+     "plazo": 47
+    }
+   },
+   "Ruptura": {
+    "params": {
+     "rsi_cap": 70,
+     "stop_atr": 3.0,
+     "tp_atr": 3.0,
+     "max_days": 30,
+     "regime": 0
+    },
+    "active": true,
+    "edge": 1.0,
+    "in_sample": {
+     "n": 295,
+     "win_rate": 55.3,
+     "expectancy": 1.6,
+     "lcb": 1.09
+    },
+    "out_of_sample": {
+     "n": 177,
+     "win_rate": 50.8,
+     "expectancy": 0.58,
+     "lcb": -0.17
+    },
+    "live": {
+     "n": 2,
+     "win_rate": 0.0,
+     "expectancy": 0.0,
+     "lcb": 0.0
+    },
+    "suspended": false,
+    "suspended_why": "",
+    "exit_reasons_oos": {
+     "objetivo": 82,
+     "plazo": 11,
+     "tendencia rota": 32,
+     "stop": 52
+    }
+   }
+  },
+  "lessons": [
+   "«Retroceso en tendencia»: con stop a 2.0 ATR, objetivo a 5.0 ATR y plazo de 10 días, en datos recientes no vistos acierta el 43.9% con +1.04% de media por operación (82 operaciones).",
+   "«Retroceso en tendencia»: la salida más frecuente es «plazo» (47 de 82).",
+   "«Ruptura»: con stop a 3.0 ATR, objetivo a 3.0 ATR y plazo de 30 días, en datos recientes no vistos acierta el 50.8% con +0.58% de media por operación (177 operaciones).",
+   "«Ruptura»: la salida más frecuente es «objetivo» (82 de 177).",
+   "«Ruptura» en real: 2 alertas cerradas, acierto 0.0%, media +0.00%."
+  ],
+  "history": [
+   {
+    "ts": 1795586789,
+    "Retroceso en tendencia": {
+     "active": true,
+     "oos_exp": 1.04
+    },
+    "Ruptura": {
+     "active": true,
+     "oos_exp": 0.58
+    }
+   }
+  ]
+ },
+ "hunter": {
+  "summary": null,
+  "closed": {},
+  "study": {},
+  "copy": {},
+  "traders": {
+   "tally": null,
+   "skilled": {}
+  }
+ },
+ "updates": {
+  "state": "al día",
+  "current": "b20cd8ce045c5e4b2a7894d99813174635327ae7",
+  "applied_at": 1795590981
+ }
+}
