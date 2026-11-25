@@ -1,32 +1,31 @@
 {
- "generated_at": 1795636817,
+ "generated_at": 1795647631,
  "days": 30,
- "version": "5d787a05017c",
+ "version": "e97790c03dd4",
  "crypto": {
   "status": {
    "mode": "paper",
    "strategy": "momentum",
    "paused": false,
-   "equity": 9699.215331948417,
+   "equity": 9670.456448800003,
    "start_equity": 10000.0,
-   "daily_pnl": -283.33766832000003,
+   "daily_pnl": -329.54355119999997,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795636722,
+    "ts": 1795647573,
     "discovered": 200,
     "with_data": 200,
-    "prefilter": 1,
-    "analyzed": 1,
+    "prefilter": 2,
+    "analyzed": 2,
     "signals": 0,
     "rejected": {
-     "liquidez": 71,
-     "volumen": 161,
-     "pocas": 138,
-     "dex": 24,
-     "edad": 161,
-     "sin": 8,
-     "FDV": 7,
-     "parece": 1
+     "dex": 25,
+     "liquidez": 94,
+     "edad": 153,
+     "volumen": 170,
+     "pocas": 147,
+     "sin": 5,
+     "FDV": 5
     },
     "filters": {
      "min_liq": 40000,
@@ -39,7 +38,7 @@
    },
    "interval": 20
   },
-  "open_positions": 2,
+  "open_positions": 0,
   "closed_last_days": [
    {
     "symbol": "BOOBS",
@@ -217,29 +216,84 @@
     "reasons": [
      "time stop (90 min, -13.3%)"
     ]
+   },
+   {
+    "symbol": "LENDR",
+    "opened": "2026-11-25T19:40:19+00:00",
+    "closed": "2026-11-25T20:22:29+00:00",
+    "ret": 0.09622277364212839,
+    "cost": 72.54,
+    "got": 79.52,
+    "reasons": [
+     "candado de beneficio (+7.6%, máximo +21%)"
+    ]
+   },
+   {
+    "symbol": "Pompom",
+    "opened": "2026-11-25T20:06:16+00:00",
+    "closed": "2026-11-25T20:40:05+00:00",
+    "ret": -0.2668408028594995,
+    "cost": 72.74,
+    "got": 53.33,
+    "reasons": [
+     "stop loss -26.3%"
+    ]
+   },
+   {
+    "symbol": "4CHAN",
+    "opened": "2026-11-25T18:02:26+00:00",
+    "closed": "2026-11-25T20:43:59+00:00",
+    "ret": -0.26956879978028014,
+    "cost": 72.82,
+    "got": 53.19,
+    "reasons": [
+     "stop loss -25.2%"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-25T20:46:42+00:00",
+    "closed": "2026-11-25T21:06:10+00:00",
+    "ret": -0.30908563976235337,
+    "cost": 69.01,
+    "got": 47.68,
+    "reasons": [
+     "stop loss -30.3%"
+    ]
+   },
+   {
+    "symbol": "NORFEATH",
+    "opened": "2026-11-25T22:13:03+00:00",
+    "closed": "2026-11-25T22:25:53+00:00",
+    "ret": 0.10758641328744578,
+    "cost": 66.83,
+    "got": 74.02,
+    "reasons": [
+     "candado de beneficio (+12.0%, máximo +33%)"
+    ]
    }
   ],
   "closed_stats": {
-   "n": 16,
-   "win_rate": 25.0,
-   "avg_ret_pct": -7.47
+   "n": 21,
+   "win_rate": 28.6,
+   "avg_ret_pct": -8.75
   }
  },
  "crypto_brain": {
   "status": "defensivo",
   "status_text": "Ninguna estrategia demuestra ventaja en datos no vistos. Modo defensivo: en real no se abren posiciones.",
-  "samples": 7116,
-  "pools": 142,
+  "samples": 8409,
+  "pools": 159,
   "version": 0,
   "reality": {
-   "n": 16,
-   "expectancy": -7.47,
-   "win_rate": 25.0,
+   "n": 21,
+   "expectancy": -8.75,
+   "win_rate": 28.6,
    "expected": null,
    "by_exit": {
     "stop": {
-     "n": 8,
-     "avg": -28.8
+     "n": 11,
+     "avg": -28.6
     },
     "time": {
      "n": 5,
@@ -250,8 +304,8 @@
      "avg": 66.7
     },
     "candado": {
-     "n": 1,
-     "avg": 7.5
+     "n": 3,
+     "avg": 9.3
     }
    }
   },
@@ -260,93 +314,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795635537,
+  "updated_at": 1795646442,
   "history": [
-   {
-    "ts": 1795596529,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 2571,
-    "pools": 81,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795598332,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 2809,
-    "pools": 90,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795600135,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 2809,
-    "pools": 91,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795601938,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 2987,
-    "pools": 93,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795603744,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 3391,
-    "pools": 93,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": []
-   },
-   {
-    "ts": 1795604022,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 3478,
-    "pools": 94,
-    "mode": "completo",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": []
-   },
-   {
-    "ts": 1795605830,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -2.8,
-    "samples": 3693,
-    "pools": 100,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "ml",
-      "e": 3.36,
-      "n": 42
-     }
-    ]
-   },
    {
     "ts": 1795605898,
     "decision": "defensivo",
@@ -759,6 +728,139 @@
       "n": 5
      }
     ]
+   },
+   {
+    "ts": 1795637339,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 7211,
+    "pools": 145,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 32.99,
+      "n": 5
+     }
+    ]
+   },
+   {
+    "ts": 1795637433,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 7211,
+    "pools": 145,
+    "mode": "completo",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
+   },
+   {
+    "ts": 1795639223,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 7545,
+    "pools": 146,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
+   },
+   {
+    "ts": 1795641028,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 7842,
+    "pools": 147,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
+   },
+   {
+    "ts": 1795642833,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 8306,
+    "pools": 152,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
+   },
+   {
+    "ts": 1795644638,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 8409,
+    "pools": 158,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
+   },
+   {
+    "ts": 1795646443,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 8409,
+    "pools": 159,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
    }
   ]
  },
@@ -769,9 +871,9 @@
    "broker": "XTB",
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
    "capital": 10000.0,
-   "cash": 675.81,
-   "equity": 7916.38,
-   "ret_pct": -20.84,
+   "cash": -3089.68,
+   "equity": 2638.29,
+   "ret_pct": -73.62,
    "history": [
     [
      1795615348,
@@ -848,23 +950,59 @@
     [
      1795636711,
      7925.94
+    ],
+    [
+     1795638629,
+     2666.56
+    ],
+    [
+     1795639703,
+     2645.75
+    ],
+    [
+     1795640782,
+     2644.33
+    ],
+    [
+     1795641858,
+     2641.87
+    ],
+    [
+     1795642934,
+     2642.81
+    ],
+    [
+     1795644011,
+     2650.21
+    ],
+    [
+     1795645087,
+     2639.59
+    ],
+    [
+     1795646164,
+     2639.95
+    ],
+    [
+     1795647236,
+     2636.17
     ]
    ],
-   "open": 20,
-   "fees_open": 18.3,
-   "move_open": 58.86,
+   "open": 29,
+   "fees_open": 55.9,
+   "move_open": 23.86,
    "pending_open": 0,
-   "invested_open": 7200.0,
-   "open_pnl": 40.56,
-   "realized": -106.01,
-   "total": -65.45,
-   "closed": 16,
+   "invested_open": 5760.0,
+   "open_pnl": -32.04,
+   "realized": -111.5,
+   "total": -143.54,
+   "closed": 17,
    "win_rate": 0.0,
    "best": -1.69,
    "worst": -17.67,
    "joint": true
   },
-  "universe": 507,
+  "universe": 519,
   "market_up": false,
   "closed": [
    {
@@ -881,7 +1019,8 @@
     "exit": 93.58,
     "exit_ts": 1795572105,
     "reason": "sobrecompra (RSI 77)",
-    "ret": 0.0
+    "ret": 0.0,
+    "amount": 100.0
    },
    {
     "symbol": "INSM",
@@ -897,7 +1036,8 @@
     "exit": 170.15,
     "exit_ts": 1795572107,
     "reason": "sobrecompra (RSI 83)",
-    "ret": 0.0
+    "ret": 0.0,
+    "amount": 100.0
    },
    {
     "symbol": "NTNX",
@@ -916,7 +1056,8 @@
     "exit_ts": 1795609058,
     "reason": "STOP LOSS en 48.81",
     "ret": -12.698845942480318,
-    "pnl_eur": -13.7
+    "pnl_eur": -13.7,
+    "amount": 100.0
    },
    {
     "symbol": "P",
@@ -1019,7 +1160,8 @@
     "exit_ts": 1795617006,
     "ret": -2.987721691678036,
     "pnl_eur": -15.94,
-    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo",
+    "amount": 100.0
    },
    {
     "symbol": "MRNA",
@@ -1122,7 +1264,8 @@
     "exit_ts": 1795617006,
     "ret": -1.8188985246086364,
     "pnl_eur": -10.09,
-    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo",
+    "amount": 100.0
    },
    {
     "symbol": "ANF",
@@ -1169,7 +1312,8 @@
     "exit_ts": 1795617006,
     "ret": -1.4999845997474393,
     "pnl_eur": -8.5,
-    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo",
+    "amount": 100.0
    },
    {
     "symbol": "PR",
@@ -1244,7 +1388,44 @@
     "exit_ts": 1795618016,
     "reason": "pierde la media de 200 días (tendencia rota)",
     "ret": -3.3333333333333326,
-    "pnl_eur": -17.67
+    "pnl_eur": -17.67,
+    "amount": 100.0
+   },
+   {
+    "symbol": "NEOG",
+    "name": "Neogen Corporation",
+    "currency": "USD",
+    "entry": 10.55,
+    "entry_ts": 1795637575,
+    "stop": 9.165714481898718,
+    "tp": 12.857142530168806,
+    "max_days": 20,
+    "peak": 10.569999694824219,
+    "atr": 0.4614285060337612,
+    "setup": "Retroceso en tendencia",
+    "price": 10.49,
+    "expected": {
+     "n": 1556,
+     "win_rate": 42.2,
+     "expectancy": 0.78,
+     "lcb": 0.45
+    },
+    "amount": 350.0,
+    "fees_eur": 3.5,
+    "size_why": [
+     "riesgo 1 % del saldo con el stop a −13.1 % → 665 €",
+     "ventaja de la estrategia +0.78 % por operación → ×0.89",
+     "mercado general bajista → ×0.6"
+    ],
+    "pending_open": false,
+    "entry_session": "regular",
+    "price_session": "regular",
+    "live_ts": 1795638441,
+    "exit": 10.49,
+    "exit_ts": 1795638501,
+    "reason": "pierde la media de 200 días (tendencia rota)",
+    "ret": -0.5687203791469253,
+    "pnl_eur": -5.49
    }
   ],
   "brain_meta": {
@@ -1792,8 +1973,8 @@
  "hunter": {
   "summary": {
    "cazador": {
-    "equity": 917.02,
-    "pnl": -82.98,
+    "equity": 917.39,
+    "pnl": -82.61,
     "open": 25,
     "closed": 10,
     "win_rate": 0.0,
@@ -1802,14 +1983,14 @@
     "mean_pct": -70.1
    },
    "copia": {
-    "equity": 207029.62,
-    "pnl": 206029.62,
+    "equity": 207004.97,
+    "pnl": 206004.97,
     "open": 25,
-    "closed": 52,
-    "win_rate": 21.2,
+    "closed": 53,
+    "win_rate": 22.6,
     "best_x": 6.91,
     "worst_pct": -100.0,
-    "mean_pct": -51.17
+    "mean_pct": -45.7
    }
   },
   "closed": {
@@ -3231,11 +3412,34 @@
      "exit_ts": 1795633173,
      "reason": "stop dinámico (40 % desde el máximo 5.1x)",
      "ret": 0.01435294774525353
+    },
+    {
+     "pair": "2sLDeGQsVyHTUquFtYhxpKga35NTRPzcaLZEni9HZDyC",
+     "mint": "27VkzPoktULfkX9ZehLW7K5bLdxUTvowyD5a5h7EDi5d",
+     "name": "USOI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 4.3043699999999996e-05,
+     "qty": 116161.01775637318,
+     "cost_usd": 10.0,
+     "got_usd": 33.870461879438814,
+     "ts": 1795621693,
+     "half": true,
+     "peak": 6.44925970583384,
+     "last": 2.3e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.3e-05,
+     "exit_ts": 1795638674,
+     "reason": "stop dinámico (40 % desde el máximo 6.4x)",
+     "ret": 2.3870461879438816
     }
    ]
   },
   "study": {
-   "ts": 1795635534,
+   "ts": 1795637418,
    "launches": 98,
    "cost_side_pct": 3.0,
    "distribution": {
@@ -3262,7 +3466,7 @@
    "note": "Pocos lanzamientos con resultado conocido (98 de 100 mínimos)."
   },
   "copy": {
-   "ts": 1795635534,
+   "ts": 1795637418,
    "pools": 8,
    "observations": 316,
    "bots_excluded": 0,
@@ -3289,7 +3493,7 @@
  },
  "updates": {
   "state": "al día",
-  "current": "5d787a05017c71df70b334db729249865024d46d",
-  "applied_at": 1795635521
+  "current": "e97790c03dd4a528f5ff925ee4d08eaf16a27c54",
+  "applied_at": 1795637402
  }
 }
