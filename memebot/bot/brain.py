@@ -52,13 +52,18 @@ NAMES_ES = {
     "fng": "índice de miedo y codicia", "sol_h1": "variación de SOL en 1 h (%)", "sol_h24": "variación de SOL en 24 h (%)",
     "news_score": "tono de las noticias",
 }
-DEFAULT_EXITS = {"sl": 25, "tp": [[100, 50], [300, 25]], "trail": 30, "trail_act": 50, "time": 90, "time_gain": 10}
+DEFAULT_EXITS = {"sl": 25, "tp": [[100, 50], [300, 25]], "trail": 30, "trail_act": 50, "time": 90, "time_gain": 10,
+                 "lock_act": 20, "lock_keep": 50}
 # estilos de salida que el modelo prueba (se elige en VALIDACIÓN, se comprueba en test)
 ML_EXIT_CHOICES = {
-    "rápida": {"sl": 15, "tp": [[30, 50], [80, 25]], "trail": 20, "trail_act": 30, "time": 60, "time_gain": 10},
-    "media": {"sl": 25, "tp": [[50, 50], [150, 25]], "trail": 35, "trail_act": 30, "time": 180, "time_gain": 10},
+    "rápida": {"sl": 15, "tp": [[30, 50], [80, 25]], "trail": 20, "trail_act": 30, "time": 60, "time_gain": 10,
+               "lock_act": 15, "lock_keep": 50},
+    "media": {"sl": 25, "tp": [[50, 50], [150, 25]], "trail": 35, "trail_act": 30, "time": 180, "time_gain": 10,
+              "lock_act": 20, "lock_keep": 50},
     "por defecto": DEFAULT_EXITS,
-    "larga": {"sl": 35, "tp": [[100, 50], [300, 25]], "trail": 35, "trail_act": 50, "time": 240, "time_gain": 10},
+    "sin candado": {"sl": 25, "tp": [[100, 50], [300, 25]], "trail": 30, "trail_act": 50, "time": 90, "time_gain": 10},
+    "larga": {"sl": 35, "tp": [[100, 50], [300, 25]], "trail": 35, "trail_act": 50, "time": 240, "time_gain": 10,
+              "lock_act": 30, "lock_keep": 50},
 }
 MODEL_EXIT_MIN_HOLD = 10              # minutos antes de que la venta inteligente pueda actuar
 MODEL_EXIT_THRS = (-0.10, -0.05, -0.02, 0.0)
@@ -124,7 +129,8 @@ def build_dataset(pools, exits: dict, cost_penalty: float = 0.0, stride: int = S
         for i in cand:
             r, _, _ = simulate(pd.o, pd.h, pd.l, pd.c, i + 1, pd.side_cost[i + 1] + cost_penalty / 2,
                                exits["sl"] / 100, tp_g, tp_p, exits["trail"] / 100, exits["trail_act"] / 100,
-                               exits["time"], exits["time_gain"] / 100)
+                               exits["time"], exits["time_gain"] / 100, exits.get("lock_act", 1e9) / 100,
+                               exits.get("lock_keep", 0) / 100)
             y.append(r)
         X.append(feature_matrix(pd.f, cand, context_columns(pd.ts[cand], hist_ts, hist_rows)))
         ts.append(pd.ts[cand])
@@ -199,7 +205,7 @@ def _exit_args(exits: dict):
     tp_g = np.array([g / 100 for g, _ in exits["tp"]], dtype=np.float64)
     tp_p = np.array([p / 100 for _, p in exits["tp"]], dtype=np.float64)
     return (exits["sl"] / 100, tp_g, tp_p, exits["trail"] / 100, exits["trail_act"] / 100, exits["time"],
-            exits["time_gain"] / 100)
+            exits["time_gain"] / 100, exits.get("lock_act", 1e9) / 100, exits.get("lock_keep", 0) / 100)
 
 
 def model_exit_returns(model, pools, trades, exits: dict, pen: float, ctx_hist) -> tuple[list, dict]:
@@ -589,7 +595,8 @@ class BrainRuntime:
         x = champ["exits_bt"]
         return {"stop_loss_pct": x["sl"], "take_profits": x["tp"], "trailing_stop_pct": x["trail"],
                 "trailing_activation_pct": x["trail_act"], "time_stop_minutes": x["time"],
-                "time_stop_min_gain_pct": x["time_gain"]}
+                "time_stop_min_gain_pct": x["time_gain"], "lock_activation_pct": x.get("lock_act", 1e9),
+                "lock_keep_pct": x.get("lock_keep", 0)}
 
 
 def main():

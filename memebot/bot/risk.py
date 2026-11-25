@@ -53,7 +53,14 @@ def evaluate_exit(pos: Position, price: float, liquidity_usd: float, now: float,
 
     # 2) Stop loss. Tras el primer take-profit el stop sube a break-even.
     stop = pos.entry_price if pos.tp_levels_hit else pos.entry_price * (1 - e.stop_loss_pct / 100)
+    peak_gain = (pos.peak_price / pos.entry_price - 1) * 100
+    lock = None
+    if peak_gain >= e.lock_activation_pct:           # candado de beneficio: no devolver lo ganado
+        lock = pos.entry_price * (1 + e.lock_keep_pct / 100 * peak_gain / 100)
+        stop = max(stop, lock)
     if price <= stop:
+        if lock is not None and stop == lock:
+            return all_out(f"candado de beneficio ({gain_pct:+.1f}%, máximo {peak_gain:+.0f}%)")
         return all_out("break-even stop" if pos.tp_levels_hit else f"stop loss {gain_pct:.1f}%")
 
     # 3) Trailing stop una vez activado.
@@ -63,7 +70,8 @@ def evaluate_exit(pos: Position, price: float, liquidity_usd: float, now: float,
 
     # 4) Time stop: si no se mueve, el capital está mejor en otra parte.
     minutes = (now - pos.opened_at) / 60
-    if not pos.tp_levels_hit and minutes >= e.time_stop_minutes and gain_pct < e.time_stop_min_gain_pct:
+    # solo si NUNCA llegó a +time_stop_min_gain_pct: si subió y luego bajó, lo gestiona el candado
+    if not pos.tp_levels_hit and minutes >= e.time_stop_minutes and peak_gain < e.time_stop_min_gain_pct:
         return all_out(f"time stop ({minutes:.0f} min, {gain_pct:+.1f}%)")
 
     # 5) Escalera de take-profits (porcentaje sobre la cantidad inicial).

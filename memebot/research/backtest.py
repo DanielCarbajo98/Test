@@ -34,12 +34,15 @@ NET_USD = 0.05
 SIZE_USD = 40.0
 COOLDOWN_MIN = 240
 ARTIFACT_JUMP = 5.0
-REASONS = ["stop", "trailing", "time", "tp_full", "end", "breakeven"]
+REASONS = ["stop", "trailing", "time", "tp_full", "end", "breakeven", "lock"]
 
 
 @njit(cache=True)
-def simulate(o, h, l, c, entry_i, side_cost, sl, tp_g, tp_p, trail, trail_act, time_stop, time_gain):
-    """Simula una operación. Devuelve (retorno_neto, índice_salida, motivo)."""
+def simulate(o, h, l, c, entry_i, side_cost, sl, tp_g, tp_p, trail, trail_act, time_stop, time_gain,
+             lock_act=9.99e9, lock_keep=0.0):
+    """Simula una operación. Devuelve (retorno_neto, índice_salida, motivo).
+    lock_act / lock_keep: «candado de beneficio»: cuando el máximo supera +lock_act, el stop sube hasta conservar
+    lock_keep (fracción) de la mejor ganancia alcanzada. El time stop solo actúa si NUNCA llegó a +time_gain."""
     n = len(c)
     pe = o[entry_i] * (1 + side_cost)          # precio efectivo de entrada
     remaining = 1.0                            # fracción de tokens que queda
@@ -50,13 +53,19 @@ def simulate(o, h, l, c, entry_i, side_cost, sl, tp_g, tp_p, trail, trail_act, t
     for j in range(entry_i, n):
         trusted = not (j > 0 and c[j] > c[j - 1] * 5.0)
         stop = pe if any_hit else pe * (1 - sl)
-        # 1) stop / break-even
+        locked = False
+        pk_gain = peak / pe - 1
+        if pk_gain >= lock_act:
+            lv = pe * (1 + lock_keep * pk_gain)
+            if lv > stop:
+                stop, locked = lv, True
+        # 1) stop / break-even / candado de beneficio
         if l[j] <= stop:
             fill = o[j] if o[j] < stop else stop
             if l[j] < stop * 0.6:
                 fill = l[j]
             proceeds += remaining * fill * (1 - side_cost)
-            return proceeds / pe - 1, j, 5 if any_hit else 0
+            return proceeds / pe - 1, j, 6 if locked else (5 if any_hit else 0)
         # 2) trailing stop
         if peak >= pe * (1 + trail_act):
             lvl = peak * (1 - trail)
@@ -81,7 +90,7 @@ def simulate(o, h, l, c, entry_i, side_cost, sl, tp_g, tp_p, trail, trail_act, t
             if c[j] > peak:
                 peak = c[j]
         # 4) time stop
-        if not any_hit and j - entry_i >= time_stop and c[j] < pe * (1 + time_gain):
+        if not any_hit and j - entry_i >= time_stop and peak < pe * (1 + time_gain):
             proceeds += remaining * c[j] * (1 - side_cost)
             return proceeds / pe - 1, j, 2
     proceeds += remaining * c[n - 1] * (1 - side_cost)
@@ -141,7 +150,8 @@ def run(pools: list[PoolData], strategy: str, entry_p: dict, exit_p: dict, split
                 continue
             r, j, why = simulate(pd.o, pd.h, pd.l, pd.c, e, pd.side_cost[e], exit_p["sl"] / 100, tp_g, tp_p,
                                  exit_p["trail"] / 100, exit_p["trail_act"] / 100, exit_p["time"],
-                                 exit_p["time_gain"] / 100)
+                                 exit_p["time_gain"] / 100, exit_p.get("lock_act", 1e9) / 100,
+                                 exit_p.get("lock_keep", 0) / 100)
             trades.append((int(pd.ts[e]), int(pd.ts[j]), float(r), REASONS[why], pd.name))
             next_free = j + 1 + COOLDOWN_MIN
     return trades
@@ -210,6 +220,8 @@ EXIT_GRID = {
     "trail_act": [30],
     "time": [60, 180],
     "time_gain": [10],
+    "lock_act": [20, 1e9],          # candado de beneficio desde +20 % (o sin candado): el cerebro decide
+    "lock_keep": [50],
 }
 
 

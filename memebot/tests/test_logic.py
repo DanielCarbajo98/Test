@@ -141,10 +141,24 @@ def test_take_profit_ladder_then_breakeven():
 def test_trailing_stop_and_time_stop():
     e = ExitCfg()
     p = pos(peak_price=1.8)
-    assert "trailing" in evaluate_exit(p, 1.2, 100_000, time.time(), e).reason
+    assert "trailing" in evaluate_exit(p, 1.2, 100_000, time.time(), ExitCfg(lock_activation_pct=1e9)).reason
+    # con el candado (por defecto) protege antes: llegó a +80 % → no baja de +40 %
+    assert "candado" in evaluate_exit(pos(peak_price=1.8), 1.39, 100_000, time.time(), e).reason
     old = pos(opened_at=time.time() - 120 * 60)
     assert "time stop" in evaluate_exit(old, 1.02, 100_000, time.time(), e).reason
     assert evaluate_exit(pos(), 1.05, 100_000, time.time(), e) is None
+
+
+def test_gains_are_not_given_back():
+    """El caso real: subió a +27 % y a los 90 min estaba en +5 %. Antes salía por time stop casi en tablas;
+    ahora el candado vende en cuanto cae a +13,5 % (la mitad de lo mejor) y el time stop ya no aplica."""
+    e = ExitCfg()
+    p = pos(opened_at=time.time() - 30 * 60, peak_price=1.27)
+    assert evaluate_exit(p, 1.20, 100_000, time.time(), e) is None               # aún por encima del candado
+    d = evaluate_exit(p, 1.13, 100_000, time.time(), e)
+    assert d and "candado" in d.reason and d.sell_qty == p.qty
+    late = pos(opened_at=time.time() - 120 * 60, peak_price=1.12)                 # subió +12 %, ahora +11 %
+    assert evaluate_exit(late, 1.11, 100_000, time.time(), e) is None            # ya no hay time stop
 
 
 # ---------------------------------------------------------------- seguridad
@@ -221,3 +235,13 @@ def test_old_config_defaults_are_migrated_but_custom_values_kept(tmp_path):
     assert cfg.scanner.max_candidates == 1000            # valor antiguo por defecto -> nuevo
     assert cfg.filters.max_fdv_usd == 1_000_000_000
     assert cfg.filters.max_liquidity_usd == 2_000_000    # personalizado por el usuario: se respeta
+
+
+def test_backtest_uses_the_same_profit_lock():
+    import numpy as np
+    from research.backtest import simulate
+    c = np.array([1.0] * 2 + list(np.linspace(1, 1.27, 30)) + list(np.linspace(1.27, 1.0, 60)) + [1.0] * 200)
+    args = (c.copy(), c * 1.001, c * 0.999, c, 1, 0.0, 0.25, np.array([1.0, 3.0]), np.array([0.5, 0.25]), 0.30, 0.50, 90, 0.10)
+    r_old, _, _ = simulate(*args)
+    r_new, _, why = simulate(*args, 0.20, 0.50)
+    assert r_old < 0.02 and r_new > 0.12 and why == 6          # conserva ~la mitad del +27 %

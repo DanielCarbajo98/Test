@@ -109,6 +109,8 @@ class ExitCfg:
     time_stop_minutes: int = 90
     time_stop_min_gain_pct: float = 10.0
     liquidity_drop_exit_pct: float = 40.0
+    lock_activation_pct: float = 20.0   # candado: al llegar a +20 % el stop sube para conservar...
+    lock_keep_pct: float = 50.0         # ...el 50 % de la mejor ganancia alcanzada
 
 
 @dataclass
