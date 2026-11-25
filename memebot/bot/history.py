@@ -12,11 +12,15 @@ def positions(trades_csv: Path) -> list[dict]:
     done = []
     for r in rows:
         m = r["mint"]
+        fill = {"ts": r["ts"], "side": r["side"], "price": float(r["price"] or 0), "qty": float(r["qty"] or 0),
+                "usd": float(r["usd"] or 0), "reason": r["reason"]}
         if r["side"] == "BUY":
-            open_by_mint[m] = {"symbol": r["symbol"], "opened": r["ts"], "cost": float(r["usd"]),
-                               "qty": float(r["qty"]), "got": 0.0, "sold": 0.0, "reasons": []}
+            open_by_mint[m] = {"symbol": r["symbol"], "mint": m, "opened": r["ts"], "cost": float(r["usd"]),
+                               "qty": float(r["qty"]), "got": 0.0, "sold": 0.0, "reasons": [],
+                               "buy_price": float(r["price"] or 0), "fills": [fill]}
         elif m in open_by_mint:
             p = open_by_mint[m]
+            p["fills"].append(fill)
             p["got"] += float(r["usd"])
             p["sold"] += float(r["qty"])
             p["reasons"].append(r["reason"])

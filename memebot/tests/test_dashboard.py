@@ -50,3 +50,46 @@ def test_token_required(tmp_path):
         assert _req(base + "/api/control", {"action": "pause"})[0] == 401
     finally:
         httpd.shutdown()
+
+
+def test_trade_detail_chart_and_value_now(tmp_path):
+    import csv
+    import httpx
+    from bot.dashboard import trade_detail, _TRADE_CACHE
+    _TRADE_CACHE.clear()
+    with (tmp_path / "trades.csv").open("w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["ts", "side", "symbol", "mint", "qty", "usd", "price", "reason", "tx"])
+        w.writerow(["2026-11-25T01:00:00+00:00", "BUY", "MEME", "MINT1", "1000", "40", "0.04", "momentum", "paper"])
+        w.writerow(["2026-11-25T02:00:00+00:00", "SELL", "MEME", "MINT1", "500", "40", "0.08", "take profit +100%", "paper"])
+        w.writerow(["2026-11-25T03:00:00+00:00", "SELL", "MEME", "MINT1", "500", "20", "0.04", "break-even stop", "paper"])
+
+    def handler(req):
+        if "dexscreener" in str(req.url):
+            return httpx.Response(200, json=[{"baseToken": {"address": "MINT1"}, "pairAddress": "POOL1",
+                                              "priceUsd": "0.12", "liquidity": {"usd": 90000}}])
+        rows = [[1795000000 + 60 * i, 0.04, 0.05, 0.03, 0.045, 100] for i in range(50)]
+        return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": rows}}})
+
+    d = trade_detail(tmp_path, "MINT1", client=httpx.Client(transport=httpx.MockTransport(handler)))
+    t = d["trade"]
+    assert t["mint"] == "MINT1" and len(t["fills"]) == 3 and t["got"] == 60
+    assert d["pool"] == "POOL1" and d["price_now"] == 0.12 and len(d["candles"]) == 50
+    assert t["qty"] * d["price_now"] == 120          # mantenerlo valdría 120 $ frente a los 60 $ obtenidos
+    assert trade_detail(tmp_path, "OTRO") is None
+
+
+def test_api_is_valid_json_even_with_infinite_profit_factor(tmp_path):
+    import csv
+    with (tmp_path / "trades.csv").open("w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["ts", "side", "symbol", "mint", "qty", "usd", "price", "reason", "tx"])
+        w.writerow(["2026-11-25T01:00:00+00:00", "BUY", "A", "M1", "10", "40", "4", "x", "paper"])
+        w.writerow(["2026-11-25T02:00:00+00:00", "SELL", "A", "M1", "10", "60", "6", "take profit", "paper"])
+    httpd, base = _serve(tmp_path)
+    try:
+        code, body = _req(base + "/api/state")
+        assert b"Infinity" not in body and b"NaN" not in body
+        assert json.loads(body)["stats"]["profit_factor"] is None
+    finally:
+        httpd.shutdown()

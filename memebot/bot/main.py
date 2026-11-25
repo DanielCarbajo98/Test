@@ -148,7 +148,7 @@ class Bot:
                 self.notify.send(f"⚠️ No se pudo cerrar {pos.symbol}: {e}")
                 continue
             pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, reason, fill.tx)
-            self.notify.send(f"🔴 SELL {pos.symbol} por ${fill.usd:.2f} — {reason} (PnL ${pnl:+.2f})")
+            self.notify.send(self._sell_msg(pos.symbol, fill, reason, pnl, final=True))
             self.pending_reclaim[mint] = 0
 
     # ------------------------------------------------------------------ salidas
@@ -174,7 +174,7 @@ class Bot:
                 continue
             pos.tp_levels_hit = d.new_tp_levels
             pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, d.reason, fill.tx)
-            self.notify.send(f"🔴 SELL {pos.symbol} {fill.qty:.4g} por ${fill.usd:.2f} — {d.reason} (PnL ${pnl:+.2f})")
+            self.notify.send(self._sell_msg(pos.symbol, fill, d.reason, pnl, final=mint not in self.pf.positions))
             if mint not in self.pf.positions:
                 self.pending_reclaim[mint] = 0
         self.pf.save()
@@ -330,8 +330,18 @@ class Bot:
             self.notify.send(f"⚠️ No se pudo cerrar {pos.symbol}: {e}")
             return
         pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, reason, fill.tx)
-        self.notify.send(f"🔴 SELL {pos.symbol} por ${fill.usd:.2f} — {reason} (PnL ${pnl:+.2f})")
+        self.notify.send(self._sell_msg(pos.symbol, fill, reason, pnl, final=True))
         self.pending_reclaim[mint] = 0
+
+    @staticmethod
+    def _sell_msg(symbol: str, fill, reason: str, pnl: float, final: bool) -> str:
+        """🪙 CRIPTO · ✅ beneficio / ❌ pérdida, y si es una venta parcial o el cierre de la posición."""
+        kind = "CIERRE" if final else "VENTA PARCIAL"
+        if pnl >= 0:
+            head = f"🪙 CRIPTO · ✅ {kind} CON BENEFICIO · {symbol} +${pnl:.2f}"
+        else:
+            head = f"🪙 CRIPTO · ❌ {kind} CON PÉRDIDA · {symbol} −${abs(pnl):.2f}"
+        return f"{head}\nVendido por ${fill.usd:.2f} a {fill.price:.6g}\nMotivo: {reason}"
 
     def refresh_position_charts(self):
         """Velas de las posiciones abiertas (para ver en directo dónde está cada una)."""
@@ -440,7 +450,8 @@ class Bot:
             ex = self.exit_cfg()
             tps = " / ".join(f"+{g:g}% (vende {q:g}%)" for g, q in ex.take_profits)
             self.notify.send(
-                f"🟢 BUY {s.symbol} ${fill.usd:.2f} @ {fill.price:.6g} [{c.mode}] | {self.strategy_label()}\n"
+                f"🪙 CRIPTO · 🟢 COMPRA {s.symbol} por ${fill.usd:.2f} a {fill.price:.6g} [{c.mode}]\n"
+                f"Estrategia: {self.strategy_label()}\n"
                 f"🛑 Stop loss: {fill.price * (1 - ex.stop_loss_pct / 100):.6g} (−{ex.stop_loss_pct:g}%)\n"
                 f"🎯 Take profit: {tps}\n"
                 f"📉 Trailing: −{ex.trailing_stop_pct:g}% desde el máximo (tras +{ex.trailing_activation_pct:g}%) · "

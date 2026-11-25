@@ -37,6 +37,11 @@ POS = ["surge", "soar", "rally", "record", "all-time high", "ath", "approv", "et
 SOLANA = ["solana", " sol ", "sol price", "memecoin", "meme coin", "pump.fun", "pumpfun", "jupiter", "raydium",
           "phantom", "bonk", "dogwifhat", "wif ", "helius", "jito"]
 CRITICAL = ["hack", "exploit", "drain", "outage", "halt", "stolen", "attack", "vulnerab", "down for"]
+# piezas clave: si caen o las hackean, afecta a TODO el mercado de memecoins de Solana
+CORE = ["jupiter", "raydium", "pump.fun", "pumpfun", "phantom", "jito", "helius", "meteora", "orca "]
+# palabras que indican que el problema es de la RED Solana (no de un proyecto pequeño que usa Solana)
+NETWORK = ["solana network", "solana outage", "solana down", "solana mainnet", "solana validators", "solana halts",
+           "solana halted", "solana blockchain halt", "network outage", "network halt", "mainnet", "consensus"]
 
 
 def _has(text: str, words: list[str]) -> bool:
@@ -49,7 +54,8 @@ def score_headline(title: str) -> dict:
     pos = sum(1 for w in POS if w in t)
     sol = _has(t, SOLANA)
     s = (pos - neg) * (2 if sol else 1)
-    return {"score": max(-3, min(3, s)), "solana": sol, "critical": sol and _has(t, CRITICAL)}
+    critical = _has(t, CRITICAL) and (_has(t, CORE) or _has(t, NETWORK))
+    return {"score": max(-3, min(3, s)), "solana": sol, "critical": critical}
 
 
 def fetch_headlines(http: httpx.Client, max_age_h: float = 24) -> list[dict]:

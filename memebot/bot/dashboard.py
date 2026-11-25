@@ -112,6 +112,75 @@ def _stocks_view(state: Path) -> dict:
             "track": st.get("track", {})}
 
 
+def _finite(o):
+    """JSON válido para el navegador: infinito / NaN (p. ej. profit factor sin pérdidas) -> null."""
+    import math
+    if isinstance(o, float):
+        return o if math.isfinite(o) else None
+    if isinstance(o, dict):
+        return {k: _finite(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_finite(v) for v in o]
+    return o
+
+
+_TRADE_CACHE: dict[str, tuple[float, dict]] = {}
+
+
+def trade_detail(state: Path, mint: str, client=None) -> dict | None:
+    """Gráfico y valor actual de una operación cerrada: velas desde antes de la compra hasta ahora."""
+    import httpx
+
+    if not mint or not all(ch.isalnum() for ch in mint):
+        return None
+    f = state / "trades.csv"
+    done = [d for d in (positions(f) if f.exists() else []) if d.get("mint") == mint]
+    if not done:
+        return None
+    trade = done[-1]
+    hit = _TRADE_CACHE.get(mint)
+    if hit and time.time() - hit[0] < 60:
+        return {**hit[1], "trade": trade}
+    http = client or httpx.Client(timeout=15, headers={"User-Agent": "Mozilla/5.0 (compatible; MemeBot/1.0)"})
+    out = {"price_now": None, "liquidity": None, "pool": None, "candles": [], "tf": None, "alive": False}
+    try:
+        pairs = http.get(f"https://api.dexscreener.com/tokens/v1/solana/{mint}").json() or []
+        pairs = [p for p in pairs if (p.get("baseToken") or {}).get("address") == mint]
+        if pairs:
+            best = max(pairs, key=lambda p: float((p.get("liquidity") or {}).get("usd") or 0))
+            out.update(price_now=float(best.get("priceUsd") or 0), pool=best.get("pairAddress"),
+                       liquidity=float((best.get("liquidity") or {}).get("usd") or 0), alive=True)
+    except (httpx.HTTPError, ValueError, TypeError):
+        pass
+    if out["pool"]:
+        from datetime import datetime
+        opened = datetime.fromisoformat(trade["opened"]).timestamp()
+        span_min = (time.time() - opened) / 60 + 60
+        if span_min <= 900:
+            tf, agg, lim = "minute", 1, int(span_min) + 10
+        elif span_min <= 5 * 1000:
+            tf, agg, lim = "minute", 5, int(span_min / 5) + 10
+        elif span_min <= 15 * 1000:
+            tf, agg, lim = "minute", 15, int(span_min / 15) + 10
+        else:
+            tf, agg, lim = "hour", 1, min(1000, int(span_min / 60) + 10)
+        try:
+            for attempt in range(3):          # GeckoTerminal limita peticiones: esperar y reintentar
+                r = http.get(f"https://api.geckoterminal.com/api/v2/networks/solana/pools/{out['pool']}/ohlcv/{tf}",
+                             params={"aggregate": agg, "limit": min(lim, 1000), "currency": "usd", "token": "base"})
+                if r.status_code != 429:
+                    break
+                time.sleep(2 * (attempt + 1))
+            rows = ((r.json().get("data") or {}).get("attributes") or {}).get("ohlcv_list") or []
+            out["candles"] = sorted(([float(x) for x in row] for row in rows), key=lambda x: x[0])
+            out["tf"] = f"{agg} {'h' if tf == 'hour' else 'min'}"
+        except (httpx.HTTPError, ValueError, TypeError):
+            pass
+    if out["candles"] or not out["alive"]:        # sin velas por un fallo momentáneo: no guardar, reintentar luego
+        _TRADE_CACHE[mint] = (time.time(), out)
+    return {**out, "trade": trade}
+
+
 def build_state(state: Path) -> dict:
     status = _read_json(state / "status.json", {})
     now = time.time()
@@ -185,7 +254,7 @@ def make_handler(state: Path, token: str):
             self.wfile.write(body)
 
         def _json(self, obj, code: int = 200):
-            self._send(code, json.dumps(obj).encode(), "application/json")
+            self._send(code, json.dumps(_finite(obj), allow_nan=False).encode(), "application/json")
 
         def do_GET(self):  # noqa: N802
             path = urlparse(self.path).path
@@ -209,6 +278,10 @@ def make_handler(state: Path, token: str):
                     return self._json({"error": "símbolo no válido"}, 400)
                 d = _read_json(state / "stock_charts" / f"{sym.replace('.', '_')}.json", None)
                 return self._json(d) if d else self._json({"error": "sin gráfico"}, 404)
+            if path == "/api/trade":
+                mint = (parse_qs(urlparse(self.path).query).get("mint") or [""])[0]
+                d = trade_detail(state, mint)
+                return self._json(d) if d else self._json({"error": "operación no encontrada"}, 404)
             if path == "/api/chart":
                 pool = (parse_qs(urlparse(self.path).query).get("pool") or [""])[0]
                 d = chart_detail(state, pool)

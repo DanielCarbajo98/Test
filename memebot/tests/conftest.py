@@ -14,4 +14,9 @@ def _no_secrets_no_messages(monkeypatch):
     monkeypatch.setattr(dotenv, "load_dotenv", lambda *a, **k: False)   # no leer un .env real
     import bot.config
     monkeypatch.setattr(bot.config, "load_dotenv", lambda *a, **k: False)
+    # el ciclo del bot no debe leer noticias ni listas de Jupiter reales (resultados que cambian cada día)
+    import bot.context
+    import bot.main
+    monkeypatch.setattr(bot.context, "build", lambda *a, **k: {})
+    monkeypatch.setattr(bot.main, "jupiter_discover", lambda *a, **k: ([], {}))
     yield

@@ -398,7 +398,9 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                 del st["positions"][sym]
                 fx = eur_rate(http, b.currency)
                 eur = f" ≈ {fmt_eur(a['price'] * fx)}" if fx and b.currency.upper() != "EUR" else ""
-                notify(f"🔴 VENDER {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}{eur}\nMotivo: {why}\n"
+                head = (f"📈 ACCIONES · ✅ CIERRE CON BENEFICIO · VENDER {sym}" if pnl >= 0 else
+                        f"📈 ACCIONES · ❌ CIERRE CON PÉRDIDA · VENDER {sym}")
+                notify(f"{head}\n{b.name} a ~{a['price']:.2f} {b.currency}{eur}\nMotivo: {why}\n"
                        f"Resultado de la alerta: {ret:+.1f}% · con {pos.get('amount', PAPER_EUR):.0f} € habrías "
                        f"{'ganado' if pnl >= 0 else 'perdido'} {abs(pnl):.2f} € (con comisiones).\n"
                        f"El cerebro de acciones aprende de este resultado.")
@@ -461,7 +463,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
         cap_line = "" if max_day >= 10**6 else f"Alerta {daily['n']} de {max_day} como máximo hoy.\n"
         fx = eur_rate(http, b.currency)
         e = (lambda v, fx=fx: f" ≈ {fmt_eur(v * fx)}") if fx and b.currency.upper() != "EUR" else (lambda v: "")
-        notify(f"🟢 COMPRAR {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}{e(a['price'])}\nSeñal: {a['signal']} · "
+        notify(f"📈 ACCIONES · 🟢 COMPRAR {sym}\n{b.name} a ~{a['price']:.2f} {b.currency}{e(a['price'])}\nSeñal: {a['signal']} · "
                f"RSI {a['rsi']:.0f} · tendencia {a['trend']}\n"
                f"🛑 Stop loss: {pl['stop']:.2f}{e(pl['stop'])} (−{risk:.1f}%)\n"
                f"🎯 Take profit: {pl['tp']:.2f}{e(pl['tp'])} (+{reward:.1f}%)\n"
@@ -521,7 +523,7 @@ def learn_daily(state_dir: Path, st: dict, every_h: float = 24, min_stocks: int 
     if res:
         log.info("Cerebro de acciones: aprendió de %d acciones en %.0f s", len(bars), time.time() - t0)
         act = [k for k, v in res["setups"].items() if v.get("active")]
-        notify("🧠 Acciones: aprendizaje diario completado. Estrategias activas: "
+        notify("📈 ACCIONES · 🧠 aprendizaje diario completado. Estrategias activas: "
                + (", ".join(act) if act else "ninguna (ninguna demuestra ventaja ahora mismo)") + ".")
     return res
 

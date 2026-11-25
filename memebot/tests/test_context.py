@@ -40,3 +40,18 @@ def test_feature_matrix_marks_missing_context():
     X = feature_matrix(f, np.array([0, 1]))
     assert X.shape[1] == 11 + len(CTX_FEATURES)
     assert (X[:, -len(CTX_FEATURES):] == MISSING).all() and np.isfinite(X).all()
+
+
+def test_small_solana_project_problems_do_not_trigger_the_brake():
+    assert not c.score_headline("Solana DEX Velocity halts trading over bug just months after relaunch")["critical"]
+    assert c.score_headline("Solana network outage halts block production")["critical"]
+    assert c.score_headline("Jupiter exchange hit by exploit, users drained")["critical"]
+
+
+def test_alert_messages_say_crypto_and_profit_or_loss():
+    from types import SimpleNamespace as NS
+    from bot.main import Bot
+    win = Bot._sell_msg("MEME", NS(usd=80.0, price=0.002), "take profit +100%", 40.0, final=False)
+    loss = Bot._sell_msg("MEME", NS(usd=30.0, price=0.0007), "stop loss -25%", -10.0, final=True)
+    assert win.startswith("🪙 CRIPTO · ✅ VENTA PARCIAL CON BENEFICIO") and "+$40.00" in win
+    assert loss.startswith("🪙 CRIPTO · ❌ CIERRE CON PÉRDIDA") and "−$10.00" in loss
