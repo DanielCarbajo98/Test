@@ -130,7 +130,8 @@ def maybe_publish(state: Path, repo: str, base: str, token: str, notify, now: fl
     day = m.strftime("%Y-%m-%d")
     mark = state / "report_sent.json"
     info = _read(mark)
-    if m.hour < REPORT_HOUR or info.get("day") == day or time.time() - info.get("failed_at", 0) < 3 * 3600:
+    first = not info                                # el primero se sube al arrancar: así se comprueba el token
+    if (m.hour < REPORT_HOUR and not first) or info.get("day") == day or time.time() - info.get("failed_at", 0) < 3 * 3600:
         return False
     try:
         publish(state, repo, base, token, http, day)
@@ -150,6 +151,9 @@ def maybe_publish(state: Path, repo: str, base: str, token: str, notify, now: fl
         mark.write_text(json.dumps(info))
         log.warning("No se pudo subir el informe: %s", e)
         return False
-    mark.write_text(json.dumps({"day": day, "ts": int(time.time())}))
+    mark.write_text(json.dumps({"day": day if m.hour >= REPORT_HOUR else "", "ts": int(time.time())}))
     log.info("Informe diario subido a la rama %s", BRANCH)
+    if first:
+        notify("✅ Primer informe subido a GitHub (rama bot-reports): el token tiene permiso de escritura y la "
+               "mejora automática de los domingos ya tiene datos.")
     return True

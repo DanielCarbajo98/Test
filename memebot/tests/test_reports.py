@@ -51,3 +51,12 @@ def test_warns_once_if_token_cannot_write(tmp_path):
     at = datetime(2026, 1, 15, 20, 30, tzinfo=timezone.utc).timestamp()
     assert not reports.maybe_publish(tmp_path, "o/r", "main", "tok", sent.append, at, gh_mock({}, 403))
     assert len(sent) == 1 and "Read and write" in sent[0]
+
+
+def test_first_report_goes_out_immediately(tmp_path):
+    store, sent = {}, []
+    at = datetime(2026, 1, 15, 9, 0, tzinfo=timezone.utc).timestamp()          # 10:00 en Madrid
+    http = gh_mock(store)
+    assert reports.maybe_publish(tmp_path, "o/r", "main", "tok", sent.append, at, http)
+    assert "reports/latest.json" in store and "Primer informe" in sent[0]
+    assert not reports.maybe_publish(tmp_path, "o/r", "main", "tok", sent.append, at + 60, http)   # el resto, a las 21:00
