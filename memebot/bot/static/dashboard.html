@@ -835,6 +835,23 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       ${closed ? `<div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Cerrada</th><th>Cuándo</th><th class="num">Entrada</th><th class="num">Salida</th><th>Motivo</th><th class="num">Resultado</th></tr></thead><tbody>${closed}</tbody></table></div>` : ""}`;
   }
 
+  function traders() {
+    const T = (S.hunter || {}).traders || {}, top = T.top || [], t = T.tally || {};
+    if (!top.length) return `<p class="sub" style="margin:0 0 10px">Traders: aún sin analizar (necesita tu RPC de Helius y unas horas de datos).</p>`;
+    const tag = { "habilidad probable": "up", "posible suerte": "flat", "pierde": "down", "bot": "down", "pocos datos": "flat" };
+    const rows = top.map(v => `<tr><td><a href="https://solscan.io/account/${esc(v.wallet)}" target="_blank" rel="noopener">${esc(v.wallet.slice(0, 4))}…${esc(v.wallet.slice(-4))}</a></td>
+      <td style="max-width:320px;white-space:normal"><b class="${tag[v.verdict] || ""}">${esc(v.verdict)}</b><div class="sub">${esc(v.why || "")}</div></td>
+      <td class="num">${v.closed ?? 0}</td><td class="num">${v.win_rate != null ? v.win_rate + "%" : "—"}</td>
+      <td class="num ${cls(v.pnl_sol)}">${v.pnl_sol != null ? (v.pnl_sol >= 0 ? "+" : "") + v.pnl_sol + " SOL" : "—"}</td>
+      <td class="num ${cls(v.pnl_without_best_sol)}">${v.pnl_without_best_sol != null ? (v.pnl_without_best_sol >= 0 ? "+" : "") + v.pnl_without_best_sol : "—"}</td>
+      <td class="num">${v.p_value ?? "—"}</td><td class="num ${cls(v.alpha_pct)}">${v.alpha_pct != null ? (v.alpha_pct >= 0 ? "+" : "") + v.alpha_pct + "%" : "—"}</td></tr>`).join("");
+    return `<h3 style="margin:14px 0 6px">¿Habilidad o suerte? Traders analizados</h3>
+      <p class="sub" style="margin:0 0 8px">${Object.entries(t).map(([k, n]) => `${esc(k)}: <b>${n}</b>`).join(" · ")}. Para llamar «habilidad» a algo exige: ≥ 10 tokens cerrados, que gane también sin su mejor operación,
+      en las dos mitades de su historial, con menos de un 5 % de probabilidad de ser azar (p) y mejor que los demás que compraron lo mismo a la vez (ventaja).</p>
+      <div class="table-wrap" style="margin-bottom:12px"><table><thead><tr><th>Cartera</th><th>Veredicto</th><th class="num">Tokens</th><th class="num">Acierto</th>
+      <th class="num">Resultado</th><th class="num">Sin la mejor</th><th class="num">p</th><th class="num">Ventaja</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+
   function renderHunter() {
     const H = S.hunter || {}, el = $("hunter"), st = H.study || {}, cp = H.copy || {}, sm = H.summary || {};
     const usd = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { maximumFractionDigits: 2 }) + " $";
@@ -860,6 +877,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     ["cazador", "copia"].forEach(k => (H.closed?.[k] || []).slice(0, 10).forEach(c => rows.push(`<tr><td><b>${esc(c.name)}</b><div class="sub">${k}</div></td><td class="sub">${dt(c.exit_ts)}</td><td class="num">${c.cost_usd.toFixed(0)} $</td><td class="num ${cls(c.ret)}">${pc(Math.round(c.ret * 100))}</td><td class="sub">${esc(c.reason)}</td></tr>`)));
     el.innerHTML = `<div class="funnel" style="grid-template-columns:repeat(2,1fr)">${tiles}</div>${dist}${rule}${copy}
       <p class="sub" style="margin:0 0 10px">Dinero ficticio: 1.000 $ por modo y ${"10"} $ por apuesta. Solo avisa por Telegram si el estudio demuestra ganar en datos no vistos.</p>
+      ${traders()}
       ${rows.length ? `<div class="table-wrap"><table><thead><tr><th>Token</th><th>Cuándo</th><th class="num">Apuesta</th><th class="num">Resultado</th><th>Estado</th></tr></thead><tbody>${rows.join("")}</tbody></table></div>` : ""}`;
   }
 

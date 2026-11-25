@@ -76,7 +76,11 @@ def build(state: Path, days: int = 30) -> dict:
                    "closed": {k: v.get("closed", [])[-100:] for k, v in
                               (_read(state / "hunter.json").get("sleeves") or {}).items()},
                    "study": _read(state / "moonshot.json"),
-                   "copy": {k: v for k, v in _read(state / "copy.json").items() if k != "watch"}},
+                   "copy": {k: v for k, v in _read(state / "copy.json").items() if k != "watch"},
+                   "traders": {"tally": _read(state / "traders.json").get("tally"),
+                               "skilled": {w[:6]: {k: x for k, x in v.items() if k != "why"} for w, v in
+                                           (_read(state / "traders.json").get("profiles") or {}).items()
+                                           if v.get("verdict") == "habilidad probable"}}},
         "updates": _pick(_read(state / "update.json"), ("state", "current", "applied_at", "error")),
     }
 

@@ -240,3 +240,173 @@ def rpc_from_env() -> RPC | None:
     if "helius" not in url and not os.getenv("COPY_ANY_RPC"):
         return None                       # el RPC público no aguanta este uso
     return RPC(url)
+
+
+# --------------------------------------------------------------------------- ¿habilidad o suerte?
+WSOL = "So11111111111111111111111111111111111111112"
+PROFILE_TX = 150
+
+
+def swap_of(tx: dict) -> dict | None:
+    """Compra o venta del firmante contra SOL: {mint, side, sol, ts}. None si no es un swap claro."""
+    who = signer(tx)
+    meta = (tx or {}).get("meta") or {}
+    if not who or meta.get("err"):
+        return None
+    try:
+        native = (meta["postBalances"][0] - meta["preBalances"][0]) / 1e9
+    except (KeyError, IndexError, TypeError):
+        native = 0.0
+    sol, tok = native, []
+    for o, m, d in token_deltas(tx):
+        if o != who:
+            continue
+        if m == WSOL:
+            sol += d
+        elif m not in SKIP_MINTS:
+            tok.append((m, d))
+    if len(tok) != 1:
+        return None
+    m, d = tok[0]
+    if d > 0 and sol < -0.0005:
+        return {"mint": m, "side": "buy", "sol": -sol, "ts": int(tx.get("blockTime") or 0)}
+    if d < 0 and sol > 0.0005:
+        return {"mint": m, "side": "sell", "sol": sol, "ts": int(tx.get("blockTime") or 0)}
+    return None
+
+
+def profile(rpc: RPC, wallet: str, limit: int = PROFILE_TX) -> list[dict]:
+    """Últimos swaps de la cartera (compras y ventas con su SOL)."""
+    sigs = [s for s in rpc.signatures(wallet, limit) if not s.get("err")]
+    out = []
+    for tx in rpc.transactions([s["signature"] for s in sigs]):
+        sw = swap_of(tx)
+        if sw:
+            out.append(sw)
+    return sorted(out, key=lambda x: x["ts"])
+
+
+def _boot_p(r: np.ndarray, n_boot: int = 2000, seed: int = 0) -> float:
+    """p-valor (bootstrap) de que su rentabilidad media real sea ≤ 0: cuanto más bajo, menos probable la suerte."""
+    if len(r) < 2:
+        return 1.0
+    rng = np.random.default_rng(seed)
+    centered = r - r.mean()
+    sims = rng.choice(centered, size=(n_boot, len(r)), replace=True).mean(axis=1)
+    return float((sims >= r.mean()).mean())
+
+
+def trader_metrics(swaps: list[dict], alpha: list[float] | None = None) -> dict:
+    """Métricas y veredicto. `alpha`: su resultado menos el de los demás compradores tempranos del mismo token."""
+    by = {}
+    for s in swaps:
+        d = by.setdefault(s["mint"], {"spent": 0.0, "got": 0.0, "first": s["ts"], "last": s["ts"], "sells": 0})
+        d["spent" if s["side"] == "buy" else "got"] += s["sol"]
+        d["last"] = max(d["last"], s["ts"])
+        d["sells"] += s["side"] == "sell"
+    closed = {m: d for m, d in by.items() if d["spent"] > 0 and d["sells"] > 0}
+    span_days = max(1 / 24, (swaps[-1]["ts"] - swaps[0]["ts"]) / 86400) if swaps else 1
+    res = {"tokens": len(by), "closed": len(closed), "swaps": len(swaps), "per_day": round(len(swaps) / span_days, 1)}
+    if not closed:
+        return {**res, "verdict": "pocos datos", "why": "aún no tiene operaciones cerradas que medir"}
+    roi = np.array([d["got"] / d["spent"] - 1 for d in closed.values()])
+    pnl = np.array([d["got"] - d["spent"] for d in closed.values()])
+    order = sorted(closed.values(), key=lambda d: d["first"])
+    half = len(order) // 2
+    h1 = sum(d["got"] - d["spent"] for d in order[:half])
+    h2 = sum(d["got"] - d["spent"] for d in order[half:])
+    best = int(np.argmax(pnl))
+    no_best = float(pnl.sum() - pnl[best])
+    hold = [d["last"] - d["first"] for d in closed.values()]
+    p = _boot_p(np.clip(roi, -1, 20))               # recorta >21x para que un único bombazo no lo decida todo
+    res.update({"pnl_sol": round(float(pnl.sum()), 3), "roi_pct": round(100 * float(pnl.sum() / sum(d["spent"] for d in closed.values())), 1),
+                "win_rate": round(100 * float((roi > 0).mean()), 1), "median_roi_pct": round(100 * float(np.median(roi)), 1),
+                "best_x": round(float(roi.max()) + 1, 2), "pnl_without_best_sol": round(no_best, 3),
+                "best_share_pct": round(100 * float(pnl[best] / pnl.sum()), 0) if pnl.sum() > 0 else None,
+                "halves_positive": bool(h1 > 0 and h2 > 0) if half else None, "p_value": round(p, 3),
+                "median_hold_min": round(float(np.median(hold)) / 60, 1),
+                "avg_size_sol": round(float(np.mean([d["spent"] for d in closed.values()])), 3)})
+    if alpha:
+        res["alpha_pct"] = round(100 * float(np.mean(alpha)), 1)
+        res["alpha_n"] = len(alpha)
+    # veredicto
+    if res["per_day"] > 300 or res["median_hold_min"] < 0.5:
+        v, why = "bot", "opera cientos de veces al día o vende en segundos: no es copiable"
+    elif len(closed) < 10:
+        v, why = "pocos datos", f"solo {len(closed)} tokens cerrados (mínimo 10)"
+    elif pnl.sum() <= 0:
+        v, why = "pierde", "en conjunto pierde dinero"
+    elif p < 0.05 and no_best > 0 and res["halves_positive"] and (alpha is None or len(alpha) < 3 or res["alpha_pct"] > 0):
+        v, why = "habilidad probable", ("gana de forma constante: también sin su mejor operación, en las dos mitades de "
+                                        "su historial y con menos de un 5 % de probabilidad de ser azar")
+    else:
+        fails = []
+        if no_best <= 0:
+            fails.append(f"casi todo viene de una sola operación ({res['best_x']}x)")
+        if not res["halves_positive"]:
+            fails.append("no gana en las dos mitades de su historial")
+        if p >= 0.05:
+            fails.append(f"el resultado podría ser azar (p = {p:.2f})")
+        if alpha and len(alpha) >= 3 and res["alpha_pct"] <= 0:
+            fails.append("no lo hace mejor que los demás que compraron lo mismo a la vez")
+        v, why = "posible suerte", "; ".join(fails) or "no supera las pruebas"
+    return {**res, "verdict": v, "why": why}
+
+
+def alpha_by_wallet(db: dict, launches: list[dict], exit_rule: dict | None = None) -> dict[str, list[float]]:
+    """Por cartera: su resultado de copia menos la media de los demás compradores tempranos del mismo token."""
+    from research import moonshot
+    ex = exit_rule or moonshot.DEFAULT_EXIT
+    by_pool = {L["pool"]: L for L in launches}
+    out: dict[str, list[float]] = {}
+    for p, v in (db.get("pools") or {}).items():
+        L = by_pool.get(p)
+        if not L or v.get("busy"):
+            continue
+        first = {}
+        for w, ts in v["buyers"]:
+            if ts and (w not in first or ts < first[w]):
+                first[w] = ts
+        rets = {}
+        for w, ts in first.items():
+            i = int((ts + COPY_DELAY_S - L["created"]) // 60) - L["off"]
+            if 0 <= i < len(L["c"]) - 2:
+                rets[w] = moonshot.simulate(L, i, ex)
+        if len(rets) < 3:
+            continue
+        for w, r in rets.items():
+            others = [x for k, x in rets.items() if k != w]
+            out.setdefault(w, []).append(r - float(np.mean(others)))
+    return out
+
+
+def analyze_traders(rpc: RPC | None, db: dict, launches: list[dict], prev: dict, now: float, per_round: int = 15,
+                    exit_rule: dict | None = None) -> dict:
+    """Perfiles de las carteras que más aparecen comprando pronto. Se refresca cada 24 h por cartera."""
+    counts: dict[str, int] = {}
+    for v in (db.get("pools") or {}).values():
+        for w in {w for w, _ in v.get("buyers", [])}:
+            counts[w] = counts.get(w, 0) + 1
+    alpha = alpha_by_wallet(db, launches, exit_rule)
+    profiles = dict(prev.get("profiles") or {})
+    candidates = [w for w, k in sorted(counts.items(), key=lambda kv: -kv[1]) if k >= 2][:200]
+    done = 0
+    for w in candidates:
+        if done >= per_round or not rpc:
+            break
+        if w in profiles and now - profiles[w].get("ts", 0) < 86400:
+            continue
+        try:
+            sw = profile(rpc, w)
+        except (httpx.HTTPError, RuntimeError) as e:
+            log.warning("RPC: %s", e)
+            break
+        profiles[w] = {"ts": int(now), "early_buys": counts[w], **trader_metrics(sw, alpha.get(w))}
+        done += 1
+    for w, pr in profiles.items():                    # refrescar alpha aunque no se vuelva a leer la cartera
+        if w in alpha and pr.get("closed"):
+            pr["alpha_pct"], pr["alpha_n"] = round(100 * float(np.mean(alpha[w])), 1), len(alpha[w])
+    tally: dict[str, int] = {}
+    for pr in profiles.values():
+        tally[pr["verdict"]] = tally.get(pr["verdict"], 0) + 1
+    return {"ts": int(now), "profiles": profiles, "tally": tally, "analyzed_now": done}

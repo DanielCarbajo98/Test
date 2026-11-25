@@ -228,7 +228,12 @@ class Hunter:
 
     def copy(self, now: float):
         cp = _read(self.state / "copy.json")
-        wallets = [w["wallet"] for w in cp.get("watch") or []]
+        prof = _read(self.state / "traders.json").get("profiles") or {}
+        skilled = sorted((w for w, v in prof.items() if v.get("verdict") == "habilidad probable"),
+                         key=lambda w: -(prof[w].get("pnl_without_best_sol") or 0))
+        bad = {w for w, v in prof.items() if v.get("verdict") in ("bot", "pierde")}
+        wallets = (skilled + [w["wallet"] for w in cp.get("watch") or [] if w["wallet"] not in bad])
+        wallets = list(dict.fromkeys(wallets))[:10]        # primero las de habilidad probada
         if not (self.rpc and wallets) or now - self.last["copy_poll"] < 120:
             return
         self.last["copy_poll"] = now
@@ -285,6 +290,24 @@ class Hunter:
                                 {k: rule[k] for k in ("stop", "trail", "hours")} if rule else None)
         cp["rpc"] = bool(self.rpc)
         _write(self.state / "copy.json", cp)
+        # ¿habilidad o suerte? perfil real de cada cartera que compra pronto (compras y ventas en la blockchain)
+        prev = _read(self.state / "traders.json")
+        tr = copytrade.analyze_traders(self.rpc, _read(self.data / "wallets.json"), launches, prev, now,
+                                       exit_rule={k: rule[k] for k in ("stop", "trail", "hours")} if rule else None)
+        pr = tr["profiles"]
+        if len(pr) > 500:                                  # quedarse con las más relevantes
+            keep = sorted(pr, key=lambda w: (pr[w]["verdict"] == "habilidad probable", pr[w].get("ts", 0)))[-500:]
+            tr["profiles"] = {w: pr[w] for w in keep}
+        old = {w for w, v in (prev.get("profiles") or {}).items() if v.get("verdict") == "habilidad probable"}
+        new = [w for w, v in tr["profiles"].items() if v.get("verdict") == "habilidad probable" and w not in old]
+        _write(self.state / "traders.json", tr)
+        for w in new[:3]:
+            v = tr["profiles"][w]
+            self.notify(f"🧠 TRADER CON HABILIDAD PROBABLE · {w[:4]}…{w[-4:]}\n{v['closed']} tokens cerrados · "
+                        f"acierto {v['win_rate']}% · {v['pnl_sol']:+.2f} SOL ({v['roi_pct']:+.0f}%) · sin su mejor "
+                        f"operación {v['pnl_without_best_sol']:+.2f} SOL · p = {v['p_value']}\n"
+                        f"Se copia en simulado para comprobar si copiarle con retraso también gana.\n"
+                        f"https://solscan.io/account/{w}")
         log.info("Estudios: cazador %s · copia %s", res.get("note", ""), cp.get("note", ""))
 
     def record_wallets(self, now: float):

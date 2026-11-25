@@ -188,7 +188,17 @@ def _hunter_view(state: Path) -> dict:
             "open": {k: list((v.get("positions") or {}).values())[:25] for k, v in sl.items()},
             "closed": {k: list(reversed((v.get("closed") or [])[-20:])) for k, v in sl.items()},
             "study": {k: v for k, v in _read_json(state / "moonshot.json", {}).items()},
-            "copy": {k: v for k, v in _read_json(state / "copy.json", {}).items()}}
+            "copy": {k: v for k, v in _read_json(state / "copy.json", {}).items()},
+            "traders": _traders_view(state)}
+
+
+def _traders_view(state: Path) -> dict:
+    t = _read_json(state / "traders.json", {})
+    rank = {"habilidad probable": 0, "posible suerte": 1, "pierde": 2, "bot": 3, "pocos datos": 4}
+    prof = sorted(((w, v) for w, v in (t.get("profiles") or {}).items()),
+                  key=lambda kv: (rank.get(kv[1].get("verdict"), 9), -(kv[1].get("pnl_sol") or 0)))
+    return {"tally": t.get("tally") or {}, "ts": t.get("ts"),
+            "top": [{"wallet": w, **v} for w, v in prof[:25]]}
 
 
 def build_state(state: Path) -> dict:

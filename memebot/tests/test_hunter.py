@@ -102,3 +102,66 @@ def test_copy_evaluation_finds_a_good_wallet_out_of_sample():
     res = copytrade.evaluate({"pools": pools}, ls)
     assert res["observations"] >= 100 and res["watch"][0]["wallet"] == "SMART"
     assert res["copy_out_of_sample"]["n"] >= 1 and res["copy_out_of_sample"]["mean_pct"] > 0
+
+
+def swaps(rois, t0=1_000_000, gap=7200, hold=1800, size=1.0):
+    out = []
+    for k, r in enumerate(rois):
+        ts = t0 + k * gap
+        out += [{"mint": f"T{k}", "side": "buy", "sol": size, "ts": ts},
+                {"mint": f"T{k}", "side": "sell", "sol": size * (1 + r), "ts": ts + hold}]
+    return out
+
+
+def test_consistent_trader_is_skilled():
+    rng = np.random.default_rng(1)
+    m = copytrade.trader_metrics(swaps(list(rng.uniform(-0.2, 0.8, 30))), alpha=[0.1, 0.2, 0.05])
+    assert m["verdict"] == "habilidad probable" and m["p_value"] < 0.05
+
+
+def test_one_lucky_moonshot_is_not_skill():
+    m = copytrade.trader_metrics(swaps([49.0] + [-0.6] * 20))
+    assert m["pnl_sol"] > 0 and m["pnl_without_best_sol"] < 0
+    assert m["verdict"] == "posible suerte" and "una sola operación" in m["why"]
+
+
+def test_no_better_than_others_is_not_skill():
+    rng = np.random.default_rng(2)
+    m = copytrade.trader_metrics(swaps(list(rng.uniform(-0.2, 0.8, 30))), alpha=[-0.1, -0.2, -0.05, -0.1])
+    assert m["verdict"] == "posible suerte" and "demás" in m["why"]
+
+
+def test_bots_and_small_samples():
+    assert copytrade.trader_metrics(swaps([0.1] * 30, gap=5, hold=2))["verdict"] == "bot"
+    assert copytrade.trader_metrics(swaps([0.5] * 4))["verdict"] == "pocos datos"
+    assert copytrade.trader_metrics(swaps([-0.3] * 15))["verdict"] == "pierde"
+
+
+def test_swap_parsed_with_sol_amounts():
+    t = tx("W", "TOK", 0, 100)
+    t["meta"].update({"preBalances": [3_000_000_000], "postBalances": [2_000_000_000]})
+    t["blockTime"] = 123
+    assert copytrade.swap_of(t) == {"mint": "TOK", "side": "buy", "sol": 1.0, "ts": 123}
+    t = tx("W", "TOK", 100, 0)
+    t["meta"].update({"preBalances": [1_000_000_000], "postBalances": [3_500_000_000]})
+    assert copytrade.swap_of(t)["side"] == "sell" and copytrade.swap_of(t)["sol"] == 2.5
+
+
+def test_analyze_traders_profiles_frequent_early_buyers():
+    class FakeRPC:
+        def signatures(self, w, limit=1000, before=None):
+            return [{"signature": f"{w}-{k}"} for k in range(4)]
+        def transactions(self, sigs):
+            out = []
+            for k, s in enumerate(sigs):
+                buy = k % 2 == 0
+                t = tx("W1", f"T{k // 2}", 0 if buy else 10, 10 if buy else 0)
+                t["meta"].update({"preBalances": [5e9], "postBalances": [4e9 if buy else 6.5e9]})
+                t["blockTime"] = 1000 + k * 600
+                out.append(t)
+            return out
+    db = {"pools": {"P1": {"buyers": [["W1", 1]]}, "P2": {"buyers": [["W1", 2]]}, "P3": {"buyers": [["W2", 3]]}}}
+    res = copytrade.analyze_traders(FakeRPC(), db, [], {}, now=10_000)
+    assert set(res["profiles"]) == {"W1"}                       # W2 solo aparece una vez
+    p = res["profiles"]["W1"]
+    assert p["closed"] == 2 and p["pnl_sol"] == 1.0 and p["verdict"] == "pocos datos"
