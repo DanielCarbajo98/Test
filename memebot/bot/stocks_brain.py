@@ -8,7 +8,9 @@
    Si una estrategia rinde en real claramente peor de lo que prometía el histórico, se SUSPENDE hasta que
    el siguiente aprendizaje vuelva a demostrar ventaja; si nunca tuvo ventaja fuera de muestra, no se activa.
 3. Escribe lecciones legibles y guarda todo en state/stocks_brain.json (lo usa el servicio de acciones).
-Costes simulados: 0,15 % por lado (comisión + diferencial). No es asesoramiento financiero.
+Costes simulados: los REALES de tu broker (bot/brokers.py): comisión, cambio de divisa, impuesto a las
+transacciones y diferencial. Además compara los brokers y por regiones (Europa / EE. UU.), y solo activa las
+alertas de las bolsas donde la estrategia gana DESPUÉS de costes. No es asesoramiento financiero.
 """
 from __future__ import annotations
 
@@ -26,6 +28,9 @@ import os
 
 SPREAD = 0.001                     # diferencial de compra/venta y deslizamiento, por lado
 COST = 0.0015                      # (compatibilidad) coste por lado sin comisión fija
+
+
+from . import brokers
 
 
 def cost_per_side(position_eur: float | None = None, fee_eur: float | None = None) -> float:
@@ -69,6 +74,7 @@ def regime_ok_at(reg, ts: np.ndarray) -> np.ndarray:
     j = np.searchsorted(rts, ts + 43200, side="right") - 1      # dato del mismo día o anterior
     return np.where(j >= 0, up[np.clip(j, 0, len(up) - 1)], True)
 MIN_TRADES_OOS = 30
+MIN_TRADES_REGION = 30
 
 
 # --------------------------------------------------------------------------- simulación
@@ -96,8 +102,10 @@ def signals(ind: dict, setup: str, p: dict) -> np.ndarray:
             & (np.abs(ind["chg"]) <= 15))
 
 
-def simulate(ind: dict, setup: str, p: dict, cost: float = COST) -> list[tuple[float, float, str]]:
-    """Operaciones (ts_entrada, retorno, motivo). Entrada en la apertura del día siguiente a la señal."""
+def simulate(ind: dict, setup: str, p: dict, cost: float | tuple[float, float] = COST) -> list[tuple[float, float, str]]:
+    """Operaciones (ts_entrada, retorno, motivo). Entrada en la apertura del día siguiente a la señal.
+    `cost`: coste por lado, o (coste de compra, coste de venta)."""
+    c_in, c_out = cost if isinstance(cost, tuple) else (cost, cost)
     sig = np.flatnonzero(signals(ind, setup, p))
     o, h, lo, c, a = ind["o"], ind["h"], ind["l"], ind["c"], ind["atr"]
     trend = ind["sma200"] if setup == "Retroceso en tendencia" else ind["sma50"]
@@ -107,7 +115,7 @@ def simulate(ind: dict, setup: str, p: dict, cost: float = COST) -> list[tuple[f
         e = i + 1
         if e >= n or e < free:
             continue
-        entry = o[e] * (1 + cost)
+        entry = o[e] * (1 + c_in)
         stop, tp = entry - p["stop_atr"] * a[i], entry + p["tp_atr"] * a[i]
         reason, px, j = "plazo", c[min(n - 1, e + p["max_days"])], min(n - 1, e + p["max_days"])
         for k in range(e, min(n, e + p["max_days"] + 1)):
@@ -120,7 +128,7 @@ def simulate(ind: dict, setup: str, p: dict, cost: float = COST) -> list[tuple[f
             if np.isfinite(trend[k]) and c[k] < trend[k] and k > e:
                 px, reason, j = c[k], "tendencia rota", k
                 break
-        out.append((float(ind["ts"][e]), (px * (1 - cost)) / entry - 1, reason))
+        out.append((float(ind["ts"][e]), (px * (1 - c_out)) / entry - 1, reason))
         free = j + 1
     return out
 
@@ -135,9 +143,19 @@ def _stats(r: list[float]) -> dict:
 
 
 # --------------------------------------------------------------------------- aprendizaje
-def optimize(bars: dict[str, dict], cost: float | None = None) -> dict:
-    """Aprende con los costes REALES del usuario (comisión fija según el importe por operación)."""
-    cost = cost_per_side() if cost is None else cost
+def _sim_all(inds: dict, setup: str, p: dict, amount: float, broker: str) -> list[tuple[float, float, str, str]]:
+    out = []
+    for sym, ind in inds.items():
+        reg = brokers.region(sym)
+        out += [(t[0], t[1], t[2], reg) for t in simulate(ind, setup, p, brokers.costs(sym, amount, broker))]
+    return out
+
+
+def optimize(bars: dict[str, dict], cost: float | None = None, amount: float | None = None,
+             broker: str | None = None, compare: bool = True) -> dict:
+    """Aprende con los costes REALES de tu broker y tu importe por operación (o con `cost` fijo, para pruebas)."""
+    amount = amount if amount is not None else float(os.getenv("STOCKS_PAPER_EUR", "100"))
+    broker = brokers.broker_key(broker)
     inds = {s: indicators(b) for s, b in bars.items() if len(b.get("c", [])) >= 260}
     if len(inds) < 20:
         return {}
@@ -146,13 +164,20 @@ def optimize(bars: dict[str, dict], cost: float | None = None) -> dict:
         ind["regime_ok"] = regime_ok_at(reg, ind["ts"])
     all_ts = np.concatenate([i["ts"] for i in inds.values()])
     split = float(np.quantile(all_ts, 0.7))
+
+    def sim(setup, p, amt=amount, brk=broker):
+        if cost is not None:
+            return [(t[0], t[1], t[2], brokers.region(sym)) for sym, ind in inds.items()
+                    for t in simulate(ind, setup, p, cost)]
+        return _sim_all(inds, setup, p, amt, brk)
+
     res = {}
     for setup in SETUPS:
         best = None
         keys = list(GRID[setup])
         for vals in itertools.product(*(GRID[setup][k] for k in keys)):
             p = dict(zip(keys, vals))
-            trades = [t for ind in inds.values() for t in simulate(ind, setup, p, cost)]
+            trades = sim(setup, p)
             ins = [t[1] for t in trades if t[0] < split]
             if len(ins) < 50:
                 continue
@@ -168,20 +193,50 @@ def optimize(bars: dict[str, dict], cost: float | None = None) -> dict:
         reasons = {}
         for t in oos:
             reasons[t[2]] = reasons.get(t[2], 0) + 1
-        edge = so["n"] >= MIN_TRADES_OOS and so["expectancy"] is not None and so["expectancy"] > 0 and (so["lcb"] or -1) > -0.5
-        # ¿a partir de qué importe por operación compensa? (misma regla, distintas comisiones)
-        fee = float(os.getenv("STOCKS_FEE_EUR", "1"))
-        by_size = {}
-        for size in SIZES_EUR:
-            c2 = cost_per_side(size, fee)
-            r2 = [t[1] for ind in inds.values() for t in simulate(ind, setup, p, c2) if t[0] >= split]
-            by_size[str(size)] = _stats(r2)
-        res[setup] = {"params": p, "in_sample": si, "out_of_sample": so, "exit_reasons_oos": reasons, "edge": edge,
-                      "cost_per_side_pct": round(100 * cost, 3), "by_size": by_size}
-    res["_meta"] = {"stocks": len(inds), "split_ts": int(split), "ts": int(time.time()),
-                    "position_eur": float(os.getenv("STOCKS_PAPER_EUR", "100")),
-                    "fee_eur": float(os.getenv("STOCKS_FEE_EUR", "1")), "cost_per_side_pct": round(100 * cost, 3)}
+        edge = _has_edge(so)
+        # por regiones: solo se activan las bolsas donde gana después de costes
+        by_region = {}
+        for rg in ("EU", "US", "OTRA"):
+            ri, ro = [t[1] for t in trades if t[3] == rg and t[0] < split], [t[1] for t in oos if t[3] == rg]
+            if ro or ri:
+                st_o = _stats(ro)
+                by_region[rg] = {"in_sample": _stats(ri), "out_of_sample": st_o,
+                                 "edge": bool(st_o["n"] >= MIN_TRADES_REGION and (st_o["expectancy"] or -1) > 0
+                                              and (_stats(ri)["expectancy"] or -1) > 0)}
+        regions = [rg for rg, v in by_region.items() if v["edge"]]
+        if edge and not regions:
+            regions = list(by_region)          # gana en conjunto aunque cada región tenga pocas operaciones
+        if not edge and regions:
+            edge = True                        # no gana en conjunto, pero sí en alguna región concreta
+        so_all = so
+        if edge and regions and len(regions) < len(by_region):     # lo que se espera es lo de las bolsas activas
+            so = _stats([t[1] for t in oos if t[3] in regions])
+            reasons = {}
+            for t in oos:
+                if t[3] in regions:
+                    reasons[t[2]] = reasons.get(t[2], 0) + 1
+        keep = (lambda t: t[3] in regions) if (edge and regions) else (lambda t: True)
+        by_size, by_broker = {}, {}
+        if compare and cost is None:
+            for size in SIZES_EUR:
+                by_size[str(size)] = _stats([t[1] for t in sim(setup, p, size) if t[0] >= split and keep(t)])
+            for bk in brokers.BROKERS:
+                tr = [t for t in sim(setup, p, amount, bk) if t[0] >= split and keep(t)]
+                by_broker[bk] = {"all": _stats([t[1] for t in tr]),
+                                 **{rg: _stats([t[1] for t in tr if t[3] == rg]) for rg in ("EU", "US")}}
+        res[setup] = {"params": p, "in_sample": si, "out_of_sample": so, "out_of_sample_all": so_all,
+                      "exit_reasons_oos": reasons, "edge": bool(edge),
+                      "regions": regions if edge else [], "by_region": by_region,
+                      "by_size": by_size, "by_broker": by_broker}
+    b = brokers.BROKERS[broker]
+    res["_meta"] = {"stocks": len(inds), "split_ts": int(split), "ts": int(time.time()), "position_eur": amount,
+                    "broker": broker, "broker_name": b["name"], "broker_note": b["note"]}
     return res
+
+
+def _has_edge(so: dict) -> bool:
+    return bool(so["n"] >= MIN_TRADES_OOS and so["expectancy"] is not None and so["expectancy"] > 0
+                and (so["lcb"] or -1) > -0.5)
 
 
 def live_feedback(learned: dict, closed: list[dict]) -> dict:
@@ -215,14 +270,25 @@ def lessons(learned: dict, fb: dict) -> list[str]:
                 top = max(er, key=er.get)
                 out.append(f"«{setup}»: la salida más frecuente es «{top}» ({er[top]} de {sum(er.values())}).")
         f = fb.get(setup) or {}
+        if L.get("regions") and len(L.get("by_region") or {}) > 1:
+            alls = L.get("out_of_sample_all") or {}
+            out.append(f"«{setup}»: solo se activa en {', '.join(brokers.REGION_NAMES[r] for r in L['regions'])}: "
+                       f"en el resto no gana después de costes"
+                       + (f" (contando todas las bolsas saldría {alls['expectancy']:+.2f}%)." if alls.get("n") else "."))
+        bb = L.get("by_broker") or {}
+        if bb:
+            rank = sorted(bb, key=lambda k: bb[k]["all"].get("expectancy") or -99, reverse=True)
+            out.append(f"«{setup}» por broker (media por operación con {int(float(os.getenv('STOCKS_PAPER_EUR', '100')))} €): " + " · ".join(
+                f"{brokers.BROKERS[k]['name']} {bb[k]['all']['expectancy']:+.2f}%" for k in rank
+                if bb[k]["all"].get("expectancy") is not None) + ".")
         bs = L.get("by_size") or {}
         good = [int(k) for k, v in bs.items() if (v.get("expectancy") or -1) > 0 and v.get("n", 0) >= MIN_TRADES_OOS]
         if bs:
             if good:
-                out.append(f"«{setup}»: con tus comisiones, compensa a partir de ~{min(good)} € por operación "
+                out.append(f"«{setup}»: con tu broker, compensa a partir de ~{min(good)} € por operación "
                            f"(por debajo, la comisión se come la ganancia).")
             else:
-                out.append(f"«{setup}»: con tus comisiones no compensa con ningún importe probado (hasta "
+                out.append(f"«{setup}»: con tu broker no compensa con ningún importe probado (hasta "
                            f"{max(int(k) for k in bs)} €).")
         if p.get("regime"):
             out.append(f"«{setup}» funciona mejor comprando solo cuando el mercado general (S&P 500) está en tendencia "

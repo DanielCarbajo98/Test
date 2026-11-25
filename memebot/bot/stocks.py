@@ -307,22 +307,32 @@ def notify(text: str):
 
 
 PAPER_EUR = float(os.getenv("STOCKS_PAPER_EUR", "100"))      # € simulados por cada alerta de compra
-BROKER_FEE_EUR = float(os.getenv("STOCKS_FEE_EUR", "1"))      # comisión por orden (Trade Republic: 1 €)
+BROKER_FEE_EUR = float(os.getenv("STOCKS_FEE_EUR", "1"))      # (antiguo) comisión fija si no se sabe el valor
 
 
-def paper_pnl(ret_pct: float, amount: float = PAPER_EUR, fee: float = BROKER_FEE_EUR) -> float:
-    """€ ganados o perdidos invirtiendo `amount` en la alerta (compra + venta = 2 comisiones)."""
-    return amount * ret_pct / 100 - 2 * fee
+def trade_fees(sym: str, amount: float = PAPER_EUR) -> float:
+    """€ de comisiones, cambio de divisa e impuestos de compra + venta con tu broker (bot/brokers.py)."""
+    from . import brokers
+    return round(brokers.fees_eur(sym, amount), 2)
+
+
+def paper_pnl(ret_pct: float, amount: float = PAPER_EUR, fee: float | None = None, fees_total: float | None = None) -> float:
+    """€ ganados o perdidos invirtiendo `amount` en la alerta, descontando los costes de compra y venta."""
+    costs = fees_total if fees_total is not None else 2 * (BROKER_FEE_EUR if fee is None else fee)
+    return amount * ret_pct / 100 - costs
 
 
 def paper_summary(st: dict) -> dict:
     opened = list((st.get("positions") or {}).values())
     closed = st.get("closed") or []
-    open_pnl = sum(paper_pnl((p.get("price", p["entry"]) / p["entry"] - 1) * 100, p.get("amount", PAPER_EUR))
-                   for p in opened)
+    open_pnl = sum(paper_pnl((p.get("price", p["entry"]) / p["entry"] - 1) * 100, p.get("amount", PAPER_EUR),
+                             fees_total=p.get("fees_eur")) for p in opened)
     realized = [c.get("pnl_eur", paper_pnl(c["ret"], c.get("amount", PAPER_EUR))) for c in closed if c.get("ret") is not None]
     wins = [x for x in realized if x > 0]
-    return {"per_alert": PAPER_EUR, "fee": BROKER_FEE_EUR, "open": len(opened),
+    from . import brokers
+    bk = brokers.BROKERS[brokers.broker_key()]
+    return {"per_alert": PAPER_EUR, "fee": BROKER_FEE_EUR, "broker": bk["name"], "broker_note": bk["note"],
+            "open": len(opened),
             "invested_open": round(sum(p.get("amount", PAPER_EUR) for p in opened), 2),
             "open_pnl": round(open_pnl, 2), "realized": round(sum(realized), 2),
             "total": round(open_pnl + sum(realized), 2), "closed": len(realized),
@@ -379,6 +389,12 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
         except OSError:
             pass
         a = analyze(b, learned)
+        if a["signal"]:                        # el cerebro solo activa las bolsas donde gana tras costes
+            from .brokers import region
+            regs = ((learned.get(a["signal"]) or (None, None, {}))[2] or {}).get("regions")
+            if regs is not None and region(sym) not in regs:
+                a["blocked_signal"], a["signal"] = a["signal"], None
+                a.pop("plan", None)
         pos = st["positions"].get(sym)
         status = "vigilando"
         if pos:
@@ -390,7 +406,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                 if why.startswith("STOP"):
                     ex = min(ex, pos["stop"]) if ex > pos["stop"] else ex
                 ret = (ex / pos["entry"] - 1) * 100
-                pnl = paper_pnl(ret, pos.get("amount", PAPER_EUR))
+                pnl = paper_pnl(ret, pos.get("amount", PAPER_EUR), fees_total=pos.get("fees_eur"))
                 st["closed"].append({**pos, "exit": a["price"], "exit_ts": int(time.time()), "reason": why, "ret": ret,
                                      "pnl_eur": round(pnl, 2)})
                 st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "VENTA", "price": a["price"],
@@ -451,7 +467,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                                 "entry_ts": int(time.time()), "stop": pl["stop"], "tp": pl["tp"],
                                 "max_days": pl["max_days"], "peak": a["price"], "atr": a["atr"],
                                 "setup": a["signal"], "price": a["price"], "expected": pl.get("expected"),
-                                "amount": PAPER_EUR}
+                                "amount": PAPER_EUR, "fees_eur": trade_fees(sym, PAPER_EUR)}
         st.setdefault("last_buy", {})[sym] = today
         st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "COMPRA", "price": a["price"],
                              "reason": a["signal"], "stop": pl["stop"], "tp": pl["tp"]})
@@ -470,6 +486,8 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                f"⏳ Plazo máximo: {pl['max_days']} días de mercado{hist}"
                f"{'' if b.market_open else chr(10) + 'Mercado cerrado: precio del último cierre.'}\n"
                f"{cap_line}"
+               f"Costes con {paper_summary(st)['broker']} (comisión, divisa e impuestos, ida y vuelta): "
+               f"~{fmt_eur(st['positions'][sym]['fees_eur'])} con {PAPER_EUR:.0f} €.\n"
                f"Es una alerta, no una orden: decides tú en tu broker.")
         if sym in by_sym:
             by_sym[sym]["status"] = "compra"

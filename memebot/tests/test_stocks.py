@@ -118,7 +118,7 @@ def test_paper_portfolio_counts_euros_with_fees(tmp_path):
     data["TEST"] = bars(pull + [150])                       # salta el stop
     s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: data.get(sym))
     c = s["closed"][-1]
-    assert abs(c["pnl_eur"] - (st.PAPER_EUR * c["ret"] / 100 - 2 * st.BROKER_FEE_EUR)) < 0.01
+    assert abs(c["pnl_eur"] - (st.PAPER_EUR * c["ret"] / 100 - c["fees_eur"])) < 0.01
     assert s["paper"]["closed"] == 1 and s["paper"]["realized"] == c["pnl_eur"] and s["paper"]["total"] < 0
 
 

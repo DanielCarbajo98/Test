@@ -811,7 +811,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("stkMute").textContent = muted ? "Activar alertas" : "Silenciar alertas";
     if (!p) { el.innerHTML = ""; return; }
     const eur = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
-    const open = (k.open_alerts || []).map(a => { const r = (a.price / a.entry - 1) * 100, pnl = (a.amount || p.per_alert) * r / 100 - 2 * p.fee;
+    const open = (k.open_alerts || []).map(a => { const r = (a.price / a.entry - 1) * 100, pnl = (a.amount || p.per_alert) * r / 100 - (a.fees_eur != null ? a.fees_eur : 2 * p.fee);
       return `<tr><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}</div></td><td class="sub">${dt(a.entry_ts)}</td>
         <td class="num">${a.entry.toFixed(2)}</td><td class="num">${(a.price || a.entry).toFixed(2)}</td>
         <td class="num">${a.stop.toFixed(2)} / ${a.tp ? a.tp.toFixed(2) : "—"}</td><td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(r)}">${pct(r)}</div></td></tr>`; }).join("");
@@ -824,7 +824,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <div><b class="${cls(p.realized)}">${eur(p.realized)}</b><span>Cerradas (${p.closed})</span></div>
         <div><b class="${cls(p.open_pnl)}">${eur(p.open_pnl)}</b><span>Abiertas (${p.open})</span></div>
         <div><b>${p.win_rate != null ? p.win_rate + "%" : "—"}</b><span>Acierto</span></div>
-        <div><b>${p.per_alert.toFixed(0)} €</b><span>por alerta · ${p.fee} € comisión</span></div></div>
+        <div><b>${p.per_alert.toFixed(0)} €</b><span>por alerta · costes de ${p.broker || "tu broker"}</span></div></div>
       <p class="sub" style="margin:0 0 10px">Lo que habría pasado invirtiendo ${p.per_alert.toFixed(0)} € en cada alerta de compra, con la comisión de tu broker. Precios en la moneda de cada acción.</p>
       ${open ? `<div class="table-wrap"><table><thead><tr><th>Abierta</th><th>Desde</th><th class="num">Entrada</th><th class="num">Ahora</th><th class="num">Stop / objetivo</th><th class="num">Resultado</th></tr></thead><tbody>${open}</tbody></table></div>` : ""}
       ${closed ? `<div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Cerrada</th><th>Cuándo</th><th class="num">Entrada</th><th class="num">Salida</th><th>Motivo</th><th class="num">Resultado</th></tr></thead><tbody>${closed}</tbody></table></div>` : ""}`;
