@@ -162,3 +162,25 @@ def test_pending_alert_buys_at_open_and_shifts_stop(tmp_path):
     p = s["positions"]["TEST"]
     assert not p["pending_open"] and p["entry"] == gap[-1]
     assert abs((p["entry"] - p["stop"]) - (old["entry"] - old["stop"])) < 1e-9
+
+
+def test_premarket_price_buys_and_values(tmp_path):
+    import dataclasses
+    import time as _t
+    activate_all(tmp_path)
+    pull = list(np.linspace(100, 200, 260)) + [200 - 3 * i for i in range(1, 8)]
+    shut = dataclasses.replace(bars(pull), market_open=False)
+    pre = lambda price: (lambda h, sym: {"price": price, "ts": int(_t.time()), "session": "pre"})  # noqa: E731
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: shut, ext_fetcher=pre(pull[-1] + 1))
+    p = s["positions"]["TEST"]
+    assert not p["pending_open"] and p["entry"] == pull[-1] + 1 and p["entry_session"] == "pre"
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: shut, ext_fetcher=pre(pull[-1] + 3))
+    p = s["positions"]["TEST"]
+    assert p["price"] == pull[-1] + 3 and p["price_session"] == "pre" and s["paper"]["move_open"] > 0
+    # sin pre-market (o dato viejo): sigue esperando a poder operar
+    stale = lambda h, sym: {"price": 1.0, "ts": int(_t.time()) - 7200, "session": "pre"}  # noqa: E731
+    other = tmp_path / "otro"
+    other.mkdir()
+    activate_all(other)
+    s2 = st.run_once(other, ["TEST"], http=object(), fetcher=lambda h, sym: shut, ext_fetcher=stale)
+    assert s2["positions"]["TEST"]["pending_open"]

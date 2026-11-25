@@ -819,7 +819,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     if (!p) { el.innerHTML = ""; return; }
     const eur = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
     const open = (k.open_alerts || []).map(a => { const r = a.pending_open ? 0 : (a.price / a.entry - 1) * 100, pnl = (a.amount || p.per_alert) * r / 100 - (a.fees_eur != null ? a.fees_eur : 2 * p.fee);
-      return `<tr><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}${a.pending_open ? " · compra en la apertura" : ""}</div></td><td class="sub">${dt(a.entry_ts)}</td>
+      return `<tr><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}${a.pending_open ? " · compra en cuanto se pueda operar" : a.price_session === "pre" ? " · precio pre-market" : a.price_session === "post" ? " · precio after-hours" : a.price_session === "cierre" ? " · bolsa cerrada" : ""}</div></td><td class="sub">${dt(a.entry_ts)}</td>
         <td class="num">${a.entry.toFixed(2)}</td><td class="num">${(a.price || a.entry).toFixed(2)}</td>
         <td class="num">${a.stop.toFixed(2)} / ${a.tp ? a.tp.toFixed(2) : "—"}</td><td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(r)}">${pct(r)}</div></td></tr>`; }).join("");
     const closed = (k.closed || []).slice(0, 15).map(c => { const pnl = c.pnl_eur != null ? c.pnl_eur : (c.amount || p.per_alert) * c.ret / 100 - 2 * p.fee;
