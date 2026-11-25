@@ -349,9 +349,52 @@ def cash_eur(state_dir: Path, st: dict) -> float:
     from . import joint
     if joint.enabled():
         c = joint.stocks_cash_eur(state_dir, st)
-        if c is not None:
-            return c
+        # sin el estado de cripto NO se usa una cuenta aparte (eso duplicaba el dinero): esta vuelta no se compra
+        return c if c is not None else 0.0
     return account(st)["cash"]
+
+
+def buying_power_eur(state_dir: Path, st: dict) -> float:
+    """Lo que las acciones pueden usar ahora: la liquidez, sin pasar del % máximo del saldo en acciones
+    (STOCKS_MAX_EXPOSURE_PCT, 70 % por defecto) para que la cripto también tenga margen."""
+    cash = cash_eur(state_dir, st)
+    eq = equity_eur(state_dir, st)
+    committed = sum(p.get("amount", PAPER_EUR) for p in (st.get("positions") or {}).values())
+    room = eq * float(os.getenv("STOCKS_MAX_EXPOSURE_PCT", "70")) / 100 - committed
+    return max(0.0, min(cash, room))
+
+
+def rebalance(state_dir: Path, st: dict) -> list[str]:
+    """Si el saldo conjunto quedó en negativo (más invertido que dinero), vende las posiciones de acciones que
+    peor van hasta volver a tener liquidez. Devuelve las vendidas."""
+    from . import joint
+    if not joint.enabled():
+        return []
+    sold = []
+    while True:
+        c = joint.stocks_cash_eur(state_dir, st)
+        live = [(k, p) for k, p in (st.get("positions") or {}).items() if not p.get("pending_open")]
+        if c is None or c >= 0 or not st.get("positions"):
+            break
+        pend = [k for k, p in st["positions"].items() if p.get("pending_open")]
+        if pend:                                       # primero, las que aún no se habían comprado
+            k = pend[-1]
+            st["alerts"].append({"ts": int(time.time()), "symbol": k, "side": "CANCELADA", "price": st["positions"][k]["entry"],
+                                 "reason": "reequilibrio del saldo conjunto"})
+            del st["positions"][k]
+            sold.append(k)
+            continue
+        k, pos = min(live, key=lambda kp: kp[1].get("price", kp[1]["entry"]) / kp[1]["entry"])
+        px = pos.get("price", pos["entry"])
+        ret = (px / pos["entry"] - 1) * 100
+        pnl = paper_pnl(ret, pos.get("amount", PAPER_EUR), fees_total=pos.get("fees_eur"))
+        st["closed"].append({**pos, "symbol": k, "exit": px, "exit_ts": int(time.time()), "ret": ret,
+                             "pnl_eur": round(pnl, 2), "reason": "reequilibrio: el saldo conjunto estaba en negativo"})
+        st["alerts"].append({"ts": int(time.time()), "symbol": k, "side": "VENTA", "price": px,
+                             "reason": "reequilibrio del saldo conjunto", "ret": ret})
+        del st["positions"][k]
+        sold.append(k)
+    return sold
 
 
 def equity_eur(state_dir: Path, st: dict) -> float:
@@ -427,6 +470,10 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
     for sym, pos in (st.get("positions") or {}).items():       # alertas antiguas: costes reales del broker
         if pos.get("fees_eur") is None:
             pos["fees_eur"] = trade_fees(sym, pos.get("amount", PAPER_EUR))
+    fixed = rebalance(state_dir, st)
+    if fixed:
+        notify(f"📈 ACCIONES · ⚖️ REEQUILIBRIO DEL SALDO CONJUNTO\nHabía más dinero invertido que saldo (error ya "
+               f"corregido). Vendidas en simulado las que peor iban: {', '.join(fixed)}.")
     charts = state_dir / "stock_charts"
     charts.mkdir(parents=True, exist_ok=True)
     today = time.strftime("%Y-%m-%d")
@@ -588,7 +635,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
         from . import brokers
         from .sizing import stock_amount
         fixed = brokers.BROKERS[brokers.broker_key()]["fee"](PAPER_EUR, brokers.region(sym))
-        amount, size_why = stock_amount(equity_eur(state_dir, st), cash_eur(state_dir, st), a["price"], pl["stop"],
+        amount, size_why = stock_amount(equity_eur(state_dir, st), buying_power_eur(state_dir, st), a["price"], pl["stop"],
                                         pl.get("expected"), market_up, list(st["positions"].values()), fixed)
         if amount <= 0:                                               # no compra (sí lo apunta)
             if sym in by_sym:

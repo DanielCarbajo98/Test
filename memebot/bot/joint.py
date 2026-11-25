@@ -20,11 +20,19 @@ def enabled() -> bool:
     return os.getenv("JOINT_BALANCE", "1") != "0"
 
 
-def _read(p: Path) -> dict:
-    try:
-        return json.loads(p.read_text())
-    except (OSError, ValueError):
+def _read(p: Path, tries: int = 5) -> dict:
+    """Lee un JSON que otro proceso reescribe a menudo: en Windows/Docker la lectura puede fallar justo mientras
+    se reemplaza, así que se reintenta en vez de suponer que no existe."""
+    import time
+    if not p.exists():
         return {}
+    for k in range(tries):
+        try:
+            return json.loads(p.read_text())
+        except (OSError, ValueError):
+            if k < tries - 1:
+                time.sleep(0.2)
+    return {}
 
 
 def stocks_side(st: dict) -> dict:

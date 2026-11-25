@@ -24,6 +24,8 @@ def activate_all(tmp_path):
     from bot.stocks_brain import DEFAULT_PARAMS
     (tmp_path / "stocks_brain.json").write_text(json.dumps({"setups": {
         k: {"params": v, "active": True} for k, v in DEFAULT_PARAMS.items()}}))
+    # saldo conjunto: la cripto publica su liquidez (sin ella, las acciones no compran)
+    (tmp_path / "status.json").write_text(json.dumps({"mode": "paper", "cash": 10_000.0, "equity": 10_000.0}))
 
 
 def test_no_alerts_before_the_brain_has_learned(tmp_path):

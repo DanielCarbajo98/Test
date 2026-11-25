@@ -19,6 +19,7 @@ def test_alerts_only_in_regions_where_the_strategy_wins(tmp_path):
     from tests.test_stocks import bars
     (tmp_path / "stocks_brain.json").write_text(json.dumps({"setups": {
         k: {"params": v, "active": True, "regions": ["EU"]} for k, v in stocks_brain.DEFAULT_PARAMS.items()}}))
+    (tmp_path / "status.json").write_text(json.dumps({"mode": "paper", "cash": 10_000.0, "equity": 10_000.0}))
     pull = list(np.linspace(100, 200, 260)) + [200 - 3 * i for i in range(1, 8)]
     s = st.run_once(tmp_path, ["TEST", "TEST.DE"], http=object(), fetcher=lambda h, sym: bars(pull))
     assert set(s["positions"]) == {"TEST.DE"}                   # la de EE. UU. queda bloqueada
