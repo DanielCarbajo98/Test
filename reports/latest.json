@@ -1,31 +1,32 @@
 {
- "generated_at": 1795627825,
+ "generated_at": 1795636817,
  "days": 30,
- "version": "615da1e4e2e4",
+ "version": "5d787a05017c",
  "crypto": {
   "status": {
    "mode": "paper",
    "strategy": "momentum",
    "paused": false,
-   "equity": 9746.06941447249,
+   "equity": 9699.215331948417,
    "start_equity": 10000.0,
-   "daily_pnl": -254.32607678500005,
+   "daily_pnl": -283.33766832000003,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795627753,
+    "ts": 1795636722,
     "discovered": 200,
-    "with_data": 199,
+    "with_data": 200,
     "prefilter": 1,
     "analyzed": 1,
     "signals": 0,
     "rejected": {
-     "edad": 165,
-     "dex": 15,
-     "liquidez": 70,
-     "volumen": 148,
-     "pocas": 132,
-     "sin": 7,
-     "FDV": 7
+     "liquidez": 71,
+     "volumen": 161,
+     "pocas": 138,
+     "dex": 24,
+     "edad": 161,
+     "sin": 8,
+     "FDV": 7,
+     "parece": 1
     },
     "filters": {
      "min_liq": 40000,
@@ -38,7 +39,7 @@
    },
    "interval": 20
   },
-  "open_positions": 1,
+  "open_positions": 2,
   "closed_last_days": [
    {
     "symbol": "BOOBS",
@@ -194,33 +195,55 @@
     "reasons": [
      "candado de beneficio (+20.1%, máximo +55%)"
     ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-25T16:41:28+00:00",
+    "closed": "2026-11-25T17:57:30+00:00",
+    "ret": -0.25927970194563266,
+    "cost": 72.47,
+    "got": 53.68,
+    "reasons": [
+     "stop loss -25.5%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T17:40:03+00:00",
+    "closed": "2026-11-25T19:10:16+00:00",
+    "ret": -0.13790311698826063,
+    "cost": 74.11,
+    "got": 63.89,
+    "reasons": [
+     "time stop (90 min, -13.3%)"
+    ]
    }
   ],
   "closed_stats": {
-   "n": 14,
-   "win_rate": 28.6,
-   "avg_ret_pct": -5.7
+   "n": 16,
+   "win_rate": 25.0,
+   "avg_ret_pct": -7.47
   }
  },
  "crypto_brain": {
   "status": "defensivo",
   "status_text": "Ninguna estrategia demuestra ventaja en datos no vistos. Modo defensivo: en real no se abren posiciones.",
-  "samples": 5734,
-  "pools": 121,
+  "samples": 7116,
+  "pools": 142,
   "version": 0,
   "reality": {
-   "n": 14,
-   "expectancy": -5.7,
-   "win_rate": 28.6,
+   "n": 16,
+   "expectancy": -7.47,
+   "win_rate": 25.0,
    "expected": null,
    "by_exit": {
     "stop": {
-     "n": 7,
-     "avg": -29.2
+     "n": 8,
+     "avg": -28.8
     },
     "time": {
-     "n": 4,
-     "avg": -4.1
+     "n": 5,
+     "avg": -6.0
     },
     "trailing": {
      "n": 2,
@@ -237,68 +260,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795626221,
+  "updated_at": 1795635537,
   "history": [
-   {
-    "ts": 1795590989,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 1967,
-    "pools": 74,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795592792,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 1967,
-    "pools": 74,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795592810,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 1967,
-    "pools": 74,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795592861,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 1967,
-    "pools": 74,
-    "mode": "completo"
-   },
-   {
-    "ts": 1795594663,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 2295,
-    "pools": 74,
-    "mode": "rápido"
-   },
-   {
-    "ts": 1795594727,
-    "decision": "recopilando",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 2364,
-    "pools": 74,
-    "mode": "completo"
-   },
    {
     "ts": 1795596529,
     "decision": "recopilando",
@@ -662,6 +625,140 @@
       "n": 43
      }
     ]
+   },
+   {
+    "ts": 1795628026,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -6.66,
+    "samples": 5973,
+    "pools": 123,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -6.72,
+      "n": 7
+     },
+     {
+      "s": "ml",
+      "e": -4.07,
+      "n": 51
+     }
+    ]
+   },
+   {
+    "ts": 1795629831,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -4.79,
+    "samples": 6247,
+    "pools": 134,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -6.72,
+      "n": 7
+     },
+     {
+      "s": "ml",
+      "e": -0.64,
+      "n": 55
+     }
+    ]
+   },
+   {
+    "ts": 1795631636,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -1.14,
+    "samples": 6555,
+    "pools": 134,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -6.72,
+      "n": 7
+     },
+     {
+      "s": "ml",
+      "e": 5.23,
+      "n": 31
+     }
+    ]
+   },
+   {
+    "ts": 1795633441,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -5.15,
+    "samples": 6901,
+    "pools": 134,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -6.72,
+      "n": 7
+     },
+     {
+      "s": "ml",
+      "e": -1.06,
+      "n": 50
+     }
+    ]
+   },
+   {
+    "ts": 1795635245,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 7116,
+    "pools": 141,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -6.72,
+      "n": 7
+     }
+    ]
+   },
+   {
+    "ts": 1795635549,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 7116,
+    "pools": 142,
+    "mode": "completo",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 32.99,
+      "n": 5
+     }
+    ]
    }
   ]
  },
@@ -673,8 +770,8 @@
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
    "capital": 10000.0,
    "cash": 675.81,
-   "equity": 7836.11,
-   "ret_pct": -21.64,
+   "equity": 7916.38,
+   "ret_pct": -20.84,
    "history": [
     [
      1795615348,
@@ -715,23 +812,59 @@
     [
      1795627011,
      7846.17
+    ],
+    [
+     1795628060,
+     7845.99
+    ],
+    [
+     1795629132,
+     7871.98
+    ],
+    [
+     1795630185,
+     7889.85
+    ],
+    [
+     1795631228,
+     7909.12
+    ],
+    [
+     1795632268,
+     7914.84
+    ],
+    [
+     1795633345,
+     7911.92
+    ],
+    [
+     1795634396,
+     7916.7
+    ],
+    [
+     1795635436,
+     7912.0
+    ],
+    [
+     1795636711,
+     7925.94
     ]
    ],
    "open": 20,
    "fees_open": 18.3,
-   "move_open": -21.41,
+   "move_open": 58.86,
    "pending_open": 0,
    "invested_open": 7200.0,
-   "open_pnl": -39.71,
+   "open_pnl": 40.56,
    "realized": -106.01,
-   "total": -145.72,
+   "total": -65.45,
    "closed": 16,
    "win_rate": 0.0,
    "best": -1.69,
    "worst": -17.67,
    "joint": true
   },
-  "universe": 454,
+  "universe": 507,
   "market_up": false,
   "closed": [
    {
@@ -1659,24 +1792,24 @@
  "hunter": {
   "summary": {
    "cazador": {
-    "equity": 923.13,
-    "pnl": -76.87,
-    "open": 23,
-    "closed": 9,
+    "equity": 917.02,
+    "pnl": -82.98,
+    "open": 25,
+    "closed": 10,
     "win_rate": 0.0,
     "best_x": 0.47,
     "worst_pct": -100.0,
-    "mean_pct": -71.99
+    "mean_pct": -70.1
    },
    "copia": {
-    "equity": 1020.12,
-    "pnl": 20.12,
+    "equity": 207029.62,
+    "pnl": 206029.62,
     "open": 25,
-    "closed": 39,
-    "win_rate": 12.8,
-    "best_x": 1.99,
+    "closed": 52,
+    "win_rate": 21.2,
+    "best_x": 6.91,
     "worst_pct": -100.0,
-    "mean_pct": -72.66
+    "mean_pct": -51.17
    }
   },
   "closed": {
@@ -1878,6 +2011,28 @@
      "exit_ts": 1795625673,
      "reason": "stop −50 %",
      "ret": -0.6481747145431622
+    },
+    {
+     "pair": "BrS4bJhGck8qTHPb5efM2zHPGSbnss72VWuTt8J2euuC",
+     "mint": "ymZJTsB2cTgUAR4awaHkASjfCk65wBBSDBEYtpRpump",
+     "name": "iNu / AAPLx",
+     "source": "cazador",
+     "entry": 8.570630000000001e-06,
+     "qty": 1166775.3712387537,
+     "cost_usd": 10.0,
+     "got_usd": 4.693458940591299,
+     "ts": 1795627713,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.147e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.147e-06,
+     "exit_ts": 1795628733,
+     "reason": "stop −50 %",
+     "ret": -0.5306541059408701
     }
    ],
    "copia": [
@@ -2777,38 +2932,337 @@
      "exit_ts": 1795627293,
      "reason": "stop −50 %",
      "ret": -0.9987189857568313
+    },
+    {
+     "pair": "8xJPvnERCAkJvFuxrssuq41ZuJD67XXcWsLm2Ate2TjQ",
+     "mint": "ExfuB4PNN2wuSvq5ySxLnKux279PaVnKtfwsnEzkRgU",
+     "name": "GORP",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.54706e-05,
+     "qty": 323193.67057515547,
+     "cost_usd": 10.0,
+     "got_usd": 10.329597753157602,
+     "ts": 1795624053,
+     "half": true,
+     "peak": 3.3508719765232113,
+     "last": 1.295e-07,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.295e-07,
+     "exit_ts": 1795628013,
+     "reason": "stop dinámico (40 % desde el máximo 3.4x)",
+     "ret": 0.03295977531576022
+    },
+    {
+     "pair": "2a5ZFaw9ZkzS8jfzYkBoSzkTSfrsArUAyWqAHk23T8XB",
+     "mint": "BvocVg1sxM3Udg6cDeXgDiBzUDJWCFibBqJeiQuypump",
+     "name": "OI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.62238e-05,
+     "qty": 190666.49379571227,
+     "cost_usd": 10.0,
+     "got_usd": 16.430646969546743,
+     "ts": 1795627533,
+     "half": true,
+     "peak": 3.3153089941198455,
+     "last": 2.264e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.264e-05,
+     "exit_ts": 1795628553,
+     "reason": "stop dinámico (40 % desde el máximo 3.3x)",
+     "ret": 0.6430646969546743
+    },
+    {
+     "pair": "GrN5z9qMuyAc5WowmggmgG8tmt3MDRqmbRgS7gNnHUsw",
+     "mint": "4X9E66y5oXquJKq3Km6LtdW4C7CdUcfbqaXxm96VCdTg",
+     "name": "FOMOCAT",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.68199e-05,
+     "qty": 594533.8557304145,
+     "cost_usd": 10.0,
+     "got_usd": 0.002464806568410038,
+     "ts": 1795628133,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.274e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.274e-09,
+     "exit_ts": 1795628613,
+     "reason": "stop −50 %",
+     "ret": -0.999753519343159
+    },
+    {
+     "pair": "2CxvxJp5AetPyyoRRNUnWk4bZQgGoBYaJTbC8U7qrKdc",
+     "mint": "A7y71o77GxTVCU4Cwo9rfU7zsUcR12Moddq6oMkspump",
+     "name": "USA6900",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.26381e-05,
+     "qty": 791258.1796314319,
+     "cost_usd": 10.0,
+     "got_usd": 1.0591781992546347,
+     "ts": 1795628613,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.38e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.38e-06,
+     "exit_ts": 1795628613,
+     "reason": "stop −50 %",
+     "ret": -0.8940821800745365
+    },
+    {
+     "pair": "J3jvcjxKYLAu3uzAGqe5vEGs2vA8iG2zWkHGWHgBPcPR",
+     "mint": "4snSwJ1MVXkUenFxjBazf5AcQ7G7d4uvqpzbNrqznz3S",
+     "name": "RECORDEGG",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.0249530000000001e-05,
+     "qty": 975654.493425552,
+     "cost_usd": 10.0,
+     "got_usd": 0.12596382468269274,
+     "ts": 1795628733,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.331e-07,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.331e-07,
+     "exit_ts": 1795628733,
+     "reason": "stop −50 %",
+     "ret": -0.9874036175317307
+    },
+    {
+     "pair": "9kDp67z9CK3re4bqmw1ZQ3Wfqi7v9Fefm1WnA6tYf3TC",
+     "mint": "EKAYUgoDp283tNs3QNKY42NydabpLLXUSSqFv8mCS4nL",
+     "name": "MEDIC",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.21862e-05,
+     "qty": 225365.3171791474,
+     "cost_usd": 10.0,
+     "got_usd": 69.07241889102234,
+     "ts": 1795622173,
+     "half": true,
+     "peak": 20.72008726145081,
+     "last": 0.0002624,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0002624,
+     "exit_ts": 1795628913,
+     "reason": "stop dinámico (40 % desde el máximo 20.7x)",
+     "ret": 5.907241889102234
+    },
+    {
+     "pair": "BHhriX4DvAgyUHf8PasRLs9rgCs5mumLXJrswYUjq25X",
+     "mint": "rM1LajNWfk2YnwdE8j3ADokL7htZ8CzikeJTHo4pump",
+     "name": "MemesAI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.8653300000000003e-05,
+     "qty": 536098.1702969447,
+     "cost_usd": 10.0,
+     "got_usd": 0.8424246648046189,
+     "ts": 1795628973,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.62e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.62e-06,
+     "exit_ts": 1795628973,
+     "reason": "stop −50 %",
+     "ret": -0.9157575335195381
+    },
+    {
+     "pair": "6LgeXcJf7EgQeDmUpkH4qMKrLXzJfDXriMt4mwNuvGqU",
+     "mint": "8vYfYCx18EjQj5Fto9QJRFe1ebSBSfwW4hE11qGatCXU",
+     "name": "BASKET",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 4.80804e-06,
+     "qty": 1039924.7926389964,
+     "cost_usd": 10.0,
+     "got_usd": 9.839533177760584,
+     "ts": 1795623813,
+     "half": true,
+     "peak": 6.222909959151755,
+     "last": 2.406e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.406e-09,
+     "exit_ts": 1795629513,
+     "reason": "stop dinámico (40 % desde el máximo 6.2x)",
+     "ret": -0.016046682223941566
+    },
+    {
+     "pair": "A8VG38kNb5neShZbYotHEMjpZQvBUFsn67tju2AeGh4v",
+     "mint": "GGvk2ZoU7TfvJkUFxAZgHuAAFgfoDEejzPiXBBjSr1iQ",
+     "name": "NEX Ai",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.42758e-05,
+     "qty": 350243.06868967065,
+     "cost_usd": 10.0,
+     "got_usd": 14.737737990165176,
+     "ts": 1795625973,
+     "half": true,
+     "peak": 2.7571134367250876,
+     "last": 1.361e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.361e-05,
+     "exit_ts": 1795630053,
+     "reason": "stop dinámico (40 % desde el máximo 2.8x)",
+     "ret": 0.4737737990165176
+    },
+    {
+     "pair": "F99AdMksAhPxvRX5556UdKsihKu7qZZ91EZfYVApkbwi",
+     "mint": "E6k59N3sarjWEmTpfUpMz3MbuoVJFRCmbGq6PM8YcgrL",
+     "name": "穗穗与羊",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.5110100000000001e-05,
+     "qty": 661808.9886896843,
+     "cost_usd": 10.0,
+     "got_usd": 0.003964070390004037,
+     "ts": 1795630173,
+     "half": false,
+     "peak": 1.0,
+     "last": 6.175e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.175e-09,
+     "exit_ts": 1795630713,
+     "reason": "stop −50 %",
+     "ret": -0.9996035929609995
+    },
+    {
+     "pair": "VFNkqPcG3fzsFpKY7s9GzzMgM8EDYL1YT6wLLMpfgCK",
+     "mint": "AthyqxiUfwJ4BZLCTd3Sc6yL9w99ZveNuAEvU91pZqQA",
+     "name": "英伟达",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.47599e-05,
+     "qty": 677511.3652531521,
+     "cost_usd": 10.0,
+     "got_usd": 3.0467144086342048e-05,
+     "ts": 1795630773,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.636e-11,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.636e-11,
+     "exit_ts": 1795631133,
+     "reason": "stop −50 %",
+     "ret": -0.9999969532855914
+    },
+    {
+     "pair": "591YTNkrjpQFpQ3X9G1CRrk5JQw6NBRfP7rrVYp9VQMM",
+     "mint": "g7Stw2wWMTTDa4aGpuwBTDkbyL77Uc8a2iUK7q7pump",
+     "name": "FOMO",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.37119e-05,
+     "qty": 148315.57995841233,
+     "cost_usd": 10.0,
+     "got_usd": 14.688730092341281,
+     "ts": 1795631253,
+     "half": true,
+     "peak": 2.1645175739130695,
+     "last": 3.449e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.449e-05,
+     "exit_ts": 1795633053,
+     "reason": "stop dinámico (40 % desde el máximo 2.2x)",
+     "ret": 0.468873009234128
+    },
+    {
+     "pair": "FFvLkptVeSr4BabqVYQywSxBeeqCECgy1oazWCa64Vuz",
+     "mint": "3aGDeS1VmffiS4wR62AZfpbb1eVcq7cAizAQC441HvNm",
+     "name": "FLOP",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0007701310000000001,
+     "qty": 6492.401942007268,
+     "cost_usd": 10.0,
+     "got_usd": 10.143529477452535,
+     "ts": 1795623573,
+     "half": true,
+     "peak": 5.065371995154071,
+     "last": 5.769e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 5.769e-05,
+     "exit_ts": 1795633173,
+     "reason": "stop dinámico (40 % desde el máximo 5.1x)",
+     "ret": 0.01435294774525353
     }
    ]
   },
   "study": {
-   "ts": 1795622615,
-   "launches": 87,
+   "ts": 1795635534,
+   "launches": 98,
    "cost_side_pct": 3.0,
    "distribution": {
-    "n": 84,
+    "n": 94,
     "entry_min": 5,
-    "reach_2x": 21.4,
-    "reach_5x": 4.8,
+    "reach_2x": 19.1,
+    "reach_5x": 4.3,
     "reach_10x": 0.0,
     "reach_100x": 0.0,
-    "dead_24h": 17.9,
-    "below_entry_24h": 71.4
+    "dead_24h": 17.0,
+    "below_entry_24h": 71.3
    },
    "distribution_30": {
-    "n": 87,
+    "n": 98,
     "entry_min": 30,
-    "reach_2x": 5.7,
-    "reach_5x": 1.1,
-    "reach_10x": 1.1,
+    "reach_2x": 6.1,
+    "reach_5x": 1.0,
+    "reach_10x": 1.0,
     "reach_100x": 0.0,
-    "dead_24h": 4.6,
-    "below_entry_24h": 40.2
+    "dead_24h": 4.1,
+    "below_entry_24h": 39.8
    },
    "edge": false,
-   "note": "Pocos lanzamientos con resultado conocido (87 de 100 mínimos)."
+   "note": "Pocos lanzamientos con resultado conocido (98 de 100 mínimos)."
   },
   "copy": {
-   "ts": 1795622615,
+   "ts": 1795635534,
    "pools": 8,
    "observations": 316,
    "bots_excluded": 0,
@@ -2835,7 +3289,7 @@
  },
  "updates": {
   "state": "al día",
-  "current": "615da1e4e2e460f490e4f811b868493b4878e0ea",
-  "applied_at": 1795622603
+  "current": "5d787a05017c71df70b334db729249865024d46d",
+  "applied_at": 1795635521
  }
 }
