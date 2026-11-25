@@ -106,7 +106,8 @@ def _stocks_view(state: Path) -> dict:
     brain["setups"] = {k: {kk: v.get(kk) for kk in ("params", "in_sample", "out_of_sample", "live", "active",
                                                    "suspended", "suspended_why", "edge")}
                        for k, v in (sb.get("setups") or {}).items()}
-    return {"brain": brain if sb else None, "market_up": st.get("market_up"), "ts": st.get("ts"), "universe": st.get("universe"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
+    opened = [dict(p, symbol=s) for s, p in (st.get("positions") or {}).items()]
+    return {"paper": st.get("paper"), "open_alerts": opened, "brain": brain if sb else None, "market_up": st.get("market_up"), "ts": st.get("ts"), "universe": st.get("universe"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
             "alerts": st.get("alerts", [])[-40:][::-1], "closed": st.get("closed", [])[-40:][::-1],
             "track": st.get("track", {})}
 
@@ -154,7 +155,8 @@ def build_state(state: Path) -> dict:
         "stocks": _stocks_view(state),
         "analyst": {k: v for k, v in _read_json(state / "analyst.json", {}).items() if k in ("review", "usage", "track", "history")}
                    | {"decisions": _read_json(state / "analyst.json", {}).get("decisions", [])[-15:][::-1]},
-        "control": {"paused": bool(control.get("paused", status.get("paused", False))),
+        "control": {"stocks_muted": control.get("stocks_alerts") is False,
+                    "paused": bool(control.get("paused", status.get("paused", False))),
                     "close_all_pending": bool(control.get("close_all"))},
     }
 
@@ -232,6 +234,8 @@ def make_handler(state: Path, token: str):
                 ctl["paused"] = False
             elif action == "close_all":
                 ctl["close_all"] = True
+            elif action in ("stocks_mute", "stocks_unmute"):
+                ctl["stocks_alerts"] = action == "stocks_unmute"
             else:
                 return self._json({"error": "acción desconocida"}, 400)
             ctl["updated_at"] = int(time.time())

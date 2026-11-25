@@ -106,3 +106,25 @@ def test_live_failures_suspend_a_strategy():
 def bars_obj(b):
     a = {k: np.array(b[k], dtype=float) for k in ("ts", "o", "h", "l", "c", "v")}
     return st.Bars("S0", "S0", "USD", a["ts"], a["o"], a["h"], a["l"], a["c"], a["v"], float(a["c"][-1]), True)
+
+
+def test_paper_portfolio_counts_euros_with_fees(tmp_path):
+    activate_all(tmp_path)
+    up = list(np.linspace(100, 200, 260))
+    pull = up + [200 - 3 * i for i in range(1, 8)]
+    data = {"TEST": bars(pull)}
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: data.get(sym))
+    assert s["paper"]["open"] == 1 and s["paper"]["invested_open"] == st.PAPER_EUR
+    data["TEST"] = bars(pull + [150])                       # salta el stop
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: data.get(sym))
+    c = s["closed"][-1]
+    assert abs(c["pnl_eur"] - (st.PAPER_EUR * c["ret"] / 100 - 2 * st.BROKER_FEE_EUR)) < 0.01
+    assert s["paper"]["closed"] == 1 and s["paper"]["realized"] == c["pnl_eur"] and s["paper"]["total"] < 0
+
+
+def test_mute_switch_stops_alerts(tmp_path):
+    activate_all(tmp_path)
+    (tmp_path / "control.json").write_text(json.dumps({"stocks_alerts": False}))
+    pull = list(np.linspace(100, 200, 260)) + [200 - 3 * i for i in range(1, 8)]
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: bars(pull))
+    assert not s["positions"] and s["watchlist"][0]["status"] == "señal (silenciada)"

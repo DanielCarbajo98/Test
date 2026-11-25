@@ -357,7 +357,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   </section>
 
   <section class="card" style="margin-top:16px">
-    <div class="card-h"><h2>Acciones · alertas</h2><span class="sub" id="stkSub" style="margin-left:auto"></span></div>
+    <div class="card-h"><h2>Acciones · alertas</h2><span class="sub" id="stkSub" style="margin-left:auto"></span>
+      <button class="btn" id="stkMute" style="height:28px;font-size:12px">Silenciar alertas</button></div>
+    <div class="card-b" id="stkPaper" style="padding-bottom:0"></div>
     <div class="stk" style="margin-top:10px; border-top:1px solid var(--border)">
       <div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
@@ -519,7 +521,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("openMeter").style.width = (100 * n / mx) + "%";
     $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
 
-    renderChart(); renderAnalyst(); renderContext(); renderTokenList(); renderStocks(); renderStockBrain(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
+    renderChart(); renderAnalyst(); renderContext(); renderTokenList(); renderStocks(); renderStockBrain(); renderStockPaper(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
     const up = S.update || {};
     const upTxt = up.state ? ` · ${up.state}${up.checked_at ? " (comprobado " + ago(S.now - up.checked_at) + ")" : ""}` : "";
     $("foot").textContent = (has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos") + ` · Versión ${S.version || "—"}${upTxt}`;
@@ -782,8 +784,42 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       <div class="anl">${setups}<div><b>Lo que ha aprendido</b><ul class="reason">${(b.lessons || []).map(t => `<li>${esc(t)}</li>`).join("")}</ul></div></div>`;
   }
 
+
+  // ---------- cartera simulada de acciones ----------
+  function renderStockPaper() {
+    const k = S.stocks || {}, p = k.paper, el = $("stkPaper");
+    const muted = (S.control || {}).stocks_muted;
+    $("stkMute").textContent = muted ? "Activar alertas" : "Silenciar alertas";
+    if (!p) { el.innerHTML = ""; return; }
+    const eur = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    const open = (k.open_alerts || []).map(a => { const r = (a.price / a.entry - 1) * 100, pnl = (a.amount || p.per_alert) * r / 100 - 2 * p.fee;
+      return `<tr><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}</div></td><td class="sub">${dt(a.entry_ts)}</td>
+        <td class="num">${a.entry.toFixed(2)}</td><td class="num">${(a.price || a.entry).toFixed(2)}</td>
+        <td class="num">${a.stop.toFixed(2)} / ${a.tp ? a.tp.toFixed(2) : "—"}</td><td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(r)}">${pct(r)}</div></td></tr>`; }).join("");
+    const closed = (k.closed || []).slice(0, 15).map(c => { const pnl = c.pnl_eur != null ? c.pnl_eur : (c.amount || p.per_alert) * c.ret / 100 - 2 * p.fee;
+      return `<tr><td><b>${esc(c.symbol)}</b><div class="sub">${esc(c.setup || "")}</div></td><td class="sub">${dt(c.exit_ts)}</td>
+        <td class="num">${c.entry.toFixed(2)}</td><td class="num">${c.exit.toFixed(2)}</td><td class="sub">${esc(c.reason || "")}</td>
+        <td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(c.ret)}">${pct(c.ret)}</div></td></tr>`; }).join("");
+    el.innerHTML = `<div class="funnel" style="grid-template-columns:repeat(5,1fr)">
+        <div><b class="${cls(p.total)}">${eur(p.total)}</b><span>Resultado total simulado</span></div>
+        <div><b class="${cls(p.realized)}">${eur(p.realized)}</b><span>Cerradas (${p.closed})</span></div>
+        <div><b class="${cls(p.open_pnl)}">${eur(p.open_pnl)}</b><span>Abiertas (${p.open})</span></div>
+        <div><b>${p.win_rate != null ? p.win_rate + "%" : "—"}</b><span>Acierto</span></div>
+        <div><b>${p.per_alert.toFixed(0)} €</b><span>por alerta · ${p.fee} € comisión</span></div></div>
+      <p class="sub" style="margin:0 0 10px">Lo que habría pasado invirtiendo ${p.per_alert.toFixed(0)} € en cada alerta de compra, con la comisión de tu broker. Precios en la moneda de cada acción.</p>
+      ${open ? `<div class="table-wrap"><table><thead><tr><th>Abierta</th><th>Desde</th><th class="num">Entrada</th><th class="num">Ahora</th><th class="num">Stop / objetivo</th><th class="num">Resultado</th></tr></thead><tbody>${open}</tbody></table></div>` : ""}
+      ${closed ? `<div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Cerrada</th><th>Cuándo</th><th class="num">Entrada</th><th class="num">Salida</th><th>Motivo</th><th class="num">Resultado</th></tr></thead><tbody>${closed}</tbody></table></div>` : ""}`;
+  }
+
   // ---------- mercado en directo (velas) ----------
-  let selPool = null, lw = null, cs = null, vs = null, lines = [], lastChartKey = "";
+  let selPool = null, lw = null, cs = null, vs = null, lines = [], lastChartKey = "", tlistKey = "";
+  // un solo manejador para toda la lista: funciona aunque la lista se actualice
+  document.getElementById("tlist").addEventListener("click", ev => {
+    const b = ev.target.closest("button[data-pool]");
+    if (!b || b.dataset.pool === selPool) return;
+    selPool = b.dataset.pool; lastChartKey = ""; tlistKey = "";
+    renderTokenList(); loadChart();
+  });
   const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   function precisionFor(p) { if (!p || p <= 0) return 6; return Math.min(12, Math.max(2, Math.ceil(-Math.log10(p)) + 3)); }
   function renderTokenList() {
@@ -791,12 +827,15 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("liveSub").textContent = list.length ? `${list.length} tokens analizados recientemente` : "";
     if (!list.length) { $("tlist").innerHTML = `<div class="empty" style="height:120px">Aún sin análisis. Aparecen en el primer minuto.</div>`; return; }
     if (!selPool || !list.some(c => c.pool === selPool)) selPool = list[0].pool;
+    const key = selPool + "|" + list.map(c => [c.pool, c.ts, c.position, c.signal, c.failed].join(":")).join(",");
+    if (key === tlistKey) return;            // sin cambios: no redibujar (así no se pierden clics)
+    tlistKey = key;
     $("tlist").innerHTML = list.map(c => {
       const b = c.position ? '<span class="badge pos">En cartera</span>' : c.signal ? '<span class="badge sig">Señal</span>'
         : `<span class="badge no">${c.checks ? (c.checks - c.failed) + "/" + c.checks : "—"}</span>`;
       return `<button data-pool="${esc(c.pool)}" class="${c.pool === selPool ? "on" : ""}">${avatar(c.symbol)}<span class="meta"><b>${esc(c.symbol)}</b><span>${price(c.price)} · ${ago(S.now - c.ts)}</span></span>${b}</button>`;
     }).join("");
-    $("tlist").querySelectorAll("button").forEach(b => b.onclick = () => { selPool = b.dataset.pool; lastChartKey = ""; renderTokenList(); loadChart(); });
+
   }
   function ensureChart() {
     if (lw || !window.LightweightCharts) return;
@@ -1000,6 +1039,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   }
   $("mCancel").onclick = () => $("modalBg").style.display = "none";
   $("modalBg").onclick = e => { if (e.target.id === "modalBg") $("modalBg").style.display = "none"; };
+  $("stkMute").onclick = () => control((S.control || {}).stocks_muted ? "stocks_unmute" : "stocks_mute");
   $("pauseBtn").onclick = () => control(S && S.control.paused ? "resume" : "pause");
   $("closeBtn").onclick = () => confirmDlg("¿Cerrar todas las posiciones?",
     ((S.status || {}).mode === "live" ? "Se venderán TODAS las posiciones a precio de mercado con dinero real. " : "Se cerrarán todas las posiciones simuladas. ") + "Las entradas no se pausan automáticamente.", () => control("close_all"));

@@ -306,6 +306,30 @@ def notify(text: str):
             pass
 
 
+PAPER_EUR = float(os.getenv("STOCKS_PAPER_EUR", "100"))      # € simulados por cada alerta de compra
+BROKER_FEE_EUR = float(os.getenv("STOCKS_FEE_EUR", "1"))      # comisión por orden (Trade Republic: 1 €)
+
+
+def paper_pnl(ret_pct: float, amount: float = PAPER_EUR, fee: float = BROKER_FEE_EUR) -> float:
+    """€ ganados o perdidos invirtiendo `amount` en la alerta (compra + venta = 2 comisiones)."""
+    return amount * ret_pct / 100 - 2 * fee
+
+
+def paper_summary(st: dict) -> dict:
+    opened = list((st.get("positions") or {}).values())
+    closed = st.get("closed") or []
+    open_pnl = sum(paper_pnl((p.get("price", p["entry"]) / p["entry"] - 1) * 100, p.get("amount", PAPER_EUR))
+                   for p in opened)
+    realized = [c.get("pnl_eur", paper_pnl(c["ret"], c.get("amount", PAPER_EUR))) for c in closed if c.get("ret") is not None]
+    wins = [x for x in realized if x > 0]
+    return {"per_alert": PAPER_EUR, "fee": BROKER_FEE_EUR, "open": len(opened),
+            "invested_open": round(sum(p.get("amount", PAPER_EUR) for p in opened), 2),
+            "open_pnl": round(open_pnl, 2), "realized": round(sum(realized), 2),
+            "total": round(open_pnl + sum(realized), 2), "closed": len(realized),
+            "win_rate": round(100 * len(wins) / len(realized), 1) if realized else None,
+            "best": round(max(realized), 2) if realized else None, "worst": round(min(realized), 2) if realized else None}
+
+
 def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = None,
              fetcher=fetch, max_per_run: int = 0, pause: float = 0.0, refresh_minutes: float = 60) -> dict:
     """Analiza las acciones. Con max_per_run > 0 va por turnos: primero las alertas abiertas y luego
@@ -366,14 +390,18 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                 if why.startswith("STOP"):
                     ex = min(ex, pos["stop"]) if ex > pos["stop"] else ex
                 ret = (ex / pos["entry"] - 1) * 100
-                st["closed"].append({**pos, "exit": a["price"], "exit_ts": int(time.time()), "reason": why, "ret": ret})
+                pnl = paper_pnl(ret, pos.get("amount", PAPER_EUR))
+                st["closed"].append({**pos, "exit": a["price"], "exit_ts": int(time.time()), "reason": why, "ret": ret,
+                                     "pnl_eur": round(pnl, 2)})
                 st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "VENTA", "price": a["price"],
                                      "reason": why, "ret": ret})
                 del st["positions"][sym]
                 fx = eur_rate(http, b.currency)
                 eur = f" ≈ {fmt_eur(a['price'] * fx)}" if fx and b.currency.upper() != "EUR" else ""
                 notify(f"🔴 VENDER {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}{eur}\nMotivo: {why}\n"
-                       f"Resultado de la alerta: {ret:+.1f}% · el cerebro de acciones aprende de este resultado.")
+                       f"Resultado de la alerta: {ret:+.1f}% · con {pos.get('amount', PAPER_EUR):.0f} € habrías "
+                       f"{'ganado' if pnl >= 0 else 'perdido'} {abs(pnl):.2f} € (con comisiones).\n"
+                       f"El cerebro de acciones aprende de este resultado.")
                 status = "venta"
             else:
                 status = "en cartera"
@@ -420,7 +448,8 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
         st["positions"][sym] = {"symbol": sym, "name": b.name, "currency": b.currency, "entry": a["price"],
                                 "entry_ts": int(time.time()), "stop": pl["stop"], "tp": pl["tp"],
                                 "max_days": pl["max_days"], "peak": a["price"], "atr": a["atr"],
-                                "setup": a["signal"], "price": a["price"], "expected": pl.get("expected")}
+                                "setup": a["signal"], "price": a["price"], "expected": pl.get("expected"),
+                                "amount": PAPER_EUR}
         st.setdefault("last_buy", {})[sym] = today
         st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "COMPRA", "price": a["price"],
                              "reason": a["signal"], "stop": pl["stop"], "tp": pl["tp"]})
@@ -459,6 +488,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
             r["status"] = "vigilando"
     closed = st["closed"]
     rets = [x["ret"] for x in closed]
+    st["paper"] = paper_summary(st)
     st.update({"market_up": market_up, "ts": int(time.time()), "watchlist": list(merged.values()), "universe": len(universe), "alerts": st["alerts"][-200:], "closed": closed[-200:],
                "track": {"n": len(rets), "win_rate": round(100 * np.mean(np.array(rets) > 0), 1) if rets else None,
                          "avg_ret": round(float(np.mean(rets)), 2) if rets else None}})
