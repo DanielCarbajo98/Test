@@ -494,6 +494,9 @@ def main():
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s: %(message)s")
     period = a.every_min * 60 if a.every_min else a.loop * 3600
+    if period:                         # modo cazador y copia de carteras (simulado), en segundo plano
+        from . import hunter
+        hunter.start_background(a.state, a.data.split(","))
     k = 0
     while True:
         t0 = time.time()

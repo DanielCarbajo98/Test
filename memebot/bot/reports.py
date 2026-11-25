@@ -72,6 +72,11 @@ def build(state: Path, days: int = 30) -> dict:
                    "market_up": stocks.get("market_up"), "closed": (stocks.get("closed") or [])[-100:],
                    "brain_meta": sb.get("meta"), "setups": setups, "lessons": sb.get("lessons"),
                    "history": (sb.get("history") or [])[-30:]},
+        "hunter": {"summary": _read(state / "hunter.json").get("summary"),
+                   "closed": {k: v.get("closed", [])[-100:] for k, v in
+                              (_read(state / "hunter.json").get("sleeves") or {}).items()},
+                   "study": _read(state / "moonshot.json"),
+                   "copy": {k: v for k, v in _read(state / "copy.json").items() if k != "watch"}},
         "updates": _pick(_read(state / "update.json"), ("state", "current", "applied_at", "error")),
     }
 

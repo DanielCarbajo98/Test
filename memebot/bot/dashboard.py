@@ -181,6 +181,16 @@ def trade_detail(state: Path, mint: str, client=None) -> dict | None:
     return {**out, "trade": trade}
 
 
+def _hunter_view(state: Path) -> dict:
+    h = _read_json(state / "hunter.json", {})
+    sl = h.get("sleeves") or {}
+    return {"ts": h.get("ts"), "summary": h.get("summary") or {}, "watch_n": h.get("watch_n"),
+            "open": {k: list((v.get("positions") or {}).values())[:25] for k, v in sl.items()},
+            "closed": {k: list(reversed((v.get("closed") or [])[-20:])) for k, v in sl.items()},
+            "study": {k: v for k, v in _read_json(state / "moonshot.json", {}).items()},
+            "copy": {k: v for k, v in _read_json(state / "copy.json", {}).items()}}
+
+
 def build_state(state: Path) -> dict:
     status = _read_json(state / "status.json", {})
     now = time.time()
@@ -222,6 +232,7 @@ def build_state(state: Path) -> dict:
         "version": version.read()[:7], "update": _read_json(state / "update.json", {}),
         "context": _read_json(state / "context.json", {}),
         "stocks": _stocks_view(state),
+        "hunter": _hunter_view(state),
         "analyst": {k: v for k, v in _read_json(state / "analyst.json", {}).items() if k in ("review", "usage", "track", "history")}
                    | {"decisions": _read_json(state / "analyst.json", {}).get("decisions", [])[-15:][::-1]},
         "control": {"stocks_muted": control.get("stocks_alerts") is False,

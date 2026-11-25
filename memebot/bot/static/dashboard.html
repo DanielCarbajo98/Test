@@ -386,6 +386,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   </section>
 
   <section class="card" style="margin-top:16px">
+    <div class="card-h"><h2>Cazador y copia de carteras · simulado</h2><span class="pill" id="huntPill" style="margin-left:auto">—</span></div>
+    <div class="card-b" id="hunter"></div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
     <div class="card-h"><h2>Cerebro</h2><span class="pill" id="brainPill" style="margin-left:auto">—</span></div>
     <div class="card-b" id="brain"></div>
   </section>
@@ -482,7 +487,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     safe("cabecera", renderHeader);
     [["saldo", renderChart], ["analista", renderAnalyst], ["contexto", renderContext], ["mercado", renderTokenList],
      ["acciones", renderStocks], ["cerebro de acciones", renderStockBrain], ["cartera de acciones", renderStockPaper],
-     ["cerebro", renderBrain], ["posiciones", renderPositions], ["operaciones", renderHistory], ["actividad", renderActivity]]
+     ["cerebro", renderBrain], ["cazador", renderHunter], ["posiciones", renderPositions], ["operaciones", renderHistory], ["actividad", renderActivity]]
       .forEach(([n, f]) => safe(n, f));
   }
 
@@ -828,6 +833,34 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       <p class="sub" style="margin:0 0 10px">Lo que habría pasado invirtiendo ${p.per_alert.toFixed(0)} € en cada alerta de compra, con la comisión de tu broker. Precios en la moneda de cada acción.</p>
       ${open ? `<div class="table-wrap"><table><thead><tr><th>Abierta</th><th>Desde</th><th class="num">Entrada</th><th class="num">Ahora</th><th class="num">Stop / objetivo</th><th class="num">Resultado</th></tr></thead><tbody>${open}</tbody></table></div>` : ""}
       ${closed ? `<div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Cerrada</th><th>Cuándo</th><th class="num">Entrada</th><th class="num">Salida</th><th>Motivo</th><th class="num">Resultado</th></tr></thead><tbody>${closed}</tbody></table></div>` : ""}`;
+  }
+
+  function renderHunter() {
+    const H = S.hunter || {}, el = $("hunter"), st = H.study || {}, cp = H.copy || {}, sm = H.summary || {};
+    const usd = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { maximumFractionDigits: 2 }) + " $";
+    const pc = v => v == null ? "—" : (v >= 0 ? "+" : "") + v + "%";
+    const anyEdge = st.edge || cp.edge;
+    $("huntPill").textContent = anyEdge ? "Con ventaja demostrada: avisa por Telegram" : "Midiendo en silencio";
+    $("huntPill").className = "pill " + (anyEdge ? "live" : "paper");
+    const d = st.distribution || {};
+    const dist = d.n ? `<p class="sub" style="margin:0 0 10px">De <b>${d.n}</b> lanzamientos reales (muestra sin trampas, apuntados al nacer), comprando a los 5 minutos:
+      llegan a 2x el <b>${d.reach_2x}%</b>, a 10x el <b>${d.reach_10x}%</b>, a 100x el <b>${d.reach_100x}%</b>; a las 24 h el <b>${d.below_entry_24h}%</b> vale menos que la entrada y el <b>${d.dead_24h}%</b> ha perdido más del 90 %.</p>`
+      : `<p class="sub" style="margin:0 0 10px">${esc(st.note || "Esperando lanzamientos con resultado conocido (necesitan 7 h de vida).")}</p>`;
+    const so = st.out_of_sample || {}, r = st.rule;
+    const rule = r ? `<p class="sub" style="margin:0 0 10px">Mejor regla: entrar a los <b>${r.entry_min} min</b> si el volumen ≥ ${Number(r.min_vol).toLocaleString("es-ES")} $
+      ${r.mom5 != null ? `, impulso 5 min ≥ ${Math.round(r.mom5 * 100)}%` : ""}${r.runup_max ? `, sin haber subido más de ${r.runup_max}x` : ""}; mitad a 2x, stop −${Math.round(r.stop * 100)}%, stop dinámico ${Math.round(r.trail * 100)}%, plazo ${r.hours} h.
+      En datos no vistos: <b class="${cls(so.mean_pct)}">${pc(so.mean_pct)}</b> por apuesta (${so.n || 0} apuestas, acierto ${so.win_rate ?? "—"}%, mejor ${so.best_x ?? "—"}x). ${esc(st.note || "")}</p>` : "";
+    const cso = cp.copy_out_of_sample || {};
+    const copy = `<p class="sub" style="margin:0 0 10px">Copia de carteras: ${cp.rpc === false ? "necesita tu RPC de Helius en <code>SOLANA_RPC_URL</code>." :
+      `${cp.pools || 0} lanzamientos estudiados, ${cp.observations || 0} compras tempranas${cso.n ? `; copiar con ${cp.delay_s} s de retraso en datos no vistos: <b class="${cls(cso.mean_pct)}">${pc(cso.mean_pct)}</b> (${cso.n} copias)` : ""}. ${esc(cp.note || "")}`}
+      ${(cp.watch || []).length ? `Vigilando ${(cp.watch || []).length} carteras.` : ""}</p>`;
+    const tiles = ["cazador", "copia"].map(k => { const s = sm[k] || {}; return `<div><b class="${cls(s.pnl)}">${usd(s.pnl)}</b><span>${k === "cazador" ? "Cazador" : "Copia"} · ${s.open || 0} abiertas · ${s.closed || 0} cerradas${s.win_rate != null ? ` · acierto ${s.win_rate}%` : ""}${s.best_x ? ` · mejor ${s.best_x}x` : ""}</span></div>`; }).join("");
+    const rows = [];
+    ["cazador", "copia"].forEach(k => (H.open?.[k] || []).forEach(p => rows.push(`<tr><td><b>${esc(p.name)}</b><div class="sub">${k}${p.half ? " · mitad vendida" : ""}</div></td><td class="sub">${dt(p.ts)}</td><td class="num">${p.cost_usd.toFixed(0)} $</td><td class="num ${cls(p.last / p.entry - 1)}">${((p.last / p.entry) || 0).toFixed(2)}x</td><td class="sub">abierta</td></tr>`)));
+    ["cazador", "copia"].forEach(k => (H.closed?.[k] || []).slice(0, 10).forEach(c => rows.push(`<tr><td><b>${esc(c.name)}</b><div class="sub">${k}</div></td><td class="sub">${dt(c.exit_ts)}</td><td class="num">${c.cost_usd.toFixed(0)} $</td><td class="num ${cls(c.ret)}">${pc(Math.round(c.ret * 100))}</td><td class="sub">${esc(c.reason)}</td></tr>`)));
+    el.innerHTML = `<div class="funnel" style="grid-template-columns:repeat(2,1fr)">${tiles}</div>${dist}${rule}${copy}
+      <p class="sub" style="margin:0 0 10px">Dinero ficticio: 1.000 $ por modo y ${"10"} $ por apuesta. Solo avisa por Telegram si el estudio demuestra ganar en datos no vistos.</p>
+      ${rows.length ? `<div class="table-wrap"><table><thead><tr><th>Token</th><th>Cuándo</th><th class="num">Apuesta</th><th class="num">Resultado</th><th>Estado</th></tr></thead><tbody>${rows.join("")}</tbody></table></div>` : ""}`;
   }
 
   // ---------- mercado en directo (velas) ----------
