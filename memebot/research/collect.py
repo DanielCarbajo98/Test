@@ -129,6 +129,11 @@ def fetch_ohlcv(g: Gecko, pool: str, since_ts: int) -> list[list[float]]:
 
 
 def collect_round(g: Gecko, out: Path, pages: int, hours: float, max_pools: int, alive_hours: float = 4):
+    try:                                  # contexto de mercado para que el cerebro lo relacione con las velas
+        from bot import context as mctx
+        mctx.append_history(out / "context.jsonl", mctx.build())
+    except Exception as e:  # noqa: BLE001
+        log.info("Contexto no registrado en esta ronda: %s", e)
     idx_file = out / "pools.json"
     index = json.loads(idx_file.read_text()) if idx_file.exists() else {}
     now = int(time.time())

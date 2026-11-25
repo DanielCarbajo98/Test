@@ -38,12 +38,16 @@ from .signals import STRATEGIES, features, to_series
 log = logging.getLogger("brain")
 
 FEATURES = ["age_h", "log_vol_5m", "log_vol_60m", "ret_5m", "ret_60m", "ret_6h", "drawdown_6h",
-            "vs_high_3h", "active_60m", "accel", "log_fdv"]
+            "vs_high_3h", "active_60m", "accel", "log_fdv", "fng", "sol_h1", "sol_h24", "news_score"]
+CTX_FEATURES = ["fng", "sol_h1", "sol_h24", "news_score"]
+MISSING = -1000.0
 NAMES_ES = {
     "age_h": "edad del token (h)", "log_vol_5m": "volumen 5 min", "log_vol_60m": "volumen 1 h",
     "ret_5m": "subida 5 min (%)", "ret_60m": "subida 1 h (%)", "ret_6h": "subida 6 h (%)",
     "drawdown_6h": "caída desde el máximo de 6 h (%)", "vs_high_3h": "distancia al máximo previo de 3 h (%)",
     "active_60m": "minutos con operaciones en 1 h", "accel": "aceleración del volumen", "log_fdv": "capitalización (FDV)",
+    "fng": "índice de miedo y codicia", "sol_h1": "variación de SOL en 1 h (%)", "sol_h24": "variación de SOL en 24 h (%)",
+    "news_score": "tono de las noticias",
 }
 DEFAULT_EXITS = {"sl": 25, "tp": [[100, 50], [300, 25]], "trail": 30, "trail_act": 50, "time": 90, "time_gain": 10}
 MIN_SAMPLES = 3000
@@ -54,7 +58,20 @@ STRIDE = 3                    # un ejemplo cada 3 minutos por token
 
 
 # --------------------------------------------------------------------------- features
-def feature_matrix(f: dict, idx: np.ndarray) -> np.ndarray:
+def context_columns(ts: np.ndarray, hist_ts: np.ndarray, hist_rows: list, max_gap: int = 7200) -> np.ndarray:
+    """Contexto de mercado vigente en cada instante (último dato anterior, si tiene < 2 h). NaN si no hay."""
+    out = np.full((len(ts), len(CTX_FEATURES)), np.nan)
+    if not len(hist_ts):
+        return out
+    j = np.searchsorted(hist_ts, ts, side="right") - 1
+    for i, k in enumerate(j):
+        if k >= 0 and ts[i] - hist_ts[k] <= max_gap:
+            r = hist_rows[k]
+            out[i] = [np.nan if r.get(c) is None else float(r[c]) for c in CTX_FEATURES]
+    return out
+
+
+def feature_matrix(f: dict, idx: np.ndarray, ctx: np.ndarray | None = None) -> np.ndarray:
     hp = f["high_prev_3h"][idx]
     vs_high = np.where(np.isfinite(hp) & (hp > 0), (f["price"][idx] / np.where(hp > 0, hp, 1) - 1) * 100, 0.0)
     cols = [
@@ -64,7 +81,11 @@ def feature_matrix(f: dict, idx: np.ndarray) -> np.ndarray:
         f["drawdown_6h"][idx], np.clip(vs_high, -100, 1000), f["active_60m"][idx],
         np.clip(f["accel"][idx], 0, 12), np.log1p(np.maximum(f["fdv"][idx], 0)),
     ]
-    return np.column_stack(cols).astype(np.float64)
+    base = np.column_stack(cols).astype(np.float64)
+    if ctx is None:
+        ctx = np.full((len(idx), len(CTX_FEATURES)), np.nan)
+    # dato ausente -> valor centinela (igual al entrenar y en vivo; el modelo aprende a separarlo)
+    return np.nan_to_num(np.hstack([base, ctx]), nan=MISSING, posinf=MISSING, neginf=MISSING)
 
 
 def activity_mask(f: dict) -> np.ndarray:
@@ -73,9 +94,10 @@ def activity_mask(f: dict) -> np.ndarray:
 
 
 # --------------------------------------------------------------------------- dataset
-def build_dataset(pools, exits: dict, cost_penalty: float = 0.0, stride: int = STRIDE):
+def build_dataset(pools, exits: dict, cost_penalty: float = 0.0, stride: int = STRIDE, ctx_hist=None):
     from research.backtest import simulate
 
+    hist_ts, hist_rows = ctx_hist if ctx_hist else (np.array([]), [])
     tp_g = np.array([g / 100 for g, _ in exits["tp"]], dtype=np.float64)
     tp_p = np.array([p / 100 for _, p in exits["tp"]], dtype=np.float64)
     X, y, ts, pid = [], [], [], []
@@ -91,7 +113,7 @@ def build_dataset(pools, exits: dict, cost_penalty: float = 0.0, stride: int = S
                                exits["sl"] / 100, tp_g, tp_p, exits["trail"] / 100, exits["trail_act"] / 100,
                                exits["time"], exits["time_gain"] / 100)
             y.append(r)
-        X.append(feature_matrix(pd.f, cand))
+        X.append(feature_matrix(pd.f, cand, context_columns(pd.ts[cand], hist_ts, hist_rows)))
         ts.append(pd.ts[cand])
         pid.append(np.full(len(cand), k))
     if not X:
@@ -228,12 +250,15 @@ def lessons_from(X, y, imp, reality: dict, cost_penalty: float) -> list[str]:
     out = []
     for name, _ in imp[:3]:
         j = FEATURES.index(name)
-        col = X[:, j]
+        keep = X[:, j] != MISSING
+        if keep.sum() < 100:
+            continue
+        col, y_k = X[keep, j], y[keep]
         qs = np.unique(np.quantile(col, [0, .2, .4, .6, .8, 1]))
         if len(qs) < 3:
             continue
         b = np.clip(np.searchsorted(qs, col, side="right") - 1, 0, len(qs) - 2)
-        means = [(float(y[b == k].mean()), k) for k in range(len(qs) - 1) if (b == k).sum() >= 50]
+        means = [(float(y_k[b == k].mean()), k) for k in range(len(qs) - 1) if (b == k).sum() >= 50]
         if len(means) < 2:
             continue
         hi, lo = max(means), min(means)
@@ -273,8 +298,13 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
     pen = brain.get("cost_penalty", 0.0)
 
     pools = [p for d in data_dirs if Path(d, "pools.json").exists() for p in load(d)]
+    from .context import load_history
+    hists = [load_history(Path(d) / "context.jsonl") for d in data_dirs]
+    rows_all = sorted((r for _, rows in hists for r in rows), key=lambda r: r["ts"])
+    ctx_hist = (np.array([r["ts"] for r in rows_all]), rows_all)
     brain.update({"updated_at": int(time.time()), "reality": reality, "pools": len(pools)})
-    ds = build_dataset(pools, (brain.get("champion") or {}).get("exits_bt", DEFAULT_EXITS), pen) if pools else None
+    ds = build_dataset(pools, (brain.get("champion") or {}).get("exits_bt", DEFAULT_EXITS), pen,
+                       ctx_hist=ctx_hist) if pools else None
     n = 0 if ds is None else len(ds[1])
     brain["samples"] = n
     if ds is None or n < MIN_SAMPLES or len(pools) < MIN_POOLS:
@@ -326,6 +356,7 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
             joblib.dump(ml["model"], path)
             best["model_path"] = str(path.name)
         best["expected_expectancy"] = best["test"]["expectancy"]
+        best["features"] = FEATURES
         best["version"] = ver
         best["promoted_at"] = int(time.time())
         brain["champion"] = best
@@ -389,7 +420,9 @@ class BrainRuntime:
             return
         champ = self.data.get("champion") or {}
         self.model = None
-        if champ.get("kind") == "ml" and champ.get("model_path"):
+        if champ.get("kind") == "ml" and champ.get("model_path") and champ.get("features", FEATURES[:11]) != FEATURES:
+            log.warning("El modelo guardado usa otros factores; se ignora hasta el próximo aprendizaje")
+        elif champ.get("kind") == "ml" and champ.get("model_path"):
             import joblib
             try:
                 self.model = joblib.load(self.dir / champ["model_path"])
@@ -408,7 +441,7 @@ class BrainRuntime:
     def defensive(self) -> bool:
         return self.data.get("status") == "defensivo"
 
-    def signal(self, rows, created_at: int, supply: float) -> tuple[bool, dict, float | None]:
+    def signal(self, rows, created_at: int, supply: float, ctx: dict | None = None) -> tuple[bool, dict, float | None]:
         champ = self.champion
         s = to_series(rows)
         if s is None or not champ:
@@ -419,7 +452,10 @@ class BrainRuntime:
             return bool(STRATEGIES[champ["strategy"]](f, champ.get("params", {}))[-1]), last, None
         if self.model is None or not activity_mask(f)[-1]:
             return False, last, None
-        pred = float(self.model.predict(feature_matrix(f, np.array([len(s) - 1])))[0])
+        from .context import features_of
+        cf = features_of(ctx)
+        ctx_row = np.array([[cf[k] for k in CTX_FEATURES]])
+        pred = float(self.model.predict(feature_matrix(f, np.array([len(s) - 1]), ctx_row))[0])
         return pred >= champ["threshold"], last, pred
 
     def exits(self) -> dict | None:

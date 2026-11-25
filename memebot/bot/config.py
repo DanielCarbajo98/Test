@@ -43,6 +43,16 @@ class StrategyCfg:
 
 
 @dataclass
+class ContextCfg:
+    """Noticias y contexto de mercado (bot/context.py)."""
+    enabled: bool = True
+    refresh_minutes: int = 10
+    pause_sol_h1_drop: float = 5.0      # frenar entradas si SOL cae ≥ 5 % en 1 h
+    pause_sol_h24_drop: float = 15.0    # … o ≥ 15 % en 24 h
+    pause_on_critical_news: bool = True # … o hay una alerta crítica (hackeo/caída en Solana) en las últimas 6 h
+
+
+@dataclass
 class BrainCfg:
     """Cerebro autónomo (bot/brain.py). Decide la estrategia y las salidas; NUNCA el riesgo."""
     enabled: bool = True
@@ -95,6 +105,7 @@ class Config:
     filters: FilterCfg = field(default_factory=FilterCfg)
     strategy: StrategyCfg = field(default_factory=StrategyCfg)
     brain: BrainCfg = field(default_factory=BrainCfg)
+    context: ContextCfg = field(default_factory=ContextCfg)
     safety: SafetyCfg = field(default_factory=SafetyCfg)
     risk: RiskCfg = field(default_factory=RiskCfg)
     exits: ExitCfg = field(default_factory=ExitCfg)
@@ -130,6 +141,7 @@ def load_config(path: str | Path = "config.yaml") -> Config:
         filters=_section(FilterCfg, raw.get("filters")),
         strategy=_section(StrategyCfg, raw.get("strategy")),
         brain=_section(BrainCfg, raw.get("brain")),
+        context=_section(ContextCfg, raw.get("context")),
         safety=_section(SafetyCfg, raw.get("safety")),
         risk=_section(RiskCfg, raw.get("risk")),
         exits=_section(ExitCfg, raw.get("exits")),

@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 
 import httpx
 
+from . import context as mctx
 from . import version
 from .brain import BrainRuntime
 from .config import Config, ExitCfg, load_config
@@ -73,6 +74,9 @@ class Bot:
         self._last_analyzed: dict[str, float] = {}
         self._chart_index: dict[str, dict] = {}
         self._analysis: dict[str, tuple] = {}     # pool -> (signal, feat, checks, pred) del último análisis
+        self.ctx: dict = {}
+        self._ctx_ts = 0.0
+        self.risk_off = ""
         self._disc: tuple = ()
         self._disc_ts = 0.0
         self._last_equity_log = 0.0
@@ -252,6 +256,25 @@ class Bot:
         except OSError as e:
             log.debug("No se pudo guardar el gráfico: %s", e)
 
+    def refresh_context(self):
+        """Noticias, miedo/codicia y tendencia de SOL; activa o levanta el freno por contexto."""
+        c = self.cfg.context
+        if not c.enabled or time.time() - self._ctx_ts < c.refresh_minutes * 60:
+            return
+        self._ctx_ts = time.time()
+        try:
+            self.ctx = mctx.build()
+            mctx.save(self.pf.dir / "context.json", self.ctx)
+        except Exception as e:  # noqa: BLE001
+            log.warning("Contexto no disponible: %s", e)
+            return
+        why = mctx.risk_off(self.ctx, c.pause_sol_h1_drop, c.pause_sol_h24_drop, c.pause_on_critical_news)
+        if why and not self.risk_off:
+            self.notify.send(f"🛑 Freno por contexto de mercado: {why}. No se abren posiciones nuevas.")
+        elif self.risk_off and not why:
+            self.notify.send("✅ El contexto de mercado se ha normalizado: se reanudan las entradas.")
+        self.risk_off = why
+
     def refresh_position_charts(self):
         """Velas de las posiciones abiertas (para ver en directo dónde está cada una)."""
         for mint, pos in self.pf.positions.items():
@@ -265,6 +288,8 @@ class Bot:
         c = self.cfg
         ok, why = can_open(len(self.pf.positions), self.pf.daily_pnl(), self.pf.start_equity_today(), c.risk,
                            self.pf.equity())
+        if ok and self.risk_off:
+            ok, why = False, f"freno por contexto: {self.risk_off}"
         if not ok:
             log.info("No se abren posiciones (%s); se sigue analizando el mercado", why)
         addrs, boosted = self._discover()
@@ -294,7 +319,7 @@ class Bot:
             created = int(time.time() - s.age_minutes * 60)
             pred = None
             if self.brain_active():
-                signal, feat, pred = self.brain.signal(rows, created, supply)
+                signal, feat, pred = self.brain.signal(rows, created, supply, self.ctx)
             else:
                 signal, feat = latest_signal(c.strategy.name, rows, created, supply, c.strategy.params)
             if pred is not None:
@@ -387,6 +412,7 @@ class Bot:
             "daily_loss_limit_pct": self.cfg.risk.daily_loss_limit_pct,
             "positions": positions, "last_scan": self.last_scan, "events": list(self.notify.events)[:30],
             "interval": self.cfg.scanner.interval_seconds,
+            "risk_off": self.risk_off,
         }
         try:
             tmp = self.pf.dir / "status.tmp"
@@ -405,6 +431,7 @@ class Bot:
 
     def cycle(self, force_entries: bool = False):
         self.read_control()
+        self.refresh_context()
         self.brain.refresh()
         if self.brain.version != self._brain_version_seen:
             if self._brain_version_seen or self.brain.version:

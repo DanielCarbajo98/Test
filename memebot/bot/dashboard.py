@@ -136,6 +136,7 @@ def build_state(state: Path) -> dict:
         "stats": stats, "fills": fills, "decisions": decisions, "brain": brain_view if brain else None,
         "charts": chart_list(state)[:40],
         "version": version.read()[:7], "update": _read_json(state / "update.json", {}),
+        "context": _read_json(state / "context.json", {}),
         "control": {"paused": bool(control.get("paused", status.get("paused", False))),
                     "close_all_pending": bool(control.get("close_all"))},
     }

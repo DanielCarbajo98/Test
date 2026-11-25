@@ -38,6 +38,12 @@ brain:
   enabled: true
   auto_apply_live: true
   defensive_in_paper: false
+context:                       # noticias y contexto de mercado
+  enabled: true
+  refresh_minutes: 10
+  pause_sol_h1_drop: 5.0       # frena entradas si SOL cae ≥ 5 % en 1 h
+  pause_sol_h24_drop: 15.0     # … o ≥ 15 % en 24 h
+  pause_on_critical_news: true # … o hay un hackeo/caída en el ecosistema Solana (últimas 6 h)
 safety:
   require_mint_revoked: true
   require_freeze_revoked: true

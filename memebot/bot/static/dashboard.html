@@ -231,6 +231,19 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 .chk.ok .ic { color: var(--good-text); } .chk.ko .ic { color: var(--bad-text); }
 @media (max-width: 1100px) { .live { grid-template-columns: 1fr; } .tlist { border-right: 0; border-bottom: 1px solid var(--border); max-height: 180px; }
   .analysis { border-left: 0; border-top: 1px solid var(--border); max-height: none; } }
+
+.ctx { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)) minmax(0, 2.2fr); gap: 0; }
+.ctx > div { padding: 14px 18px; border-right: 1px solid var(--border); min-width: 0; }
+.ctx > div:last-child { border-right: 0; }
+.ctx .big { font-size: 22px; font-weight: 650; margin-top: 4px; }
+.gauge { height: 6px; border-radius: 99px; margin-top: 10px; background: linear-gradient(90deg, #d03b3b, #fab219 50%, #0ca30c); position: relative; }
+.gauge i { position: absolute; top: -4px; width: 3px; height: 14px; border-radius: 2px; background: var(--text); transform: translateX(-50%); }
+.news { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 150px; overflow-y: auto; font-size: 12.5px; }
+.news li { display: grid; grid-template-columns: 34px 1fr; gap: 8px; align-items: start; }
+.news .sc { font-weight: 700; font-variant-numeric: tabular-nums; text-align: center; border-radius: 6px; padding: 1px 0; background: var(--surface-2); }
+.news a { color: var(--text-2); }
+.news a:hover { color: var(--accent); }
+@media (max-width: 1000px) { .ctx { grid-template-columns: 1fr 1fr; } .ctx > div { border-right: 0; border-bottom: 1px solid var(--border); } .ctx > div:last-child { grid-column: 1 / -1; } }
 </style>
 </head>
 <body>
@@ -287,6 +300,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       </div>
     </div>
     <div class="card-b"><div class="chart" id="chart"></div></div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <div class="card-h"><h2>Contexto de mercado y noticias</h2><span class="pill" id="ctxPill" style="margin-left:auto">—</span></div>
+    <div class="ctx" id="ctx" style="margin-top:10px; border-top:1px solid var(--border)"></div>
   </section>
 
   <section class="card" style="margin-top:16px" id="liveCard">
@@ -437,7 +455,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("openMeter").style.width = (100 * n / mx) + "%";
     $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
 
-    renderChart(); renderTokenList(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
+    renderChart(); renderContext(); renderTokenList(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
     const up = S.update || {};
     const upTxt = up.state ? ` · ${up.state}${up.checked_at ? " (comprobado " + ago(S.now - up.checked_at) + ")" : ""}` : "";
     $("foot").textContent = (has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos") + ` · Versión ${S.version || "—"}${upTxt}`;
@@ -534,6 +552,26 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       <div><h3>Qué factores pesan más</h3>${impHtml}${cands}</div></div>`;
   }
 
+
+
+  // ---------- contexto de mercado ----------
+  function renderContext() {
+    const c = S.context || {}, el = $("ctx"), pill = $("ctxPill"), ro = (S.status || {}).risk_off;
+    if (!c.ts) { el.innerHTML = `<div style="grid-column:1/-1" class="empty">El contexto aparece unos minutos después de arrancar.</div>`; pill.textContent = "—"; return; }
+    pill.textContent = ro ? "🛑 Freno activo" : "✓ Sin freno"; pill.className = "pill " + (ro ? "bad" : "good");
+    const fng = c.fng, fngEs = { "Extreme Fear": "Miedo extremo", "Fear": "Miedo", "Neutral": "Neutral", "Greed": "Codicia", "Extreme Greed": "Codicia extrema" }[c.fng_text] || c.fng_text || "";
+    const ns = c.news_score;
+    const heads = (c.headlines || []).slice(0, 15).map(h => `<li><span class="sc ${cls(h.score)}">${h.score > 0 ? "+" : ""}${h.score}</span>
+      <span>${h.critical ? "⚠️ " : ""}${h.solana ? '<b>SOL</b> · ' : ""}<a href="${esc(h.link)}" target="_blank" rel="noopener">${esc(h.title)}</a> <span class="sub">· ${esc(h.source)} · ${ago(S.now - h.ts)}</span></span></li>`).join("");
+    el.innerHTML = `
+      <div><div class="label">Miedo y codicia</div><div class="big">${fng ?? "—"} <span class="sub" style="font-size:13px">${esc(fngEs)}</span></div>
+        <div class="gauge"><i style="left:${fng ?? 50}%"></i></div></div>
+      <div><div class="label">Solana (SOL)</div><div class="big">${c.sol_price ? "$" + c.sol_price.toFixed(2) : "—"}</div>
+        <div class="sub"><span class="${cls(c.sol_h1)}">${c.sol_h1 != null ? pct(c.sol_h1) : "—"} 1 h</span> · <span class="${cls(c.sol_h24)}">${c.sol_h24 != null ? pct(c.sol_h24) : "—"} 24 h</span></div></div>
+      <div><div class="label">Tono de las noticias</div><div class="big ${cls(ns || 0)}">${ns != null ? (ns > 0 ? "+" : "") + ns.toFixed(2) : "—"}</div>
+        <div class="sub">${c.news_n || 0} titulares en 12 h${ro ? `<br><b class="down">${esc(ro)}</b>` : ""}</div></div>
+      <div><div class="label" style="margin-bottom:8px">Últimos titulares</div><ul class="news">${heads || '<li class="sub">Sin titulares</li>'}</ul></div>`;
+  }
 
   // ---------- mercado en directo (velas) ----------
   let selPool = null, lw = null, cs = null, vs = null, lines = [], lastChartKey = "";
