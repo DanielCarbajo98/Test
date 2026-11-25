@@ -89,7 +89,7 @@ def main():
     logging.getLogger("httpx").setLevel(logging.WARNING)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
-    g = Gecko(min_interval=2.5)
+    g = Gecko(min_interval=8.0)   # ~7 peticiones/min: el bot tiene prioridad
     if not a.fetch:
         sample(g, out, a.minutes, a.every)
         return

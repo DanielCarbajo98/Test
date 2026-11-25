@@ -16,18 +16,28 @@ class Candles:
         self.min_interval = min_interval
         self._last = 0.0
 
-    def minute(self, pool: str, limit: int = 420) -> list[list[float]]:
+    def minute(self, pool: str, limit: int = 420, retries: int = 2) -> list[list[float]]:
         """Últimas `limit` velas de 1 min [ts,o,h,l,c,vol_usd], ascendente. 420 = 7 h (lo que usan las features)."""
-        wait = self.min_interval - (time.time() - self._last)
-        if wait > 0:
-            time.sleep(wait)
-        self._last = time.time()
-        try:
-            r = self.http.get(f"{G}/pools/{pool}/ohlcv/minute",
-                              params={"aggregate": 1, "limit": limit, "currency": "usd", "token": "base"})
-            if r.status_code == 429:
-                log.info("GeckoTerminal 429; se salta este candidato en este ciclo")
+        r = None
+        for attempt in range(retries + 1):
+            wait = self.min_interval - (time.time() - self._last)
+            if wait > 0:
+                time.sleep(wait)
+            self._last = time.time()
+            try:
+                r = self.http.get(f"{G}/pools/{pool}/ohlcv/minute",
+                                  params={"aggregate": 1, "limit": limit, "currency": "usd", "token": "base"})
+            except httpx.HTTPError as e:
+                log.warning("GeckoTerminal falló para %s: %s", pool, e)
                 return []
+            if r.status_code != 429:
+                break
+            if attempt < retries:
+                time.sleep(3 * (attempt + 1))     # límite de peticiones: esperar y reintentar
+        if r is None or r.status_code == 429:
+            log.info("GeckoTerminal sigue limitando; se reintenta este candidato en el próximo ciclo")
+            return []
+        try:
             r.raise_for_status()
         except httpx.HTTPError as e:
             log.warning("GeckoTerminal falló para %s: %s", pool, e)

@@ -34,7 +34,9 @@ EXCLUDE_BASE = QUOTES | {"USDG", "USDC", "USDT", "SOL", "JitoSOL", "mSOL", "cbBT
 
 
 class Gecko:
-    def __init__(self, min_interval: float = 2.2):
+    # GeckoTerminal permite ~30 peticiones/min POR CONEXIÓN, compartidas con el bot.
+    # Por defecto el recolector usa ~12/min y deja el resto al bot (prioridad: operar).
+    def __init__(self, min_interval: float = 5.0):
         self.http = httpx.Client(timeout=30, headers={"Accept": "application/json"})
         self.min_interval = min_interval
         self._last = 0.0
@@ -171,12 +173,13 @@ def main():
     ap.add_argument("--hours", type=float, default=48, help="antigüedad máxima de las pools nuevas")
     ap.add_argument("--max-pools", type=int, default=400)
     ap.add_argument("--loop", type=float, default=0, help="repetir cada N minutos (0 = una vez)")
+    ap.add_argument("--interval", type=float, default=5.0, help="segundos entre peticiones (deja cupo al bot)")
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     logging.getLogger("httpx").setLevel(logging.WARNING)
     out = Path(a.out)
     (out / "ohlcv").mkdir(parents=True, exist_ok=True)
-    g = Gecko()
+    g = Gecko(a.interval)
     while True:
         t0 = time.time()
         collect_round(g, out, a.pages, a.hours, a.max_pools)
