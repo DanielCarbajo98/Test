@@ -2,5 +2,5 @@
 Set-Location (Join-Path $PSScriptRoot "..")
 $here = (Get-Location).Path
 docker compose run --rm --no-deps -v "${here}:/work" -w /work bot python -m bot.setup
-docker compose restart bot
+docker compose up -d --force-recreate
 Read-Host "Pulsa Enter para cerrar"

@@ -288,6 +288,8 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
     bfile = state / "brain.json"
     brain = json.loads(bfile.read_text()) if bfile.exists() else {"version": 0, "history": [], "cost_penalty": 0.0}
     t0 = time.time()
+    brain["running_since"] = int(t0)
+    bfile.write_text(json.dumps(brain, indent=1, default=str))
 
     # 4) aprender de errores: calibrar costes con la realidad
     reality = reality_check(state, brain)
@@ -311,7 +313,13 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
         brain["status"] = "recopilando"
         brain["status_text"] = (f"Recopilando datos: {n:,} ejemplos de {MIN_SAMPLES:,} y {len(pools)} tokens de {MIN_POOLS} "
                                 f"necesarios antes de decidir nada.").replace(",", ".")
-        bfile.write_text(json.dumps(brain, indent=1))
+        brain["needs"] = {"samples": MIN_SAMPLES, "pools": MIN_POOLS}
+        brain["history"] = (brain.get("history", []) + [{"ts": int(time.time()), "decision": "recopilando",
+                            "version": brain.get("version", 0), "best": None, "best_score": None, "samples": n,
+                            "pools": len(pools), "mode": "rápido" if not full else "completo"}])[-200:]
+        brain.pop("running_since", None)
+        brain["learn_seconds"] = round(time.time() - t0, 1)
+        bfile.write_text(json.dumps(brain, indent=1, default=str))
         log.info(brain["status_text"])
         return brain
     X, y, ts, pid = ds
@@ -385,9 +393,17 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
     brain["ml"] = ({"test": ml["test"], "test_baseline": ml["test_baseline"], "threshold": ml["threshold"],
                     "importance": [{"feature": k, "name": NAMES_ES[k], "value": v} for k, v in ml["importance"]]} if ml else None)
     brain["lessons"] = lessons_from(X, y, ml["importance"] if ml else [], reality, pen)
+    champ_now = brain.get("champion") or {}
     brain["history"] = (brain.get("history", []) + [{"ts": int(time.time()), "decision": decision,
                         "version": brain["version"], "best": best["strategy"] if best else None,
-                        "best_score": best["score"] if best else None, "samples": n}])[-50:]
+                        "best_score": best["score"] if best else None, "samples": n, "pools": len(pools),
+                        "mode": "completo" if full else "rápido",
+                        "champion": champ_now.get("strategy"),
+                        "champion_exp": (champ_now.get("test") or {}).get("expectancy"),
+                        "candidates": [{"s": c["strategy"], "e": c["test"].get("expectancy"), "n": c["test"].get("n")}
+                                       for c in candidates]}])[-200:]
+    brain.pop("running_since", None)
+    brain["needs"] = {"samples": MIN_SAMPLES, "pools": MIN_POOLS}
     brain["learn_seconds"] = round(time.time() - t0, 1)
     brain["learn_mode"] = "completo" if full else "rápido"
     bfile.write_text(json.dumps(brain, indent=1, default=str))
@@ -485,11 +501,25 @@ def main():
             learn(a.data.split(","), a.state, full=(k % max(1, a.full_every) == 0) or not a.every_min)
         except Exception:  # noqa: BLE001
             log.exception("Fallo en el ciclo de aprendizaje")
+            try:
+                bf = Path(a.state) / "brain.json"
+                b = json.loads(bf.read_text())
+                b.pop("running_since", None)
+                bf.write_text(json.dumps(b, indent=1, default=str))
+            except (OSError, ValueError):
+                pass
         k += 1
         if not period:
             break
         from . import version
         end = time.time() + max(30, period - (time.time() - t0))
+        try:                            # para que el panel muestre cuándo será el próximo aprendizaje
+            bf = Path(a.state) / "brain.json"
+            b = json.loads(bf.read_text())
+            b["next_learn"] = int(end)
+            bf.write_text(json.dumps(b, indent=1, default=str))
+        except (OSError, ValueError):
+            pass
         while time.time() < end:
             if version.changed():
                 return                  # Docker lo reinicia con el código nuevo

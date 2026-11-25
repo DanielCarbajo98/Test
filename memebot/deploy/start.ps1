@@ -26,8 +26,7 @@ if (-not (Select-String -Path .env -Pattern '^WALLET_PRIVATE_KEY=.' -Quiet)) {
 } else { Paso "4/5 Configuracion existente (para cambiar claves: doble clic en CONFIGURAR-Windows)" }
 
 Paso "5/5 Arrancando bot, panel, cerebro y recolectores"
-docker compose up -d
-docker compose restart bot | Out-Null
+docker compose up -d --force-recreate
 $m = Select-String -Path .env -Pattern '^DASHBOARD_TOKEN=(.*)'
 if (-not $m) { Fin "Falta la configuracion. Vuelve a hacer doble clic en INICIAR y completa el asistente." }
 $token = $m.Matches[0].Groups[1].Value.Trim()

@@ -244,6 +244,30 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 .news a { color: var(--text-2); }
 .news a:hover { color: var(--accent); }
 @media (max-width: 1000px) { .ctx { grid-template-columns: 1fr 1fr; } .ctx > div { border-right: 0; border-bottom: 1px solid var(--border); } .ctx > div:last-child { grid-column: 1 / -1; } }
+
+.stk { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 0; }
+.stk > div { min-width: 0; padding: 14px 18px; }
+.stk > div:first-child { border-right: 1px solid var(--border); }
+.stk table tr { cursor: pointer; }
+.stk table tr.on td { background: var(--accent-soft); }
+#schart { height: 300px; }
+.trend-up { color: var(--good-text); } .trend-down { color: var(--bad-text); }
+@media (max-width: 1000px) { .stk { grid-template-columns: 1fr; } .stk > div:first-child { border-right: 0; border-bottom: 1px solid var(--border); } }
+
+.learn { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 22px; }
+.learn h3 { margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.prog { display: grid; gap: 10px; margin-bottom: 12px; }
+.prog .row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 12.5px; }
+.prog .bar2 { grid-column: 1 / -1; height: 7px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.prog .bar2 i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.running { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--accent); }
+.running::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .running::before { animation: none; } }
+#learnChart { height: 150px; }
+.lhist { max-height: 240px; overflow-y: auto; }
+.lhist td, .lhist th { padding: 6px 8px; font-size: 12px; }
+@media (max-width: 1000px) { .learn { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -317,6 +341,18 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <div class="legend" id="clegend"></div>
       </div>
       <div class="analysis" id="analysis"></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <div class="card-h"><h2>Acciones · alertas</h2><span class="sub" id="stkSub" style="margin-left:auto"></span></div>
+    <div class="stk" style="margin-top:10px; border-top:1px solid var(--border)">
+      <div class="table-wrap scroll" id="stkTable"></div>
+      <div>
+        <div class="chead" id="stkHead"></div>
+        <div id="schart"><div class="empty">Elige una acción de la lista.</div></div>
+        <div id="stkInfo" style="margin-top:10px"></div>
+      </div>
     </div>
   </section>
 
@@ -455,7 +491,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("openMeter").style.width = (100 * n / mx) + "%";
     $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
 
-    renderChart(); renderContext(); renderTokenList(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
+    renderChart(); renderContext(); renderTokenList(); renderStocks(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
     const up = S.update || {};
     const upTxt = up.state ? ` · ${up.state}${up.checked_at ? " (comprobado " + ago(S.now - up.checked_at) + ")" : ""}` : "";
     $("foot").textContent = (has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos") + ` · Versión ${S.version || "—"}${upTxt}`;
@@ -547,9 +583,30 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const les = (b.lessons || []).length ? `<ul class="lessons">${b.lessons.map(l => `<li>${esc(l)}</li>`).join("")}</ul>` : `<p class="sub">Todavía sin lecciones: necesita más datos.</p>`;
     const cands = (b.candidates || []).length ? `<table class="cands"><thead><tr><th>Aspirante</th><th class="num">Esperanza</th><th class="num">Ops</th></tr></thead><tbody>${
       b.candidates.map(x => `<tr><td>${esc(STRAT_ES[x.strategy] || x.strategy)}</td><td class="num ${cls(x.test.expectancy)}">${pct(x.test.expectancy, 2)}</td><td class="num">${x.test.n}</td></tr>`).join("")}</tbody></table>` : "";
+    // --- entrenamiento en directo ---
+    const run = b.running_since ? `<span class="running">Entrenando ahora… (${ago(S.now - b.running_since).replace("hace ", "")})</span>`
+      : `<span class="sub">Último aprendizaje ${b.updated_at ? ago(S.now - b.updated_at) : "—"}${b.learn_seconds ? ` (tardó ${b.learn_seconds} s)` : ""}${b.next_learn && b.next_learn > S.now ? ` · próximo en ${dur(b.next_learn - S.now)}` : ""}</span>`;
+    const nd = b.needs || { samples: 3000, pools: 60 };
+    const pS = Math.min(1, (b.samples || 0) / nd.samples), pP = Math.min(1, (b.pools || 0) / nd.pools);
+    const prog = st === "recopilando" ? `<div class="prog">
+        <div class="row"><span>Ejemplos estudiados</span><b>${(b.samples || 0).toLocaleString("es-ES")} / ${nd.samples.toLocaleString("es-ES")}</b><span class="bar2"><i style="width:${100 * pS}%"></i></span></div>
+        <div class="row"><span>Tokens con datos a futuro</span><b>${b.pools || 0} / ${nd.pools}</b><span class="bar2"><i style="width:${100 * pP}%"></i></span></div>
+        <p class="sub" style="margin:0">Cuando ambas barras se llenen, empezará a competir estrategias y elegirá la mejor.</p></div>` : "";
+    const H2 = (b.history || []).slice().reverse();
+    const decEs = { nueva: "✓ nueva estrategia", mantener: "mantiene", defensivo: "defensivo", recopilando: "recopilando datos" };
+    const rows = H2.slice(0, 40).map(h => `<tr><td class="sub">${dt(h.ts)}</td><td>${esc(decEs[h.decision] || h.decision)}${h.mode ? ` <span class="sub">· ${esc(h.mode)}</span>` : ""}</td>
+      <td class="num">${(h.samples || 0).toLocaleString("es-ES")}</td><td>${h.best ? esc(STRAT_ES[h.best] || h.best) : "—"}</td>
+      <td class="num ${h.best_score != null ? cls(h.best_score) : ""}">${h.best_score != null ? pct(h.best_score, 2) : "—"}</td></tr>`).join("");
+    const learnHtml = `<div class="learn">
+      <div><h3>Entrenamiento</h3><div style="margin-bottom:10px">${run}</div>${prog}<div id="learnChart"></div>
+        <p class="sub" style="margin:6px 0 0"><span style="color:var(--accent)">━</span> ejemplos estudiados · <span style="color:#16a34a">━</span> esperanza prudente de la mejor estrategia (%)</p></div>
+      <div><h3>Historial de aprendizaje</h3><div class="lhist table-wrap"><table><thead><tr><th>Cuándo</th><th>Resultado</th><th class="num">Ejemplos</th><th>Mejor aspirante</th><th class="num">Esperanza*</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="5" class="sub">Aún sin ciclos.</td></tr>'}</tbody></table></div>
+        <p class="sub" style="margin:6px 0 0">* Límite inferior prudente de la ganancia media por operación en datos que el cerebro no vio al aprender.</p></div></div>`;
     el.innerHTML = `<div class="brain"><div><h3>Estrategia activa</h3>${champHtml}${meta}</div>
       <div><h3>Lo que ha aprendido</h3>${les}</div>
-      <div><h3>Qué factores pesan más</h3>${impHtml}${cands}</div></div>`;
+      <div><h3>Qué factores pesan más</h3>${impHtml}${cands}</div></div>${learnHtml}`;
+    drawLearnChart(b.history || []);
   }
 
 
@@ -571,6 +628,67 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       <div><div class="label">Tono de las noticias</div><div class="big ${cls(ns || 0)}">${ns != null ? (ns > 0 ? "+" : "") + ns.toFixed(2) : "—"}</div>
         <div class="sub">${c.news_n || 0} titulares en 12 h${ro ? `<br><b class="down">${esc(ro)}</b>` : ""}</div></div>
       <div><div class="label" style="margin-bottom:8px">Últimos titulares</div><ul class="news">${heads || '<li class="sub">Sin titulares</li>'}</ul></div>`;
+  }
+
+
+  // ---------- acciones ----------
+  let selStock = null, slw = null, scs = null, s50 = null, s200 = null, sLoaded = "";
+  function renderStocks() {
+    const k = S.stocks || {}, wl = k.watchlist || [];
+    if (!wl.length) { $("stkTable").innerHTML = `<div class="empty" style="height:120px">El análisis de acciones aparece a los pocos minutos de arrancar (servicio «stocks»).</div>`; $("stkSub").textContent = ""; return; }
+    const tr = k.track || {};
+    $("stkSub").textContent = `${wl.length} acciones · ${Object.keys(k.positions || {}).length} alertas abiertas` + (tr.n ? ` · historial: ${tr.n} cerradas, acierto ${tr.win_rate}%, media ${pct(tr.avg_ret)}` : "") + ` · ${ago(S.now - k.ts)}`;
+    if (!selStock || !wl.some(r => r.symbol === selStock)) selStock = (wl.find(r => r.status !== "vigilando") || wl[0]).symbol;
+    const tag = r => r.status === "en cartera" ? '<span class="badge pos">Alerta abierta</span>' : r.status === "compra" ? '<span class="badge sig">COMPRAR</span>'
+      : r.status === "venta" ? '<span class="badge" style="background:color-mix(in srgb,var(--bad) 22%,transparent);color:var(--bad-text)">VENDER</span>' : '<span class="badge no">Vigilando</span>';
+    $("stkTable").innerHTML = `<table><thead><tr><th>Acción</th><th class="num">Precio</th><th class="num">1 día</th><th class="num">1 mes</th><th class="num">RSI</th><th>Tendencia</th><th>Estado</th></tr></thead><tbody>${
+      wl.map(r => `<tr data-s="${esc(r.symbol)}" class="${r.symbol === selStock ? "on" : ""}"><td><b>${esc(r.symbol)}</b><div class="sub">${esc((r.name || "").slice(0, 26))}</div></td>
+        <td class="num">${r.price.toLocaleString("es-ES", { maximumFractionDigits: 2 })} ${esc(r.currency)}</td><td class="num ${cls(r.chg_1d)}">${pct(r.chg_1d)}</td>
+        <td class="num ${cls(r.chg_1m)}">${pct(r.chg_1m)}</td><td class="num">${r.rsi.toFixed(0)}</td>
+        <td class="${r.trend === "alcista" ? "trend-up" : r.trend === "bajista" ? "trend-down" : "flat"}">${esc(r.trend)}</td><td>${tag(r)}</td></tr>`).join("")}</tbody></table>`;
+    $("stkTable").querySelectorAll("tr[data-s]").forEach(t => t.onclick = () => { selStock = t.dataset.s; sLoaded = ""; renderStocks(); loadStock(); });
+    const row = wl.find(r => r.symbol === selStock);
+    if (row) {
+      const pos = (k.positions || {})[row.symbol];
+      const setups = Object.entries(row.checks || {}).map(([name, cs]) => `<div style="margin-top:8px"><b style="font-size:12.5px">${esc(name)}</b> <span class="sub">${cs.filter(c => c[1]).length}/${cs.length}</span>
+        <div class="checks">${cs.map(([l, ok]) => `<div class="chk ${ok ? "ok" : "ko"}"><span class="ic">${ok ? "✓" : "✗"}</span><span>${esc(l)}</span><span></span></div>`).join("")}</div></div>`).join("");
+      const hist = (k.alerts || []).filter(a => a.symbol === row.symbol).slice(0, 6).map(a => `<li><time>${dt(a.ts)}</time><div><b class="${a.side === "COMPRA" ? "up" : "down"}">${a.side}</b> a ${a.price.toFixed(2)} · ${esc(a.reason)}${a.ret != null ? ` · <b class="${cls(a.ret)}">${pct(a.ret)}</b>` : ""}</div></li>`).join("");
+      $("stkInfo").innerHTML = (pos ? `<div class="verdict yes">● Alerta abierta desde ${pos.entry.toFixed(2)} · ${pct((row.price / pos.entry - 1) * 100)} · stop ${pos.stop.toFixed(2)}</div>` : "")
+        + setups + (hist ? `<ul class="feed" style="margin-top:10px">${hist}</ul>` : "")
+        + `<p class="sub" style="margin:10px 0 0">Alertas orientativas, no asesoramiento financiero. Tú decides y ejecutas en tu broker.</p>`;
+    }
+    if (sLoaded !== selStock) loadStock();
+  }
+  async function loadStock() {
+    if (!selStock) return;
+    sLoaded = selStock;
+    try {
+      const r = await fetch("api/stock_chart" + (location.search ? location.search + "&" : "?") + "symbol=" + encodeURIComponent(selStock), { headers: H, cache: "no-store" });
+      if (!r.ok) return;
+      const d = await r.json();
+      if (!window.LightweightCharts) return;
+      if (!slw) {
+        const el = $("schart"); el.innerHTML = "";
+        slw = LightweightCharts.createChart(el, { autoSize: true,
+          layout: { background: { type: "solid", color: "transparent" }, textColor: css("--muted"), fontFamily: css("--font") },
+          grid: { vertLines: { color: css("--grid") }, horzLines: { color: css("--grid") } },
+          rightPriceScale: { borderColor: css("--border") }, timeScale: { borderColor: css("--border") } });
+        scs = slw.addCandlestickSeries({ upColor: "#16a34a", downColor: "#dc2626", borderVisible: false, wickUpColor: "#16a34a", wickDownColor: "#dc2626" });
+        s50 = slw.addLineSeries({ color: "#3987e5", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+        s200 = slw.addLineSeries({ color: "#f59e0b", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+      }
+      const day = t => { const x = new Date(t * 1000); return { year: x.getUTCFullYear(), month: x.getUTCMonth() + 1, day: x.getUTCDate() }; };
+      const key = t => { const x = new Date(t * 1000); return x.toISOString().slice(0, 10); };
+      scs.setData(d.candles.map(c => ({ time: day(c[0]), open: c[1], high: c[2], low: c[3], close: c[4] })));
+      s50.setData(d.candles.map((c, i) => d.sma50[i] == null ? null : { time: day(c[0]), value: d.sma50[i] }).filter(Boolean));
+      s200.setData(d.candles.map((c, i) => d.sma200[i] == null ? null : { time: day(c[0]), value: d.sma200[i] }).filter(Boolean));
+      const days = new Set(d.candles.map(c => key(c[0])));
+      scs.setMarkers((d.alerts || []).filter(a => days.has(key(a.ts))).map(a => a.side === "COMPRA"
+        ? { time: day(a.ts), position: "belowBar", color: "#3987e5", shape: "arrowUp", text: "COMPRA" }
+        : { time: day(a.ts), position: "aboveBar", color: "#f59e0b", shape: "arrowDown", text: "VENTA" }));
+      slw.timeScale().fitContent();
+      $("stkHead").innerHTML = `<b>${esc(d.symbol)}</b><span class="sub">${esc(d.name)} · velas diarias · <span style="color:#3987e5">media 50</span> · <span style="color:#f59e0b">media 200</span></span>`;
+    } catch {}
   }
 
   // ---------- mercado en directo (velas) ----------
@@ -695,6 +813,30 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("analysis").innerHTML = html;
   }
 
+
+  let llw = null;
+  function drawLearnChart(hist) {
+    const el = $("learnChart");
+    if (!el || !window.LightweightCharts) return;
+    if (llw) { try { llw.remove(); } catch {} llw = null; }
+    if (hist.length < 2) { el.innerHTML = `<div class="empty">La gráfica aparece tras dos ciclos de aprendizaje.</div>`; return; }
+    llw = LightweightCharts.createChart(el, { autoSize: true, handleScroll: false, handleScale: false,
+      layout: { background: { type: "solid", color: "transparent" }, textColor: css("--muted"), fontFamily: css("--font") },
+      grid: { vertLines: { visible: false }, horzLines: { color: css("--grid") } },
+      rightPriceScale: { borderColor: css("--border") }, leftPriceScale: { visible: true, borderColor: css("--border") },
+      timeScale: { borderColor: css("--border"), timeVisible: true } });
+    const seen = new Set(), pts = hist.filter(h => !seen.has(h.ts) && seen.add(h.ts)).sort((a, b) => a.ts - b.ts);
+    const sm = llw.addLineSeries({ color: css("--accent"), lineWidth: 2, priceScaleId: "left", priceLineVisible: false,
+      priceFormat: { type: "price", precision: 0, minMove: 1 } });
+    sm.setData(pts.map(h => ({ time: h.ts, value: h.samples || 0 })));
+    const sc = pts.filter(h => h.best_score != null);
+    if (sc.length) {
+      const ex = llw.addLineSeries({ color: "#16a34a", lineWidth: 2, priceScaleId: "right", priceLineVisible: false });
+      ex.setData(sc.map(h => ({ time: h.ts, value: h.best_score })));
+    }
+    llw.timeScale().fitContent();
+  }
+
   // ---------- posiciones ----------
   function renderPositions() {
     const ps = (S.status || {}).positions || [];
@@ -781,6 +923,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const nx = cur === "light" ? "dark" : "light"; document.documentElement.dataset.theme = nx;
     try { localStorage.setItem("memebot-theme", nx); } catch {} if (S) renderChart();
     if (lw) { lw.remove(); lw = null; lines = []; lastChartKey = ""; loadChart(); }
+    if (slw) { slw.remove(); slw = null; sLoaded = ""; loadStock(); }
   };
   addEventListener("resize", () => S && renderChart());
   load(); setInterval(load, 3000);

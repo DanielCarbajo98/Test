@@ -97,6 +97,15 @@ def chart_detail(state: Path, pool: str) -> dict | None:
     return data
 
 
+def _stocks_view(state: Path) -> dict:
+    st = _read_json(state / "stocks.json", {})
+    if not st:
+        return {}
+    return {"ts": st.get("ts"), "watchlist": st.get("watchlist", []), "positions": st.get("positions", {}),
+            "alerts": st.get("alerts", [])[-40:][::-1], "closed": st.get("closed", [])[-40:][::-1],
+            "track": st.get("track", {})}
+
+
 def build_state(state: Path) -> dict:
     status = _read_json(state / "status.json", {})
     now = time.time()
@@ -122,13 +131,13 @@ def build_state(state: Path) -> dict:
     brain = _read_json(state / "brain.json", {})
     brain_view = {k: brain.get(k) for k in ("version", "status", "status_text", "updated_at", "samples", "pools",
                                             "cost_penalty", "lessons", "reality", "ml", "learn_seconds", "learn_mode",
-                                            "last_full_learn")}
+                                            "last_full_learn", "running_since", "next_learn", "needs")}
     champ = brain.get("champion") or {}
     brain_view["champion"] = {k: champ.get(k) for k in ("kind", "strategy", "version", "test", "promoted_at",
                                                         "exits_bt", "threshold", "params")} if champ else None
     brain_view["candidates"] = [{k: c.get(k) for k in ("kind", "strategy", "test", "score")}
                                 for c in brain.get("candidates", [])]
-    brain_view["history"] = brain.get("history", [])[-12:]
+    brain_view["history"] = brain.get("history", [])[-120:]
     return {
         "now": int(now), "online": online, "status": status, "equity": equity_series(state),
         "closed": [{k: v for k, v in c.items() if k != "reasons"} | {"reason": (c["reasons"] or ["?"])[-1]}
@@ -137,6 +146,7 @@ def build_state(state: Path) -> dict:
         "charts": chart_list(state)[:40],
         "version": version.read()[:7], "update": _read_json(state / "update.json", {}),
         "context": _read_json(state / "context.json", {}),
+        "stocks": _stocks_view(state),
         "control": {"paused": bool(control.get("paused", status.get("paused", False))),
                     "close_all_pending": bool(control.get("close_all"))},
     }
@@ -184,6 +194,12 @@ def make_handler(state: Path, token: str):
                 return self._send(200, STATIC.read_bytes(), "text/html; charset=utf-8")
             if path == "/api/state":
                 return self._json(build_state(state))
+            if path == "/api/stock_chart":
+                sym = (parse_qs(urlparse(self.path).query).get("symbol") or [""])[0].upper()
+                if not sym or not all(ch.isalnum() or ch in ".-^=" for ch in sym):
+                    return self._json({"error": "símbolo no válido"}, 400)
+                d = _read_json(state / "stock_charts" / f"{sym.replace('.', '_')}.json", None)
+                return self._json(d) if d else self._json({"error": "sin gráfico"}, 404)
             if path == "/api/chart":
                 pool = (parse_qs(urlparse(self.path).query).get("pool") or [""])[0]
                 d = chart_detail(state, pool)

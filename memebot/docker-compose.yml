@@ -54,6 +54,13 @@ services:
       - ./research:/app/research:ro
     command: ["sh", "-c", "while true; do python -m research.sample_launches --minutes 60 --every 180; python -m research.sample_launches --fetch; done"]
 
+  stocks:                    # acciones: alertas de compra/venta por Telegram (cada 15 min)
+    <<: *base
+    volumes:
+      - ./state:/app/state
+      - ./bot:/app/bot:ro
+    command: ["python", "-m", "bot.stocks", "--state", "state", "--loop", "15"]
+
   updater:                   # actualizaciones automáticas desde tu GitHub (cada 30 min, con tests previos)
     <<: *base
     volumes:

@@ -25,8 +25,7 @@ else
 fi
 
 paso "5/5 Arrancando bot, panel, cerebro y recolectores"
-docker compose up -d
-docker compose restart bot >/dev/null
+docker compose up -d --force-recreate
 TOKEN=$(grep ^DASHBOARD_TOKEN= .env | cut -d= -f2)
 URL="http://127.0.0.1:8050/?token=$TOKEN"
 sleep 5
