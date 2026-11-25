@@ -839,7 +839,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         slw = LightweightCharts.createChart(el, { autoSize: true,
           layout: { background: { type: "solid", color: "transparent" }, textColor: css("--muted"), fontFamily: css("--font") },
           grid: { vertLines: { color: css("--grid") }, horzLines: { color: css("--grid") } },
-          rightPriceScale: { borderColor: css("--border") }, timeScale: { borderColor: css("--border") } });
+          rightPriceScale: { borderColor: css("--border") }, timeScale: { borderColor: css("--border"), tickMarkFormatter: localTicks } });
         scs = slw.addCandlestickSeries({ upColor: "#16a34a", downColor: "#dc2626", borderVisible: false, wickUpColor: "#16a34a", wickDownColor: "#dc2626" });
         s50 = slw.addLineSeries({ color: "#3987e5", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
         s200 = slw.addLineSeries({ color: "#f59e0b", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
@@ -962,6 +962,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     renderTokenList(); loadChart();
   });
   const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  // las velas van en UTC: el eje se muestra en tu hora local, igual que el cursor
+  const localTicks = (t, type) => { const d = new Date(t * 1000);
+    return type <= 2 ? d.toLocaleDateString("es-ES", { day: "2-digit", month: "short" }) : d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }); };
   function precisionFor(p) { if (!p || p <= 0) return 6; return Math.min(12, Math.max(2, Math.ceil(-Math.log10(p)) + 3)); }
   function renderTokenList() {
     const list = S.charts || [];
@@ -1095,7 +1098,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       layout: { background: { type: "solid", color: "transparent" }, textColor: css("--muted"), fontFamily: css("--font") },
       grid: { vertLines: { visible: false }, horzLines: { color: css("--grid") } },
       rightPriceScale: { borderColor: css("--border") }, leftPriceScale: { visible: true, borderColor: css("--border") },
-      timeScale: { borderColor: css("--border"), timeVisible: true } });
+      timeScale: { borderColor: css("--border"), timeVisible: true, tickMarkFormatter: localTicks } });
     const seen = new Set(), pts = hist.filter(h => !seen.has(h.ts) && seen.add(h.ts)).sort((a, b) => a.ts - b.ts);
     const sm = llw.addLineSeries({ color: css("--accent"), lineWidth: 2, priceScaleId: "left", priceLineVisible: false,
       priceFormat: { type: "price", precision: 0, minMove: 1 } });
@@ -1199,7 +1202,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       const chart = LightweightCharts.createChart(el, { autoSize: true,
         layout: { background: { type: "solid", color: "transparent" }, textColor: css("--muted"), fontFamily: css("--font") },
         grid: { vertLines: { color: css("--grid") }, horzLines: { color: css("--grid") } },
-        rightPriceScale: { borderColor: css("--border") }, timeScale: { borderColor: css("--border"), timeVisible: d.interval !== "1d" },
+        rightPriceScale: { borderColor: css("--border") }, timeScale: { borderColor: css("--border"), timeVisible: d.interval !== "1d", tickMarkFormatter: localTicks },
         localization: { timeFormatter: x => new Date(x * 1000).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) } });
       const ser = chart.addCandlestickSeries({ upColor: "#16a34a", downColor: "#dc2626", borderVisible: false, wickUpColor: "#16a34a", wickDownColor: "#dc2626" });
       slive = { chart, ser, lines: [] };
@@ -1267,7 +1270,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       tlw = LightweightCharts.createChart(el, { autoSize: true,
         layout: { background: { type: "solid", color: "transparent" }, textColor: css("--muted"), fontFamily: css("--font") },
         grid: { vertLines: { color: css("--grid") }, horzLines: { color: css("--grid") } },
-        rightPriceScale: { borderColor: css("--border") }, timeScale: { borderColor: css("--border"), timeVisible: true },
+        rightPriceScale: { borderColor: css("--border") }, timeScale: { borderColor: css("--border"), timeVisible: true, tickMarkFormatter: localTicks },
         localization: { timeFormatter: x => new Date(x * 1000).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) } });
       const prec = precisionFor(t.buy_price || d.candles[d.candles.length - 1][4]);
       const ser = tlw.addCandlestickSeries({ upColor: "#16a34a", downColor: "#dc2626", borderVisible: false, wickUpColor: "#16a34a", wickDownColor: "#dc2626",
@@ -1276,7 +1279,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       ser.setData(cd.map(c => ({ time: c[0], open: c[1], high: c[2], low: c[3], close: c[4] })));
       const t0 = cd[0][0], t1 = cd[cd.length - 1][0], step = cd.length > 1 ? cd[1][0] - cd[0][0] : 60;
       const snap = x => Math.min(Math.max(Math.floor((x - t0) / step) * step + t0, t0), t1);
-      ser.setMarkers(t.fills.map(f => f.side === "BUY"
+      const inRange = f => { const x = isoTs(f.ts); return x >= t0 - step && x <= t1 + step; };
+      const outside = t.fills.filter(f => !inRange(f));
+      ser.setMarkers(t.fills.filter(inRange).map(f => f.side === "BUY"
         ? { time: snap(isoTs(f.ts)), position: "belowBar", color: "#3987e5", shape: "arrowUp", text: "COMPRA" }
         : { time: snap(isoTs(f.ts)), position: "aboveBar", color: "#f59e0b", shape: "arrowDown", text: "VENTA · " + (f.reason || "").split(" ").slice(0, 2).join(" ") })
         .sort((a, b) => a.time - b.time));
@@ -1284,8 +1289,9 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       sells.forEach((f, i) => ser.createPriceLine({ price: f.price, color: "#f59e0b", lineWidth: 1, lineStyle: 2, axisLabelVisible: i === sells.length - 1, title: "Tu venta" }));
       if (d.price_now) ser.createPriceLine({ price: d.price_now, color: "#a3a3a3", lineWidth: 1, lineStyle: 1, axisLabelVisible: true, title: "Ahora" });
       tlw.timeScale().fitContent();
-      $("tNote").textContent = d.source && d.source !== "live"
-        ? `GeckoTerminal está saturado: velas guardadas hace ${d.saved_min ?? 0} min${d.source === "bot" ? " por el bot" : ""}. Se actualizarán solas en cuanto responda.` : "";
+      $("tNote").textContent = (d.source && d.source !== "live"
+        ? `GeckoTerminal está saturado: velas guardadas hace ${d.saved_min ?? 0} min${d.source === "bot" ? " por el bot" : ""}. Se actualizarán solas en cuanto responda. ` : "")
+        + (outside.length ? `${outside.map(f => (f.side === "BUY" ? "La compra" : "La venta") + " de las " + hhmm(isoTs(f.ts))).join(" y ")} queda fuera de las velas disponibles (terminan a las ${hhmm(t1)}): su línea de precio sí está en el gráfico.` : "");
     } else {
       $("tNote").textContent = "";
       $("tChart").innerHTML = `<div class="empty">${d.alive ? "No se pudieron descargar las velas ahora mismo (límite de peticiones). Cierra y vuelve a abrir en unos segundos." : "Este token ya no tiene liquidez ni datos (probablemente ha muerto o hizo rug)."}</div>`;
@@ -1298,7 +1304,10 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <span>Precio de compra</span><b>${price(t.buy_price)}</b><span>Precio ahora</span><b>${d.price_now != null ? price(d.price_now) : "—"}${fromBuy != null ? ` <span class="${cls(fromBuy)}">(${pct(fromBuy)} desde tu compra)</span>` : ""}</b></div>
       ${nowVal != null ? `<div class="verdict ${diff > 0 ? "no" : "yes"}" style="margin-top:12px">Si no hubieras vendido nada, hoy valdría <b>${usd(nowVal)}</b>
         → ${diff > 0 ? `<span class="up">${sgnUsd(diff)} más</span> de lo que obtuviste (vendió pronto)` : `<span class="up">${sgnUsd(-diff)} menos</span>: vender fue la decisión correcta`}.</div>` : ""}
-      <p class="sub" style="margin:10px 0 0">Ventas: ${sells.map(f => `${dt(isoTs(f.ts))} a ${price(f.price)} (${esc(f.reason)})`).join(" · ")}</p>`;
+      <p class="sub" style="margin:10px 0 0">Ventas: ${sells.map(f => `${dt(isoTs(f.ts))} a ${price(f.price)} (${esc(f.reason)})`).join(" · ")}</p>
+      ${sells.map(f => { const m = /([+−-]?\d+(?:[.,]\d+)?)%\)?\s*$/.exec(f.reason || ""); if (!m || !t.buy_price) return "";
+          const seen = parseFloat(m[1].replace("−", "-").replace(",", ".")), real = (f.price / t.buy_price - 1) * 100;
+          return Math.abs(seen - real) >= 3 ? `<p class="sub" style="margin:6px 0 0">ℹ️ Decidió vender viendo ${pct(seen)} (precio de DexScreener, que va con retraso), pero al vender la cotización real de Jupiter daba ${pct(real)}. Con dinero real pasaría lo mismo: por eso el simulado vende al precio ejecutable.</p>` : ""; }).join("")}`;
   }
 
   // ---------- posiciones ----------
