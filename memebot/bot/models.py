@@ -91,6 +91,8 @@ class Position:
     peak_price: float
     tp_levels_hit: list[int] = field(default_factory=list)
     pool: str = ""
+    token_created_at: float = 0.0   # para que el cerebro pueda re-evaluar la posición (venta inteligente)
+    supply: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

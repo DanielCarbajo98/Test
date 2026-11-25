@@ -412,12 +412,32 @@ class Bot:
             head = f"🪙 CRIPTO · ❌ {kind} CON PÉRDIDA · {symbol} −${abs(pnl):.2f}"
         return f"{head}\nVendido por ${fill.usd:.2f} a {fill.price:.6g}\nMotivo: {reason}"
 
+    def _smart_exit(self, mint: str, pos, rows) -> bool:
+        """Venta inteligente: el cerebro re-evalúa la posición con las velas de ahora; si ya no ve ventaja, vende.
+        Solo actúa si se demostró que mejora el resultado en datos no vistos (brain.model_exit)."""
+        me = self.brain.model_exit() if self.brain_active() else None
+        if not me or not rows or not pos.supply or not pos.token_created_at:
+            return False
+        if time.time() - pos.opened_at < 60 * 10:
+            return False
+        try:
+            pred = self.brain.predict(rows, int(pos.token_created_at), pos.supply, self.ctx)
+        except Exception as e:  # noqa: BLE001
+            log.warning("Venta inteligente %s: %s", pos.symbol, e)
+            return False
+        if pred is None or pred >= me["threshold"]:
+            return False
+        self._close_one(mint, f"venta inteligente: el cerebro ya no ve ventaja (espera {100 * pred:+.1f}% desde aquí)")
+        return mint not in self.pf.positions
+
     def refresh_position_charts(self):
         """Velas de las posiciones abiertas (para ver en directo dónde está cada una)."""
-        for mint, pos in self.pf.positions.items():
+        for mint, pos in list(self.pf.positions.items()):
             if not pos.pool:
                 continue
             rows = self.candles.minute(pos.pool, limit=240)
+            if self._smart_exit(mint, pos, rows):
+                continue
             sig, feat, checks, pred = self._analysis.get(pos.pool, (False, {}, [], None))
             self._save_chart(pos.pool, mint, pos.symbol, rows, sig, feat, checks, pred, {"position": True})
 
@@ -537,7 +557,7 @@ class Bot:
             pos = Position(token_address=s.token_address, symbol=s.symbol, decimals=rep.decimals or 6,
                            entry_price=fill.price, qty=fill.qty, initial_qty=fill.qty, cost_usd=fill.usd,
                            realized_usd=0.0, entry_liquidity=s.liquidity_usd, opened_at=time.time(),
-                           peak_price=fill.price, pool=s.pair_address)
+                           peak_price=fill.price, pool=s.pair_address, token_created_at=created, supply=supply)
             self.pf.open(pos, self.strategy_label(), fill.tx)
             ex = self.exit_cfg()
             tps = " / ".join(f"+{g:g}% (vende {q:g}%)" for g, q in ex.take_profits)

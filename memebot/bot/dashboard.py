@@ -300,7 +300,8 @@ def build_state(state: Path) -> dict:
                                             "last_full_learn", "running_since", "next_learn", "needs")}
     champ = brain.get("champion") or {}
     brain_view["champion"] = {k: champ.get(k) for k in ("kind", "strategy", "version", "test", "promoted_at",
-                                                        "exits_bt", "threshold", "params")} if champ else None
+                                                        "exits_bt", "threshold", "params", "exit_style",
+                                                        "model_exit")} if champ else None
     brain_view["candidates"] = [{k: c.get(k) for k in ("kind", "strategy", "test", "score")}
                                 for c in brain.get("candidates", [])]
     brain_view["history"] = brain.get("history", [])[-120:]

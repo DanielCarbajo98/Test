@@ -684,7 +684,10 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       <p>${esc(b.status_text || "")}</p>
       <div class="kv"><span>Esperanza en datos no vistos</span><b class="${cls(t.expectancy)}">${pct(t.expectancy, 2)}</b>
         <span>Tasa de acierto</span><b>${t.win_rate}%</b><span>Operaciones de prueba</span><b>${t.n}</b>
-        <span>Salidas</span><b>SL −${c.exits_bt.sl}% · TP ${c.exits_bt.tp.map(x => "+" + x[0] + "%").join(" / ")} · trailing ${c.exits_bt.trail}%</b></div>`
+        <span>Salidas${c.exit_style ? " (" + esc(c.exit_style) + ", aprendidas)" : ""}</span><b>SL −${c.exits_bt.sl}% · TP ${c.exits_bt.tp.map(x => "+" + x[0] + "%").join(" / ")} · trailing ${c.exits_bt.trail}%</b>
+        ${c.model_exit ? `<span>Venta inteligente</span><b class="${c.model_exit.enabled ? "up" : "flat"}">${c.model_exit.enabled
+          ? `activa · ${pct(c.model_exit.test_gain_pct, 2)} por operación en datos no vistos` : "desactivada (no mejora)"}</b>` : ""}</div>
+      ${c.model_exit && c.model_exit.why ? `<p class="sub" style="margin-top:8px">${esc(c.model_exit.why)}.</p>` : ""}`
       : `<div class="big">${st === "defensivo" ? "Sin ventaja demostrada" : "Aún sin estrategia propia"}</div><p>${esc(b.status_text || "")}</p>`;
     const meta = `<div class="kv"><span>Ejemplos estudiados</span><b>${(b.samples || 0).toLocaleString("es-ES")}</b>
       <span>Tokens analizados</span><b>${b.pools ?? "—"}</b><span>Último aprendizaje</span><b>${b.updated_at ? ago(S.now - b.updated_at) : "—"}${b.learn_mode ? " · " + b.learn_mode : ""}</b>

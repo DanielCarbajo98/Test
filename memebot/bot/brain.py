@@ -53,6 +53,15 @@ NAMES_ES = {
     "news_score": "tono de las noticias",
 }
 DEFAULT_EXITS = {"sl": 25, "tp": [[100, 50], [300, 25]], "trail": 30, "trail_act": 50, "time": 90, "time_gain": 10}
+# estilos de salida que el modelo prueba (se elige en VALIDACIÓN, se comprueba en test)
+ML_EXIT_CHOICES = {
+    "rápida": {"sl": 15, "tp": [[30, 50], [80, 25]], "trail": 20, "trail_act": 30, "time": 60, "time_gain": 10},
+    "media": {"sl": 25, "tp": [[50, 50], [150, 25]], "trail": 35, "trail_act": 30, "time": 180, "time_gain": 10},
+    "por defecto": DEFAULT_EXITS,
+    "larga": {"sl": 35, "tp": [[100, 50], [300, 25]], "trail": 35, "trail_act": 50, "time": 240, "time_gain": 10},
+}
+MODEL_EXIT_MIN_HOLD = 10              # minutos antes de que la venta inteligente pueda actuar
+MODEL_EXIT_THRS = (-0.10, -0.05, -0.02, 0.0)
 MIN_SAMPLES = 3000
 MIN_POOLS = 60
 MIN_TEST_TRADES = 25
@@ -104,7 +113,7 @@ def build_dataset(pools, exits: dict, cost_penalty: float = 0.0, stride: int = S
     hist_ts, hist_rows = ctx_hist if ctx_hist else (np.array([]), [])
     tp_g = np.array([g / 100 for g, _ in exits["tp"]], dtype=np.float64)
     tp_p = np.array([p / 100 for _, p in exits["tp"]], dtype=np.float64)
-    X, y, ts, pid = [], [], [], []
+    X, y, ts, pid, ix = [], [], [], [], []
     for k, pd in enumerate(pools):
         mask = activity_mask(pd.f)
         cand = np.flatnonzero(mask[: len(pd.c) - 1])
@@ -120,9 +129,10 @@ def build_dataset(pools, exits: dict, cost_penalty: float = 0.0, stride: int = S
         X.append(feature_matrix(pd.f, cand, context_columns(pd.ts[cand], hist_ts, hist_rows)))
         ts.append(pd.ts[cand])
         pid.append(np.full(len(cand), k))
+        ix.append(cand)
     if not X:
         return None
-    return np.vstack(X), np.array(y), np.concatenate(ts), np.concatenate(pid)
+    return np.vstack(X), np.array(y), np.concatenate(ts), np.concatenate(pid), np.concatenate(ix)
 
 
 def dedupe(sel_idx: np.ndarray, ts: np.ndarray, pid: np.ndarray, gap: int = 3600) -> np.ndarray:
@@ -179,9 +189,65 @@ def train_model(X, y, ts, pid):
     sel_te = dedupe(np.flatnonzero(te)[pt >= best_thr], ts, pid)
     base_te = dedupe(np.flatnonzero(te), ts, pid)
     imp = importance(model, X[te], y[te])
-    return {"model": model, "threshold": best_thr, "val_lcb": best_score,
+    sel_va = dedupe(np.flatnonzero(va)[pv >= best_thr], ts, pid)
+    return {"model": model, "threshold": best_thr, "val_lcb": best_score, "sel_va": sel_va, "sel_te": sel_te,
             "test": summarize(y[sel_te]), "test_baseline": summarize(y[base_te]),
             "importance": imp, "split": [float(t1), float(t2)]}
+
+
+def _exit_args(exits: dict):
+    tp_g = np.array([g / 100 for g, _ in exits["tp"]], dtype=np.float64)
+    tp_p = np.array([p / 100 for _, p in exits["tp"]], dtype=np.float64)
+    return (exits["sl"] / 100, tp_g, tp_p, exits["trail"] / 100, exits["trail_act"] / 100, exits["time"],
+            exits["time_gain"] / 100)
+
+
+def model_exit_returns(model, pools, trades, exits: dict, pen: float, ctx_hist) -> tuple[list, dict]:
+    """Para cada operación (pool, vela de señal): retorno con las salidas normales y retorno si además se vende
+    en cuanto el modelo deja de ver ventaja (predicción < umbral), para cada umbral de MODEL_EXIT_THRS."""
+    from research.backtest import simulate
+    hist_ts, hist_rows = ctx_hist if ctx_hist else (np.array([]), [])
+    args = _exit_args(exits)
+    base, per = [], {t: [] for t in MODEL_EXIT_THRS}
+    for k, i in trades:
+        pd = pools[int(k)]
+        e0 = int(i) + 1
+        if e0 >= len(pd.c) - 1:
+            continue
+        cost = pd.side_cost[e0] + pen / 2
+        r, ex_j, _ = simulate(pd.o, pd.h, pd.l, pd.c, e0, cost, *args)
+        base.append(r)
+        js = np.arange(e0 + MODEL_EXIT_MIN_HOLD, min(int(ex_j), e0 + 1440))
+        preds = (model.predict(feature_matrix(pd.f, js, context_columns(pd.ts[js], hist_ts, hist_rows)))
+                 if len(js) else np.array([]))
+        for t in MODEL_EXIT_THRS:
+            hit = np.flatnonzero(preds < t)
+            if not len(hit):
+                per[t].append(r)
+                continue
+            j = int(js[hit[0]]) + 1
+            r2, _, _ = simulate(pd.o[:j], pd.h[:j], pd.l[:j], pd.c[:j], e0, cost, *args)
+            per[t].append(r2)
+    return base, per
+
+
+def model_exit_study(ml: dict, pools, ds, exits: dict, pen: float, ctx_hist) -> dict:
+    """¿Mejora vender cuando el modelo deja de ver ventaja? Umbral elegido en validación, comprobado en test."""
+    _, _, _, pid, ix = ds
+    tr_va = [(pid[i], ix[i]) for i in ml["sel_va"]]
+    tr_te = [(pid[i], ix[i]) for i in ml["sel_te"]]
+    b_va, p_va = model_exit_returns(ml["model"], pools, tr_va, exits, pen, ctx_hist)
+    if len(b_va) < 15:
+        return {"enabled": False, "why": "pocas operaciones para comprobarlo"}
+    gains = {t: float(np.mean(p_va[t]) - np.mean(b_va)) for t in MODEL_EXIT_THRS}
+    t_best = max(gains, key=gains.get)
+    b_te, p_te = model_exit_returns(ml["model"], pools, tr_te, exits, pen, ctx_hist)
+    g_te = float(np.mean(p_te[t_best]) - np.mean(b_te)) if b_te else 0.0
+    ok = gains[t_best] > 0 and g_te > 0 and len(b_te) >= 15
+    return {"enabled": bool(ok), "threshold": t_best, "val_gain_pct": round(100 * gains[t_best], 2),
+            "test_gain_pct": round(100 * g_te, 2), "n_test": len(b_te),
+            "why": ("vender cuando el modelo deja de ver ventaja mejora el resultado también en datos no vistos" if ok
+                    else "vender antes por el modelo no mejora el resultado en datos no vistos: se usan solo las salidas normales")}
 
 
 def importance(model, X, y, n: int = 3000) -> list[tuple[str, float]]:
@@ -326,10 +392,28 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
         bfile.write_text(json.dumps(brain, indent=1, default=str))
         log.info(brain["status_text"])
         return brain
-    X, y, ts, pid = ds
+    X, y, ts, pid, ix = ds
 
-    # 2) modelo
+    # 2) modelo: en los ciclos completos prueba varios estilos de salida y se queda con el mejor en VALIDACIÓN
+    used_exits = (brain.get("champion") or {}).get("exits_bt", DEFAULT_EXITS)
     ml = train_model(X, y, ts, pid)
+    if ml:
+        ml["exits"], ml["exit_style"] = used_exits, next((k for k, v in ML_EXIT_CHOICES.items() if v == used_exits), "actual")
+    if full:
+        for style, ex in ML_EXIT_CHOICES.items():
+            if ex == used_exits:
+                continue
+            ds2 = build_dataset(pools, ex, pen, ctx_hist=ctx_hist)
+            m2 = train_model(*ds2[:4]) if ds2 is not None else None
+            if m2 and (ml is None or m2["val_lcb"] > ml["val_lcb"]):
+                m2["exits"], m2["exit_style"], m2["_ds"] = ex, style, ds2
+                ml = m2
+    if ml:
+        try:
+            ml["model_exit"] = model_exit_study(ml, pools, ml.pop("_ds", ds), ml["exits"], pen, ctx_hist)
+        except Exception as e:  # noqa: BLE001
+            log.warning("Estudio de venta inteligente: %s", e)
+            ml["model_exit"] = {"enabled": False, "why": "no se pudo comprobar"}
     t1, t2 = (ml["split"] if ml else np.quantile(ts, [0.6, 0.8]).tolist())
     # 3) aspirantes de reglas
     # reoptimizar las reglas es caro: se hace en los ciclos completos; en los rápidos se conserva lo último
@@ -344,7 +428,8 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
         candidates.append({"kind": "rule", "strategy": name, "params": r["entry"], "exits_bt": r["exit"],
                            "test": r["test"], "score": r["test"]["lcb"] if r["test"]["n"] >= MIN_TEST_TRADES else None})
     if ml and ml["test"]["n"] >= MIN_TEST_TRADES:
-        candidates.append({"kind": "ml", "strategy": "ml", "params": {}, "exits_bt": DEFAULT_EXITS,
+        candidates.append({"kind": "ml", "strategy": "ml", "params": {}, "exits_bt": ml["exits"],
+                           "exit_style": ml.get("exit_style"), "model_exit": ml.get("model_exit"),
                            "threshold": ml["threshold"], "test": ml["test"], "score": ml["test"]["lcb"]})
     valid = [c for c in candidates if c["score"] is not None]
     best = max(valid, key=lambda c: c["score"]) if valid else None
@@ -379,6 +464,7 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
         path = bdir / f"model_v{brain['version']}.joblib"
         joblib.dump(ml["model"], path)
         champ["threshold"], champ["test"] = ml["threshold"], ml["test"]
+        champ["exits_bt"], champ["exit_style"], champ["model_exit"] = ml["exits"], ml.get("exit_style"), ml.get("model_exit")
     if not best or best["score"] <= 0:
         if not champ_score or champ_score <= 0:
             decision = "defensivo"
@@ -395,6 +481,7 @@ def learn(data_dirs: list[str], state_dir: str, full: bool = True) -> dict:
         brain["status_text"] = "La estrategia actual sigue siendo la mejor; ningún aspirante la supera con margen suficiente."
     brain["candidates"] = [{k: v for k, v in c.items() if k not in ("exits_bt",)} | {"exits": c["exits_bt"]} for c in candidates]
     brain["ml"] = ({"test": ml["test"], "test_baseline": ml["test_baseline"], "threshold": ml["threshold"],
+                    "exit_style": ml.get("exit_style"), "model_exit": ml.get("model_exit"),
                     "importance": [{"feature": k, "name": NAMES_ES[k], "value": v} for k, v in ml["importance"]]} if ml else None)
     brain["lessons"] = lessons_from(X, y, ml["importance"] if ml else [], reality, pen)
     champ_now = brain.get("champion") or {}
@@ -477,6 +564,23 @@ class BrainRuntime:
         ctx_row = np.array([[cf[k] for k in CTX_FEATURES]])
         pred = float(self.model.predict(feature_matrix(f, np.array([len(s) - 1]), ctx_row))[0])
         return pred >= champ["threshold"], last, pred
+
+    def model_exit(self) -> dict | None:
+        """Venta inteligente del campeón (solo si se demostró útil en datos no vistos)."""
+        champ = self.champion or {}
+        me = champ.get("model_exit") or {}
+        return me if champ.get("kind") == "ml" and me.get("enabled") and self.model is not None else None
+
+    def predict(self, rows, created_at: int, supply: float, ctx: dict | None = None) -> float | None:
+        """Lo que el modelo espera ahora mismo de este token (para re-evaluar una posición abierta)."""
+        s = to_series(rows)
+        if s is None or self.model is None:
+            return None
+        f = features(s, created_at, supply)
+        from .context import features_of
+        cf = features_of(ctx)
+        ctx_row = np.array([[cf[k] for k in CTX_FEATURES]])
+        return float(self.model.predict(feature_matrix(f, np.array([len(s) - 1]), ctx_row))[0])
 
     def exits(self) -> dict | None:
         champ = self.champion

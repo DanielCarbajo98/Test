@@ -66,7 +66,11 @@ def test_brain_discovers_real_pattern_and_bot_uses_it(tmp_path, fast):
     # el runtime lo carga y genera señales
     rt = brain.BrainRuntime(str(tmp_path / "state"))
     rt.refresh()
-    assert rt.champion and rt.version == 1 and rt.exits()["stop_loss_pct"] == 15
+    assert rt.champion and rt.version == 1
+    # las salidas son las aprendidas (las de la regla o el estilo que eligió el modelo en validación)
+    assert rt.exits()["stop_loss_pct"] in {15} | {v["sl"] for v in brain.ML_EXIT_CHOICES.values()}
+    if rt.champion["kind"] == "ml":
+        assert rt.champion["exit_style"] and "enabled" in rt.champion["model_exit"]
     # una segunda pasada con los mismos datos no cambia de campeón sin mejora
     b2 = brain.learn([str(tmp_path / "data")], str(tmp_path / "state"))
     assert b2["version"] in (1, 2) and b2["status"] in ("mantener", "nueva")
