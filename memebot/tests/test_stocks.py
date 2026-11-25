@@ -19,7 +19,21 @@ def test_indicators():
     assert down[-1] < 1
 
 
+def activate_all(tmp_path):
+    """Simula un cerebro de acciones que ya aprendió y dio por buenas ambas estrategias."""
+    from bot.stocks_brain import DEFAULT_PARAMS
+    (tmp_path / "stocks_brain.json").write_text(json.dumps({"setups": {
+        k: {"params": v, "active": True} for k, v in DEFAULT_PARAMS.items()}}))
+
+
+def test_no_alerts_before_the_brain_has_learned(tmp_path):
+    up = list(np.linspace(100, 200, 260)) + [200 - 3 * i for i in range(1, 8)]
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: bars(up))
+    assert s["watchlist"][0]["signal"] is None and not s["positions"]
+
+
 def test_pullback_buy_then_stop_sell(tmp_path):
+    activate_all(tmp_path)
     # tendencia alcista larga y retroceso brusco -> RSI bajo con precio aún sobre la media de 200
     up = list(np.linspace(100, 200, 260))
     pull = up + [200 - 3 * i for i in range(1, 8)]          # 197 … 179

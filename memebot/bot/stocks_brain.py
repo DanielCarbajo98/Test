@@ -229,4 +229,4 @@ def params_for(state_dir: Path, setup: str) -> tuple[dict, bool, dict]:
         s = d["setups"][setup]
         return {**DEFAULT_PARAMS[setup], **s["params"]}, bool(s.get("active")), s
     except (OSError, ValueError, KeyError):
-        return dict(DEFAULT_PARAMS[setup]), True, {}
+        return dict(DEFAULT_PARAMS[setup]), False, {}      # sin aprendizaje todavía: no se envían alertas

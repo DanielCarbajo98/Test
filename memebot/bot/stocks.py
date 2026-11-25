@@ -340,6 +340,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
     bars_dir = state_dir / "stock_bars"
     bars_dir.mkdir(parents=True, exist_ok=True)
     rows = []
+    pending: list[tuple] = []
     for sym in todo:
         if pause:
             time.sleep(pause)
@@ -377,30 +378,10 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
             else:
                 status = "en cartera"
         elif a["signal"] and st.get("last_buy", {}).get(sym) != today:
-            pl = a["plan"]
-            st["positions"][sym] = {"symbol": sym, "name": b.name, "currency": b.currency, "entry": a["price"],
-                                    "entry_ts": int(time.time()), "stop": pl["stop"], "tp": pl["tp"],
-                                    "max_days": pl["max_days"], "peak": a["price"], "atr": a["atr"],
-                                    "setup": a["signal"], "price": a["price"], "expected": pl.get("expected")}
-            st.setdefault("last_buy", {})[sym] = today
-            st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "COMPRA", "price": a["price"],
-                                 "reason": a["signal"], "stop": pl["stop"], "tp": pl["tp"]})
-            ex = pl.get("expected") or {}
-            hist = (f"\nEn el histórico (datos no vistos): acierto {ex['win_rate']}% · media {ex['expectancy']:+.2f}% "
-                    f"por operación ({ex['n']} casos)." if ex.get("n") else "")
-            risk = (a["price"] - pl["stop"]) / a["price"] * 100
-            reward = (pl["tp"] - a["price"]) / a["price"] * 100
-            fx = eur_rate(http, b.currency)
-            e = (lambda v: f" ≈ {fmt_eur(v * fx)}") if fx and b.currency.upper() != "EUR" else (lambda v: "")
-            notify(f"🟢 COMPRAR {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}{e(a['price'])}\nSeñal: {a['signal']} · "
-                   f"RSI {a['rsi']:.0f} · tendencia {a['trend']}\n"
-                   f"🛑 Stop loss: {pl['stop']:.2f}{e(pl['stop'])} (−{risk:.1f}%)\n"
-                   f"🎯 Take profit: {pl['tp']:.2f}{e(pl['tp'])} (+{reward:.1f}%)\n"
-                   f"⏳ Plazo máximo: {pl['max_days']} días de mercado{hist}"
-                   f"{'' if b.market_open else chr(10) + 'Mercado cerrado: precio del último cierre.'}\n"
-                   f"{chr(10) + 'En euros, el precio en tu broker puede variar un poco (tipo de cambio y horario). Guíate por los porcentajes.' if fx and b.currency.upper() != 'EUR' else ''}\n"
-                   f"Es una alerta, no una orden: decides tú en tu broker.")
-            status = "compra"
+            exp = ((a["plan"].get("expected") or {}).get("expectancy") or 0.0)
+            score = exp + 0.2 * min(a["vol_ratio"], 5) + (0.5 if a["trend"] == "alcista" else 0.0)
+            pending.append((score, sym, b, a))
+            status = "señal"
         rows.append({"symbol": sym, "name": b.name, "currency": b.currency, "price": a["price"], "chg_1d": a["chg_1d"],
                      "chg_1m": a["chg_1m"], "rsi": a["rsi"], "trend": a["trend"], "signal": a["signal"],
                      "status": status, "market_open": b.market_open, "checked": int(time.time()),
@@ -416,6 +397,61 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                  "alerts": [x for x in st["alerts"] if x["symbol"] == sym][-20:],
                  "position": st["positions"].get(sym)}
         (charts / f"{sym.replace('.', '_')}.json").write_text(json.dumps(chart))
+    # ---- alertas de compra: solo las mejores y con un máximo diario
+    max_day = int(os.getenv("STOCKS_MAX_ALERTS_DAY", "0")) or 10**6     # 0 = sin límite (solo estrategias con ventaja)
+    ctl = {}
+    try:
+        ctl = json.loads((state_dir / "control.json").read_text())
+    except (OSError, ValueError):
+        pass
+    muted = ctl.get("stocks_alerts") is False
+    daily = st.get("daily_alerts") or {}
+    if daily.get("day") != today:
+        daily = {"day": today, "n": 0}
+    pending.sort(key=lambda x: -x[0])
+    by_sym = {r["symbol"]: r for r in rows}
+    for score, sym, b, a in pending:
+        if muted or daily["n"] >= max_day:
+            if sym in by_sym:
+                by_sym[sym]["status"] = "señal (silenciada)" if muted else "señal (límite diario)"
+            continue
+        daily["n"] += 1
+        pl = a["plan"]
+        st["positions"][sym] = {"symbol": sym, "name": b.name, "currency": b.currency, "entry": a["price"],
+                                "entry_ts": int(time.time()), "stop": pl["stop"], "tp": pl["tp"],
+                                "max_days": pl["max_days"], "peak": a["price"], "atr": a["atr"],
+                                "setup": a["signal"], "price": a["price"], "expected": pl.get("expected")}
+        st.setdefault("last_buy", {})[sym] = today
+        st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "COMPRA", "price": a["price"],
+                             "reason": a["signal"], "stop": pl["stop"], "tp": pl["tp"]})
+        ex = pl.get("expected") or {}
+        hist = (f"\nEn el histórico (datos no vistos): acierto {ex['win_rate']}% · media {ex['expectancy']:+.2f}% "
+                f"por operación ({ex['n']} casos)." if ex.get("n") else "")
+        risk = (a["price"] - pl["stop"]) / a["price"] * 100
+        reward = (pl["tp"] - a["price"]) / a["price"] * 100
+        cap_line = "" if max_day >= 10**6 else f"Alerta {daily['n']} de {max_day} como máximo hoy.\n"
+        fx = eur_rate(http, b.currency)
+        e = (lambda v, fx=fx: f" ≈ {fmt_eur(v * fx)}") if fx and b.currency.upper() != "EUR" else (lambda v: "")
+        notify(f"🟢 COMPRAR {sym} ({b.name}) a ~{a['price']:.2f} {b.currency}{e(a['price'])}\nSeñal: {a['signal']} · "
+               f"RSI {a['rsi']:.0f} · tendencia {a['trend']}\n"
+               f"🛑 Stop loss: {pl['stop']:.2f}{e(pl['stop'])} (−{risk:.1f}%)\n"
+               f"🎯 Take profit: {pl['tp']:.2f}{e(pl['tp'])} (+{reward:.1f}%)\n"
+               f"⏳ Plazo máximo: {pl['max_days']} días de mercado{hist}"
+               f"{'' if b.market_open else chr(10) + 'Mercado cerrado: precio del último cierre.'}\n"
+               f"{cap_line}"
+               f"Es una alerta, no una orden: decides tú en tu broker.")
+        if sym in by_sym:
+            by_sym[sym]["status"] = "compra"
+        chart_f = charts / f"{sym.replace('.', '_')}.json"
+        try:
+            ch = json.loads(chart_f.read_text())
+            ch["alerts"] = [x for x in st["alerts"] if x["symbol"] == sym][-20:]
+            ch["position"] = st["positions"].get(sym)
+            chart_f.write_text(json.dumps(ch))
+        except (OSError, ValueError):
+            pass
+    st["daily_alerts"] = daily
+
     # conservar lo ya analizado de las que no tocaban en este turno (y olvidar las que salieron del universo)
     merged = {**{k: v for k, v in prev.items() if k in universe}, **{r["symbol"]: r for r in rows}}
     for sym, r in merged.items():
