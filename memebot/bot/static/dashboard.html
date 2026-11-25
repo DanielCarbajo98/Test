@@ -1319,7 +1319,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         const lo = Math.min(p.stop, p.price, p.entry_price) * .97, hi = Math.max(p.peak, p.price, p.entry_price) * 1.03;
         const pos = v => (100 * (v - lo) / (hi - lo)).toFixed(1) + "%";
         return `<tr><td><a class="tok" href="${dexLink(p.mint, p.pool)}" target="_blank" rel="noopener">${avatar(p.symbol)}<span>${esc(p.symbol)}<div class="sub">${esc(p.mint.slice(0, 4))}…${esc(p.mint.slice(-4))}</div></span></a></td>
-        <td class="num">${price(p.entry_price)}</td><td class="num">${price(p.price)}</td><td class="num">${usd(p.value)}</td>
+        <td class="num">${price(p.entry_price)}</td><td class="num">${price(p.price)}${p.price_source ? `<div class="sub">${esc(p.price_source)}</div>` : ""}</td><td class="num">${usd(p.value)}</td>
         <td class="num"><span class="${cls(p.pnl_usd)}">${sgnUsd(p.pnl_usd)}</span><div class="sub ${cls(p.pnl_pct)}">${pct(p.pnl_pct)}</div></td>
         <td><div class="bar" title="Stop ${price(p.stop)} · máximo ${price(p.peak)}">
           <span class="z" style="left:${pos(p.stop)};right:calc(100% - ${pos(p.peak)});background:color-mix(in srgb, var(--accent) 30%, transparent)"></span>

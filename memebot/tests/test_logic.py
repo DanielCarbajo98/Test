@@ -245,3 +245,15 @@ def test_backtest_uses_the_same_profit_lock():
     r_old, _, _ = simulate(*args)
     r_new, _, why = simulate(*args, 0.20, 0.50)
     assert r_old < 0.02 and r_new > 0.12 and why == 6          # conserva ~la mitad del +27 %
+
+
+def test_jupiter_live_prices_parsed():
+    import httpx
+    from bot.market import jupiter_prices
+
+    def handler(req):
+        assert "price/v3" in str(req.url)
+        return httpx.Response(200, json={"A": {"usdPrice": 0.0015}, "B": {"usdPrice": None}})
+    out = jupiter_prices(["A", "B"], client=httpx.Client(transport=httpx.MockTransport(handler)))
+    assert out == {"A": 0.0015}
+    assert jupiter_prices([]) == {}

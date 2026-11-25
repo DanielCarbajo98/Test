@@ -119,3 +119,24 @@ def test_panel_controls_pause_and_close_all(tmp_path):
     bot.cycle()
     assert not bot.pf.positions
     assert json.loads((tmp_path / "control.json").read_text())["close_all"] is False
+
+
+def test_exits_use_jupiter_live_price_not_stale_dexscreener(tmp_path, monkeypatch):
+    import time
+    import bot.main as bm
+    state = {"price": 0.001, "now_ms": int(time.time() * 1000)}
+    client = httpx.Client(transport=make_transport(state))
+    bot = Bot(Config(state_dir=str(tmp_path)))
+    bot.dex = DexScreener(client)
+    bot.safety.rpc = SolanaRPC("http://rpc", client)
+    bot.safety.http = client
+    bot.candles = Candles(client, min_interval=0)
+    bot.exe.quoter = Quoter("", 300, client)
+    bot.cycle(force_entries=True)
+    assert "MINT" in bot.pf.positions
+    # DexScreener sigue mostrando 0.001 (con retraso) pero el precio real ya se ha desplomado
+    live = {"MINT": 0.0005}
+    monkeypatch.setattr(bm, "market_prices", lambda mints, *a, **k: {m: live[m] for m in mints if m in live})
+    state["price"] = 0.0005                      # lo que daría de verdad la venta (cotización)
+    bot.manage_positions(fast=True)              # revisión rápida: sin DexScreener
+    assert "MINT" not in bot.pf.positions        # el stop salta con el precio al momento

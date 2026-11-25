@@ -28,6 +28,7 @@ from .brain import BrainRuntime
 from .config import Config, ExitCfg, load_config
 from .executor import JupiterExecutor, PaperExecutor, Quoter
 from .market import DEFAULT_SOURCES, Candles, discover, jupiter_discover
+from .market import jupiter_prices as market_prices
 from .models import Position
 from .portfolio import Portfolio
 from .risk import can_open, evaluate_exit, position_size_usd
@@ -90,6 +91,8 @@ class Bot:
         self.started_at = time.time()
         self.last_scan: dict = {}
         self.liquidity: dict[str, float] = {}
+        self.price_source: dict[str, str] = {}
+        self._last_manage = 0.0
         self.paused = False
         self.pending_reclaim: dict[str, int] = {}   # mint -> intentos de recuperar el rent
         self.brain = BrainRuntime(cfg.state_dir)
@@ -205,23 +208,32 @@ class Bot:
             self._archive_chart(pos.pool, mint)
 
     # ------------------------------------------------------------------ salidas
-    def manage_positions(self):
+    def manage_positions(self, fast: bool = False):
+        """Salidas de las posiciones abiertas con el precio AL MOMENTO de Jupiter (DexScreener puede ir con
+        retraso). `fast`: revisión rápida entre análisis de candidatos, sin pedir DexScreener (liquidez la última)."""
         if not self.pf.positions:
             return
-        snaps = self.dex.best_pairs(list(self.pf.positions))
+        self._last_manage = time.time()
+        snaps = {} if fast else self.dex.best_pairs(list(self.pf.positions))
+        live = market_prices(list(self.pf.positions), self.cfg.jupiter_api_key)
         now = time.time()
         for mint, pos in list(self.pf.positions.items()):
             s = snaps.get(mint)
-            if s is None:
-                log.warning("Sin datos para %s; se reintentará", pos.symbol)
+            px = live.get(mint) or (s.price_usd if s else None)
+            liq = s.liquidity_usd if s else self.liquidity.get(mint, pos.entry_liquidity)
+            if not px:
+                if not fast:
+                    log.warning("Sin datos para %s; se reintentará", pos.symbol)
                 continue
-            self.pf.last_prices[mint] = s.price_usd
-            self.liquidity[mint] = s.liquidity_usd
-            d = evaluate_exit(pos, s.price_usd, s.liquidity_usd, now, self.exit_cfg())
+            self.pf.last_prices[mint] = px
+            if s:
+                self.liquidity[mint] = s.liquidity_usd
+            self.price_source[mint] = "Jupiter (al momento)" if mint in live else "DexScreener"
+            d = evaluate_exit(pos, px, liq, now, self.exit_cfg())
             if d is None:
                 continue
             try:
-                fill = self.exe.sell(mint, pos.decimals, d.sell_qty, s.price_usd, s.liquidity_usd)
+                fill = self.exe.sell(mint, pos.decimals, d.sell_qty, px, liq)
             except Exception as e:  # noqa: BLE001
                 self.notify.send(f"⚠️ Venta fallida {pos.symbol} ({d.reason}): {e}")
                 continue
@@ -481,6 +493,8 @@ class Bot:
                           "queue": max(0, len(passed) - c.strategy.max_ohlcv_per_cycle)}
 
         for s in passed[: c.strategy.max_ohlcv_per_cycle]:
+            if self.pf.positions and time.time() - self._last_manage >= 5:
+                self.manage_positions(fast=True)        # no dejar las posiciones sin vigilar mientras analiza
             rows = self.candles.minute(s.pair_address)
             self._last_analyzed[s.pair_address] = time.time()
             supply = s.fdv / s.price_usd
@@ -613,6 +627,7 @@ class Bot:
                 "opened_at": p.opened_at, "tp_hit": len(p.tp_levels_hit), "peak": p.peak_price,
                 "stop": p.entry_price if p.tp_levels_hit else p.entry_price * (1 - self.exit_cfg().stop_loss_pct / 100),
                 "liquidity": self.liquidity.get(m, p.entry_liquidity),
+                "price_source": self.price_source.get(m),
             })
         eq = self.pf.equity()
         jv = self.joint_view()

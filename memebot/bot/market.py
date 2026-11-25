@@ -86,6 +86,31 @@ JUP_LISTS = [("toptrending", "5m"), ("toptrending", "1h"), ("toptrending", "6h")
              ("toptraded", "1h"), ("toptraded", "24h"), ("toporganicscore", "1h"), ("toporganicscore", "24h")]
 
 
+def jupiter_prices(mints: list[str], api_key: str = "", client: httpx.Client | None = None) -> dict[str, float]:
+    """Precio al momento (USD) de cada token según Jupiter: el de las rutas por las que se vende de verdad.
+    Se actualiza cada pocos segundos; DexScreener puede ir con retraso."""
+    if not mints:
+        return {}
+    http = client or httpx.Client(timeout=8)
+    out: dict[str, float] = {}
+    for k in range(0, len(mints), 50):
+        ids = ",".join(mints[k:k + 50])
+        try:
+            if api_key:
+                r = http.get("https://api.jup.ag/price/v3", params={"ids": ids}, headers={"x-api-key": api_key})
+                if r.status_code != 200:
+                    r = http.get("https://lite-api.jup.ag/price/v3", params={"ids": ids})
+            else:
+                r = http.get("https://lite-api.jup.ag/price/v3", params={"ids": ids})
+            for m, v in (r.json() or {}).items() if r.status_code == 200 else []:
+                px = (v or {}).get("usdPrice")
+                if px and px > 0:
+                    out[m] = float(px)
+        except (httpx.HTTPError, ValueError, AttributeError):
+            continue
+    return out
+
+
 def jupiter_discover(api_key: str = "", client: httpx.Client | None = None) -> tuple[list[str], dict[str, dict]]:
     """Cientos de tokens activos de Solana desde las listas de Jupiter (no gasta el cupo de velas).
     Devuelve (mints, info) con info[mint] = {organic, holders, verified}."""

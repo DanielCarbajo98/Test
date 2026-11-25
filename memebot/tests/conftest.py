@@ -19,6 +19,7 @@ def _no_secrets_no_messages(monkeypatch):
     import bot.main
     monkeypatch.setattr(bot.context, "build", lambda *a, **k: {})
     monkeypatch.setattr(bot.main, "jupiter_discover", lambda *a, **k: ([], {}))
+    monkeypatch.setattr(bot.main, "market_prices", lambda *a, **k: {})     # sin precios reales de Jupiter
     import bot.watchdog
     real_radar = bot.watchdog.market_radar
     monkeypatch.setattr(bot.watchdog, "market_radar", lambda state, http=None: real_radar(state, http or _offline()))
