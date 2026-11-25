@@ -147,6 +147,8 @@ def build_state(state: Path) -> dict:
         "version": version.read()[:7], "update": _read_json(state / "update.json", {}),
         "context": _read_json(state / "context.json", {}),
         "stocks": _stocks_view(state),
+        "analyst": {k: v for k, v in _read_json(state / "analyst.json", {}).items() if k in ("review", "usage", "track", "history")}
+                   | {"decisions": _read_json(state / "analyst.json", {}).get("decisions", [])[-15:][::-1]},
         "control": {"paused": bool(control.get("paused", status.get("paused", False))),
                     "close_all_pending": bool(control.get("close_all"))},
     }

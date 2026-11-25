@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 import httpx
 
 from . import context as mctx
+from .analyst import Analyst
 from . import version
 from .brain import BrainRuntime
 from .config import Config, ExitCfg, load_config
@@ -74,6 +75,10 @@ class Bot:
         self._last_analyzed: dict[str, float] = {}
         self._chart_index: dict[str, dict] = {}
         self._analysis: dict[str, tuple] = {}     # pool -> (signal, feat, checks, pred) del último análisis
+        a = cfg.analyst
+        self.analyst = Analyst(cfg.state_dir, a.model, "low", False, 0, a.max_calls_per_day)
+        self._analyst_review_seen = ""
+        self._analyst_outcome_ts = 0.0
         self.ctx: dict = {}
         self._ctx_ts = 0.0
         self.risk_off = ""
@@ -281,6 +286,53 @@ class Bot:
             self.notify.send("✅ El contexto de mercado se ha normalizado: se reanudan las entradas.")
         self.risk_off = why
 
+    def analyst_review(self) -> dict:
+        """Última revisión de Claude si es reciente (< 3 h); si no, ninguna."""
+        if not self.cfg.analyst.enabled:
+            return {}
+        rv = self.analyst.load().get("review") or {}
+        return rv if time.time() - rv.get("ts", 0) < 3 * 3600 else {}
+
+    def apply_analyst(self):
+        """Aplica lo que Claude pide en su revisión: solo acciones que REDUCEN riesgo."""
+        rv = self.analyst_review()
+        if not rv or rv.get("id") == self._analyst_review_seen:
+            return
+        self._analyst_review_seen = rv.get("id", "")
+        if self.cfg.analyst.allow_close_positions:
+            for act in rv.get("position_actions", []):
+                if act.get("action") == "cerrar" and act.get("mint") in self.pf.positions:
+                    pos = self.pf.positions[act["mint"]]
+                    self.notify.send(f"🤖 Claude pide cerrar {pos.symbol}: {act.get('reason', '')}")
+                    self._close_one(act["mint"], "cierre por el analista Claude")
+        # seguimiento de vetos (¿acertó Claude?)
+        if time.time() - self._analyst_outcome_ts > 900:
+            self._analyst_outcome_ts = time.time()
+            try:
+                self.analyst.record_outcomes(self._price_of)
+            except Exception as e:  # noqa: BLE001
+                log.debug("Seguimiento de vetos: %s", e)
+
+    def _price_of(self, mint: str) -> float | None:
+        s = self.dex.best_pairs([mint]).get(mint)
+        return s.price_usd if s else None
+
+    def _close_one(self, mint: str, reason: str):
+        pos = self.pf.positions.get(mint)
+        if not pos:
+            return
+        s = self.dex.best_pairs([mint]).get(mint)
+        price = s.price_usd if s else self.pf.last_prices.get(mint, pos.entry_price)
+        liq = s.liquidity_usd if s else pos.entry_liquidity
+        try:
+            fill = self.exe.sell(mint, pos.decimals, pos.qty, price, liq)
+        except Exception as e:  # noqa: BLE001
+            self.notify.send(f"⚠️ No se pudo cerrar {pos.symbol}: {e}")
+            return
+        pnl = self.pf.reduce(mint, fill.qty, fill.usd, fill.price, reason, fill.tx)
+        self.notify.send(f"🔴 SELL {pos.symbol} por ${fill.usd:.2f} — {reason} (PnL ${pnl:+.2f})")
+        self.pending_reclaim[mint] = 0
+
     def refresh_position_charts(self):
         """Velas de las posiciones abiertas (para ver en directo dónde está cada una)."""
         for mint, pos in self.pf.positions.items():
@@ -346,7 +398,31 @@ class Bot:
                 log.info("%s con señal pero NO seguro: %s", s.symbol, "; ".join(rep.reasons))
                 self.pf.cooldowns[s.token_address] = time.time()
                 continue
+            rv = self.analyst_review()
+            if s.token_address in (rv.get("avoid_tokens") or []):
+                self.notify.send(f"🤖 Claude tenía {s.symbol} en su lista de tokens a evitar: no se compra.")
+                self.pf.cooldowns[s.token_address] = time.time()
+                continue
+            mult = float(rv.get("risk_multiplier", 1.0)) if rv else 1.0
+            if mult <= 0:
+                log.info("Claude recomienda no abrir posiciones ahora (riesgo x0)")
+                continue
+            if c.analyst.enabled and c.analyst.veto_entries and self.analyst.enabled:
+                info = self.token_info.get(s.token_address, {})
+                verdict = self.analyst.check_trade({
+                    "symbol": s.symbol, "mint": s.token_address, "pool": s.pair_address, "price": s.price_usd,
+                    "liquidity": s.liquidity_usd, "fdv": s.fdv, "age_min": round(s.age_minutes),
+                    "buys_5m": s.buys_m5, "sells_5m": s.sells_m5, "buys_1h": s.buys_h1, "sells_1h": s.sells_h1,
+                    "change_1h": s.change_h1, "change_24h": s.change_h24, "top10_holders_pct": rep.top10_pct,
+                    "organic_score": info.get("organic"), "holders": info.get("holders"),
+                    "features": {k: round(v, 4) for k, v in feat.items() if k != "valid"},
+                    "strategy": self.strategy_label(), "context": {k: self.ctx.get(k) for k in ("fng", "sol_h1", "sol_h24", "news_score")}})
+                if not verdict.get("approve", True):
+                    self.notify.send(f"🤖 Claude veta la compra de {s.symbol}: {verdict.get('reason', '')}")
+                    self.pf.cooldowns[s.token_address] = time.time()
+                    continue
             size = position_size_usd(self.pf.equity(), self.pf.cash, s.liquidity_usd, self.exit_cfg().stop_loss_pct, c.risk)
+            size = round(size * max(0.0, min(1.0, mult)), 2)
             if size < 5:
                 log.info("Tamaño insuficiente para %s (%.2f USD)", s.symbol, size)
                 continue
@@ -419,6 +495,7 @@ class Bot:
             "positions": positions, "last_scan": self.last_scan, "events": list(self.notify.events)[:30],
             "interval": self.cfg.scanner.interval_seconds,
             "risk_off": self.risk_off,
+            "analyst_enabled": bool(self.cfg.analyst.enabled and self.analyst.enabled),
         }
         try:
             tmp = self.pf.dir / "status.tmp"
@@ -438,6 +515,7 @@ class Bot:
     def cycle(self, force_entries: bool = False):
         self.read_control()
         self.refresh_context()
+        self.apply_analyst()
         self.brain.refresh()
         if self.brain.version != self._brain_version_seen:
             if self._brain_version_seen or self.brain.version:

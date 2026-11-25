@@ -268,6 +268,13 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 .lhist { max-height: 240px; overflow-y: auto; }
 .lhist td, .lhist th { padding: 6px 8px; font-size: 12px; }
 @media (max-width: 1000px) { .learn { grid-template-columns: 1fr; } }
+
+.anl { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
+.anl h3 { margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.anl p { margin: 0 0 10px; color: var(--text-2); }
+.idea { display: grid; grid-template-columns: 70px 1fr; gap: 6px 10px; font-size: 12.5px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.reason { margin: 8px 0 0; padding-left: 18px; color: var(--text-2); font-size: 13px; display: grid; gap: 4px; }
+@media (max-width: 1000px) { .anl { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -324,6 +331,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       </div>
     </div>
     <div class="card-b"><div class="chart" id="chart"></div></div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <div class="card-h"><h2>Analista Claude</h2><span class="pill" id="anlPill" style="margin-left:auto">—</span></div>
+    <div class="card-b" id="anl"></div>
   </section>
 
   <section class="card" style="margin-top:16px">
@@ -505,7 +517,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("openMeter").style.width = (100 * n / mx) + "%";
     $("openS").textContent = has ? (n ? `${usd(invested)} invertidos` : "Esperando señal") : "";
 
-    renderChart(); renderContext(); renderTokenList(); renderStocks(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
+    renderChart(); renderAnalyst(); renderContext(); renderTokenList(); renderStocks(); renderBrain(); renderPositions(); renderHistory(); renderActivity();
     const up = S.update || {};
     const upTxt = up.state ? ` · ${up.state}${up.checked_at ? " (comprobado " + ago(S.now - up.checked_at) + ")" : ""}` : "";
     $("foot").textContent = (has ? `Última actualización ${hhmm(S.now)}` : "Arranca el bot para ver datos") + ` · Versión ${S.version || "—"}${upTxt}`;
@@ -625,6 +637,33 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 
 
 
+
+  // ---------- analista Claude ----------
+  function renderAnalyst() {
+    const a = S.analyst || {}, r = a.review, el = $("anl"), pill = $("anlPill"), u = a.usage || {}, st = S.status || {};
+    if (!r) {
+      pill.textContent = st.analyst_enabled ? "Esperando primera revisión" : "Desactivado"; pill.className = "pill";
+      el.innerHTML = `<div class="empty" style="height:90px">${st.analyst_enabled ? "La primera revisión llega en unos minutos."
+        : "Para activarlo, añade tu clave de la API de Claude con CONFIGURAR (opcional, de pago por uso)."}</div>`; return;
+    }
+    const reg = { favorable: "good", neutral: "", desfavorable: "bad" }[r.regime] || "";
+    pill.textContent = `Mercado ${r.regime} · tamaño x${(+r.risk_multiplier).toFixed(2)} · ${ago(S.now - r.ts)}`; pill.className = "pill " + reg;
+    const ideas = (r.stock_ideas || []).map(i => `<div class="idea"><b>${esc(i.symbol)}</b><span><b class="${i.action === "comprar" ? "up" : i.action === "vender" || i.action === "evitar" ? "down" : "flat"}">${esc(i.action)}</b> · ${esc(i.reason)}</span></div>`).join("");
+    const acts = (r.position_actions || []).map(x => `<li>${esc(x.action)} ${esc((x.mint || "").slice(0, 6))}… · ${esc(x.reason)}</li>`).join("");
+    const news = (r.news_highlights || []).map(n => `<li>${esc(n)}</li>`).join("");
+    const dec = (a.decisions || []).slice(0, 6).map(d => `<li><time>${hhmm(d.ts)}</time><div>${d.approve ? '<b class="up">Aprueba</b>' : '<b class="down">Veta</b>'} ${esc(d.symbol || "")} · ${esc(d.reason || "")}${d.outcome != null ? ` · 2 h después: <b class="${cls(-d.outcome)}">${pct(d.outcome)}</b>` : ""}</div></li>`).join("");
+    const tr = a.track || {};
+    el.innerHTML = `<div class="anl">
+      <div><h3>Resumen</h3><p>${esc(r.summary)}</p><h3>Cripto</h3><p>${esc(r.crypto_view)}</p><h3>Acciones</h3><p>${esc(r.stocks_view)}</p>
+        ${news ? `<h3>Noticias destacadas</h3><ul class="reason">${news}</ul>` : ""}</div>
+      <div><h3>Ideas sobre acciones</h3>${ideas || '<p class="sub">Sin ideas concretas en esta revisión.</p>'}
+        ${acts ? `<h3 style="margin-top:12px">Acciones sobre posiciones</h3><ul class="reason">${acts}</ul>` : ""}</div>
+      <div><h3>Vetos y aprobaciones de compras</h3><ul class="feed" style="max-height:200px">${dec || '<li class="sub">Aún no ha revisado ninguna compra.</li>'}</ul>
+        <div class="kv"><span>Vetos medidos</span><b>${tr.vetos_medidos ?? 0}</b><span>Vetos acertados</span><b>${tr.acierto_pct != null ? tr.acierto_pct + "%" : "—"}</b>
+        <span>Coste hoy</span><b>$${(u.cost_today || 0).toFixed(2)} (${u.calls_today || 0} consultas)</b><span>Coste este mes</span><b>$${(u.cost_month || 0).toFixed(2)}</b>
+        <span>Modelo</span><b>${esc(r.model || "")}</b></div></div></div>`;
+  }
+
   // ---------- contexto de mercado ----------
   function renderContext() {
     const c = S.context || {}, el = $("ctx"), pill = $("ctxPill"), ro = (S.status || {}).risk_off;
@@ -678,7 +717,10 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
       const setups = Object.entries(row.checks || {}).map(([name, cs]) => `<div style="margin-top:8px"><b style="font-size:12.5px">${esc(name)}</b> <span class="sub">${cs.filter(c => c[1]).length}/${cs.length}</span>
         <div class="checks">${cs.map(([l, ok]) => `<div class="chk ${ok ? "ok" : "ko"}"><span class="ic">${ok ? "✓" : "✗"}</span><span>${esc(l)}</span><span></span></div>`).join("")}</div></div>`).join("");
       const hist = (k.alerts || []).filter(a => a.symbol === row.symbol).slice(0, 6).map(a => `<li><time>${dt(a.ts)}</time><div><b class="${a.side === "COMPRA" ? "up" : "down"}">${a.side}</b> a ${a.price.toFixed(2)} · ${esc(a.reason)}${a.ret != null ? ` · <b class="${cls(a.ret)}">${pct(a.ret)}</b>` : ""}</div></li>`).join("");
+      const idea = (((S.analyst || {}).review || {}).stock_ideas || []).find(i => i.symbol === row.symbol);
       $("stkInfo").innerHTML = (pos ? `<div class="verdict yes">● Alerta abierta desde ${pos.entry.toFixed(2)} · ${pct((row.price / pos.entry - 1) * 100)} · stop ${pos.stop.toFixed(2)}</div>` : "")
+        + (row.reasoning && row.reasoning.length ? `<div style="margin-top:8px"><b style="font-size:12.5px">Análisis</b><ul class="reason">${row.reasoning.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "")
+        + (idea ? `<div class="verdict ${idea.action === "comprar" ? "yes" : "no"}" style="margin-top:10px">🤖 Claude: ${esc(idea.action)} · ${esc(idea.reason)}</div>` : "")
         + setups + (hist ? `<ul class="feed" style="margin-top:10px">${hist}</ul>` : "")
         + `<p class="sub" style="margin:10px 0 0">Alertas orientativas, no asesoramiento financiero. Tú decides y ejecutas en tu broker.</p>`;
     }

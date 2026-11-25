@@ -54,6 +54,21 @@ class ContextCfg:
 
 
 @dataclass
+class AnalystCfg:
+    """Analista Claude (bot/analyst.py). Necesita ANTHROPIC_API_KEY. Solo puede REDUCIR riesgo."""
+    enabled: bool = True
+    model: str = "claude-opus-5-5"
+    effort: str = "medium"              # low | medium | high (más alto = más caro y más profundo)
+    review_minutes: int = 60            # revisión completa del mercado
+    web_search: bool = True             # Claude busca noticias recientes en la web durante la revisión
+    web_search_max_uses: int = 3
+    veto_entries: bool = True           # consultar a Claude antes de cada compra
+    allow_close_positions: bool = True  # Claude puede pedir cerrar posiciones (solo reduce riesgo)
+    max_calls_per_day: int = 60         # tope de gasto
+    telegram_digest_hours: int = 4
+
+
+@dataclass
 class BrainCfg:
     """Cerebro autónomo (bot/brain.py). Decide la estrategia y las salidas; NUNCA el riesgo."""
     enabled: bool = True
@@ -107,6 +122,7 @@ class Config:
     strategy: StrategyCfg = field(default_factory=StrategyCfg)
     brain: BrainCfg = field(default_factory=BrainCfg)
     context: ContextCfg = field(default_factory=ContextCfg)
+    analyst: AnalystCfg = field(default_factory=AnalystCfg)
     safety: SafetyCfg = field(default_factory=SafetyCfg)
     risk: RiskCfg = field(default_factory=RiskCfg)
     exits: ExitCfg = field(default_factory=ExitCfg)
@@ -172,6 +188,7 @@ def load_config(path: str | Path = "config.yaml") -> Config:
         strategy=_section(StrategyCfg, raw.get("strategy")),
         brain=_section(BrainCfg, raw.get("brain")),
         context=_section(ContextCfg, raw.get("context")),
+        analyst=_section(AnalystCfg, raw.get("analyst")),
         safety=_section(SafetyCfg, raw.get("safety")),
         risk=_section(RiskCfg, raw.get("risk")),
         exits=_section(ExitCfg, raw.get("exits")),

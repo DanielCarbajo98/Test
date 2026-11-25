@@ -45,6 +45,17 @@ context:                       # noticias y contexto de mercado
   pause_sol_h1_drop: 5.0       # frena entradas si SOL cae ≥ 5 % en 1 h
   pause_sol_h24_drop: 15.0     # … o ≥ 15 % en 24 h
   pause_on_critical_news: true # … o hay un hackeo/caída en el ecosistema Solana (últimas 6 h)
+analyst:                       # analista Claude (necesita ANTHROPIC_API_KEY en .env). Solo REDUCE riesgo
+  enabled: true
+  model: claude-opus-5-5
+  effort: medium
+  review_minutes: 60           # revisión completa del mercado cada hora
+  web_search: true             # busca noticias recientes en la web
+  web_search_max_uses: 3
+  veto_entries: true           # le consulta antes de cada compra
+  allow_close_positions: true
+  max_calls_per_day: 60        # tope de gasto diario
+  telegram_digest_hours: 4
 safety:
   require_mint_revoked: true
   require_freeze_revoked: true

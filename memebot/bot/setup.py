@@ -233,6 +233,30 @@ def main():
         bad(f"GitHub responde {code or 'sin conexión'}: {reasons.get(code, 'respuesta inesperada.')} "
             f"(Enter para omitir)")
 
+    # 4c. Analista Claude ---------------------------------------------------
+    print(f"\n{B}Analista Claude (opcional, de pago por uso){X}")
+    print("  Claude revisa el mercado y las noticias cada hora y puede vetar compras o reducir el riesgo.")
+    print("  Clave en console.anthropic.com → API Keys (necesita saldo en la cuenta). Coste orientativo en la guía.")
+    while True:
+        key = (ask("Clave de la API de Claude (Enter para omitir)", secret=True) or env.get("ANTHROPIC_API_KEY", "")).strip()
+        if not key:
+            warn("Sin clave: el bot funciona igual, sin el analista Claude.")
+            break
+        try:
+            r = httpx.get("https://api.anthropic.com/v1/models/claude-opus-5-5", timeout=15,
+                          headers={"x-api-key": key, "anthropic-version": "2023-06-01"})
+            code = r.status_code
+        except httpx.HTTPError:
+            code = 0
+        if code == 200:
+            env["ANTHROPIC_API_KEY"] = key
+            ok("Analista Claude activado")
+            break
+        bad({401: "clave no válida o mal copiada (empieza por «sk-ant-»).",
+             403: "la clave no tiene permiso para este modelo.",
+             0: "sin conexión con Anthropic ahora mismo."}.get(code, f"respuesta inesperada ({code}).")
+            + " Prueba otra vez o pulsa Enter.")
+
     # 5. Perfil y modo ------------------------------------------------------
     print(f"\n{B}5. Capital y modo{X}")
     while True:

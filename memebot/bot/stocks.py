@@ -173,8 +173,53 @@ def analyze(b: Bars) -> dict:
         signal = "Ruptura"
     last["signal"] = signal
     last["checks"] = {"Retroceso en tendencia": checks_pull, "Ruptura": checks_brk}
+    last["reasoning"] = reasoning(last)
     last["sma50_series"], last["sma200_series"] = s50, s200
     return last
+
+
+def _pct(a: float, b: float) -> float:
+    return (a / b - 1) * 100 if b and np.isfinite(b) else float("nan")
+
+
+def reasoning(a: dict) -> list[str]:
+    """Explicación en lenguaje llano de la situación técnica de la acción (sin promesas)."""
+    out = []
+    p, s50, s200, r = a["price"], a["sma50"], a["sma200"], a["rsi"]
+    d200, d50 = _pct(p, s200), _pct(p, s50)
+    if np.isfinite(d200):
+        if a["trend"] == "alcista":
+            out.append(f"Tendencia de fondo ALCISTA: cotiza un {d200:+.1f}% respecto a su media de 200 días y la media de 50 "
+                       f"está por encima de la de 200.")
+        elif a["trend"] == "bajista":
+            out.append(f"Tendencia de fondo BAJISTA: cotiza un {d200:+.1f}% respecto a su media de 200 días. "
+                       f"Las compras en tendencia bajista tienen menos probabilidad de salir bien.")
+        else:
+            out.append(f"Tendencia LATERAL/indecisa: {d200:+.1f}% respecto a la media de 200 días, pero las medias no "
+                       f"confirman una dirección clara.")
+    if np.isfinite(d50):
+        out.append(f"A corto plazo está un {d50:+.1f}% respecto a su media de 50 días "
+                   f"({'por encima: fuerza reciente' if d50 > 0 else 'por debajo: debilidad o retroceso reciente'}).")
+    if np.isfinite(r):
+        zona = ("SOBRECOMPRADA (subió mucho y rápido; riesgo de corrección)" if r > 70 else
+                "SOBREVENDIDA (cayó mucho; posible rebote)" if r < 30 else
+                "con algo de debilidad" if r < 45 else "con algo de fuerza" if r > 55 else "neutral")
+        out.append(f"RSI {r:.0f}: {zona}.")
+    if a["atr"] and p:
+        out.append(f"Volatilidad típica diaria (ATR): {100 * a['atr'] / p:.1f}% del precio.")
+    out.append(f"En el último mes: {a['chg_1m']:+.1f}%. Hoy: {a['chg_1d']:+.1f}%.")
+    if a.get("signal"):
+        out.append(f"→ SEÑAL DE COMPRA «{a['signal']}». Stop orientativo: {p - 2 * a['atr']:.2f} (2 ATR por debajo).")
+    else:
+        miss = []
+        if a["trend"] == "alcista" and np.isfinite(r) and r >= 35:
+            miss.append(f"para «Retroceso en tendencia» le falta que el RSI baje de 35 (ahora {r:.0f})")
+        if p <= a["hi55"] and np.isfinite(a["hi55"]):
+            miss.append(f"para «Ruptura» tendría que superar {a['hi55']:.2f} ({_pct(a['hi55'], p):+.1f}%) con volumen alto")
+        if a["trend"] != "alcista":
+            miss.append("ambas estrategias exigen que el precio esté por encima de su media de 200 días")
+        out.append("→ Sin señal ahora: " + ("; ".join(miss) if miss else "no cumple las condiciones") + ".")
+    return out
 
 
 def exit_reason(pos: dict, a: dict) -> str:
@@ -266,6 +311,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
         rows.append({"symbol": sym, "name": b.name, "currency": b.currency, "price": a["price"], "chg_1d": a["chg_1d"],
                      "chg_1m": a["chg_1m"], "rsi": a["rsi"], "trend": a["trend"], "signal": a["signal"],
                      "status": status, "market_open": b.market_open, "checked": int(time.time()),
+                     "reasoning": a["reasoning"],
                      "checks": {k: [[t, bool(ok)] for t, ok in v] for k, v in a["checks"].items()}})
         n = 180
         chart = {"symbol": sym, "name": b.name, "currency": b.currency,

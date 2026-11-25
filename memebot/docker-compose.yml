@@ -61,6 +61,14 @@ services:
       - ./bot:/app/bot:ro
     command: ["python", "-m", "bot.stocks", "--state", "state", "--loop", "15"]
 
+  analyst:                   # analista Claude: revisión del mercado cada hora (necesita ANTHROPIC_API_KEY)
+    <<: *base
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./state:/app/state
+      - ./bot:/app/bot:ro
+    command: ["python", "-m", "bot.analyst", "--state", "state", "--config", "config.yaml"]
+
   updater:                   # actualizaciones automáticas desde tu GitHub (cada 30 min, con tests previos)
     <<: *base
     volumes:
