@@ -449,6 +449,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     <div class="card-b table-wrap" id="positions"></div>
   </section>
 
+  <section class="card" style="margin-top:16px" data-tab="resumen">
+    <div class="card-h"><h2>Posiciones abiertas de acciones</h2><span class="sub" id="resStkSub" style="margin-left:auto"></span></div>
+    <div class="card-b table-wrap" id="resStocks"></div>
+  </section>
+
   <section class="grid bottom" style="margin-top:16px" data-tab="cripto">
     <div class="card">
       <div class="card-h"><h2>Operaciones</h2>
@@ -537,6 +542,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   function render() {
     safe("cabecera", renderHeader);
     safe("resumen", renderOverview);
+    safe("acciones en resumen", renderStockPositions);
     [["saldo", renderChart], ["analista", renderAnalyst], ["contexto", renderContext], ["mercado", renderTokenList],
      ["acciones", renderStocks], ["cerebro de acciones", renderStockBrain], ["cartera de acciones", renderStockPaper],
      ["cerebro", renderBrain], ["cazador", renderHunter], ["posiciones", renderPositions], ["operaciones", renderHistory], ["actividad", renderActivity]]
@@ -1135,6 +1141,31 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <span class="sub">${esc(((b.status_text || "") + "").slice(0, 90))}</span><span class="go">Ver cerebro →</span></button>`;
     $("areas").querySelectorAll("[data-go]").forEach(x => x.onclick = () => showTab(x.dataset.go, true));
   }
+
+  function renderStockPositions() {
+    const k = S.stocks || {}, ps = (k.open_alerts || []).slice(), p = k.paper || {};
+    const eur = v => (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    const ses = { pre: "pre-market", post: "after-hours", cierre: "bolsa cerrada" };
+    if (!ps.length) { $("resStocks").innerHTML = `<div class="empty" style="height:90px">Sin posiciones de acciones abiertas.</div>`; $("resStkSub").textContent = ""; return; }
+    const rows = ps.map(a => {
+      const amt = a.amount || p.per_alert || 0, r = a.pending_open ? 0 : ((a.price || a.entry) / a.entry - 1) * 100;
+      const pnl = amt * r / 100 - (a.fees_eur ?? 0);
+      const dist = a.stop ? ((a.price || a.entry) / a.stop - 1) * 100 : null;
+      return { a, amt, r, pnl, dist };
+    }).sort((x, y) => y.pnl - x.pnl);
+    const tot = rows.reduce((s, x) => s + x.pnl, 0), inv = rows.reduce((s, x) => s + x.amt, 0);
+    $("resStkSub").innerHTML = `${rows.length} abiertas · ${inv.toLocaleString("es-ES", { maximumFractionDigits: 0 })} € invertidos · <span class="${cls(tot)}">${eur(tot)}</span>`;
+    $("resStocks").innerHTML = `<table><thead><tr><th>Acción</th><th>Estrategia</th><th class="num">Invertido</th><th class="num">Entrada</th><th class="num">Ahora</th>
+      <th class="num">Resultado</th><th class="num">Al stop</th><th class="num">Desde</th></tr></thead><tbody>${rows.map(({ a, amt, r, pnl, dist }) => `
+      <tr class="click" data-sym="${esc(a.symbol)}" title="Ver velas en directo"><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.name || "")}</div></td>
+        <td class="sub">${esc(a.setup || "")}</td><td class="num">${amt.toLocaleString("es-ES", { maximumFractionDigits: 0 })} €</td>
+        <td class="num">${(+a.entry).toFixed(2)} ${esc(a.currency || "")}</td>
+        <td class="num">${a.pending_open ? `<span class="sub">compra en cuanto se pueda operar</span>` : `${(+(a.price || a.entry)).toFixed(2)}${ses[a.price_session] ? `<div class="sub">${ses[a.price_session]}</div>` : ""}`}</td>
+        <td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(r)}">${pct(r)}</div></td>
+        <td class="num ${dist != null && dist < 2 ? "down" : ""}">${dist != null ? pct(-dist) : "—"}</td>
+        <td class="num sub">${a.entry_ts ? dur(S.now - a.entry_ts) : "—"}</td></tr>`).join("")}</tbody></table>`;
+  }
+  $("resStocks").addEventListener("click", ev => { const tr = ev.target.closest("tr[data-sym]"); if (tr) openStockLive(tr.dataset.sym); });
 
   // ---------- velas en directo de una acción de la cartera ----------
   let slive = null, sliveTimer = null, sliveSym = null;
