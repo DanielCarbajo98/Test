@@ -1010,11 +1010,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   function drawChart(d) {
     const pos = d.position;
     const last = d.candles.length ? d.candles[d.candles.length - 1][4] : 0;
-    const nowPx = pos ? pos.price : last;
+    const nowPx = d.price_now || (pos ? pos.price : last);
     const first = d.candles.length ? d.candles[Math.max(0, d.candles.length - 61)][4] : 0;
     const ch = first ? 100 * (last / first - 1) : 0;
     $("chead").innerHTML = `<b>${esc(d.symbol)}</b><span class="px">${price(nowPx)}</span><span class="${cls(ch)}">${pct(ch)} 1 h</span>
-      <a href="${dexLink(d.mint, d.pool)}" target="_blank" rel="noopener">DexScreener ↗</a><span class="sub">analizado ${ago(S.now - d.ts)}</span>`;
+      <a href="${dexLink(d.mint, d.pool)}" target="_blank" rel="noopener">DexScreener ↗</a><span class="sub">${d.price_now ? `<span class="up">● en directo</span> · ` : ""}analizado ${ago(S.now - d.ts)}</span>`;
     if (!window.LightweightCharts) { $("candle").innerHTML = `<div class="empty">No se pudo cargar la librería de gráficos.</div>`; renderAnalysis(d); return; }
     ensureChart();
     const prec = precisionFor(last);

@@ -134,3 +134,20 @@ def test_stock_live_chart_with_entry_and_exit(tmp_path):
     assert d["name"] == "SAP SE" and len(d["candles"]) == 2 and d["position"]["stop"] == 95 and d["price_now"] == 2.5
     assert stock_live(tmp_path, "AAPL", client=c)["closed"][0]["exit"] == 55
     assert stock_live(tmp_path, "MSFT", client=c) is None             # no está en la cartera
+
+
+def test_open_chart_is_live(tmp_path):
+    import httpx
+    from bot import dashboard as dash
+    dash._LIVE_CANDLES.clear(); dash._LIVE_PRICE.clear()
+    now = 1_795_600_000
+    data = {"pool": "POOL", "mint": "MINT", "ts": now - 600, "candles": [[now - 660, 1, 1, 1, 1, 5]]}
+
+    def handler(req):
+        if "price/v3" in str(req.url):
+            return httpx.Response(200, json={"MINT": {"usdPrice": 1.2}})
+        return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": [[now - 120, 1, 1.1, 1, 1.1, 9], [now - 180, 1, 1, 1, 1, 9]]}}})
+    c = httpx.Client(transport=httpx.MockTransport(handler))
+    d = dash.live_candles(dict(data), c, now)
+    assert d["candles"][-1][0] == now // 60 * 60 and d["candles"][-1][4] == 1.2 and d["price_now"] == 1.2
+    assert len(d["candles"]) == 3                       # velas frescas + la del minuto actual

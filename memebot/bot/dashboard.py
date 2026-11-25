@@ -75,12 +75,64 @@ def chart_list(state: Path) -> list[dict]:
     return sorted(idx, key=lambda c: (not c.get("position"), not c.get("signal"), -c.get("ts", 0)))
 
 
-def chart_detail(state: Path, pool: str) -> dict | None:
+_LIVE_CANDLES: dict[str, tuple[float, list]] = {}
+_LIVE_PRICE: dict[str, tuple[float, float]] = {}
+
+
+def live_candles(data: dict, client=None, now: float | None = None) -> dict:
+    """El gráfico que tienes abierto, en directo: velas frescas de GeckoTerminal (como mucho 1 vez/min por token,
+    sin reintentos para no quitarle cupo al bot) y la última vela moviéndose con el precio al momento de Jupiter."""
+    import httpx
+    from .market import jupiter_prices
+    now = now or time.time()
+    pool, mint = data.get("pool", ""), data.get("mint", "")
+    candles = [list(c) for c in data.get("candles") or []]
+    hit = _LIVE_CANDLES.get(pool)
+    if hit and len(hit[1]) and hit[1][-1][0] >= (candles[-1][0] if candles else 0):
+        candles = [list(c) for c in hit[1]]
+    if pool and now - (hit[0] if hit else data.get("ts", 0)) >= 60:
+        _LIVE_CANDLES[pool] = (now, candles)               # aunque falle, no reintentar hasta dentro de 1 min
+        try:
+            http = client or httpx.Client(timeout=8, headers={"Accept": "application/json"})
+            r = http.get(f"https://api.geckoterminal.com/api/v2/networks/solana/pools/{pool}/ohlcv/minute",
+                         params={"aggregate": 1, "limit": 420, "currency": "usd", "token": "base"})
+            rows = ((r.json().get("data") or {}).get("attributes") or {}).get("ohlcv_list") or [] if r.status_code == 200 else []
+            if rows:
+                candles = sorted(([float(x) for x in row] for row in rows), key=lambda x: x[0])
+                _LIVE_CANDLES[pool] = (now, candles)
+        except (httpx.HTTPError, ValueError, TypeError):
+            pass
+    ph = _LIVE_PRICE.get(mint)
+    if mint and (not ph or now - ph[0] >= 3):
+        try:
+            px = jupiter_prices([mint], client=client).get(mint)
+        except Exception:  # noqa: BLE001
+            px = None
+        if px:
+            _LIVE_PRICE[mint] = ph = (now, px)
+    if ph and candles and now - ph[0] < 30:
+        px, minute = ph[1], int(now // 60 * 60)
+        last = candles[-1]
+        if minute > last[0]:                                # vela nueva de este minuto
+            candles.append([minute, last[4], max(last[4], px), min(last[4], px), px, 0.0])
+        else:
+            last[4], last[2], last[3] = px, max(last[2], px), min(last[3], px)
+        data["price_now"] = px
+    data["candles"] = candles[-420:]
+    data["live_ts"] = int(now)
+    return data
+
+
+def chart_detail(state: Path, pool: str, client=None) -> dict | None:
     if not pool or not all(ch.isalnum() for ch in pool):
         return None
     data = _read_json(state / "charts" / f"{pool}.json", None)
     if data is None:
         return None
+    try:
+        data = live_candles(data, client)
+    except Exception:  # noqa: BLE001
+        pass
     mint = data.get("mint", "")
     trades = []
     f = state / "trades.csv"
