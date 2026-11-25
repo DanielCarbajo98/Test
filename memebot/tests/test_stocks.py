@@ -46,3 +46,11 @@ def test_no_signal_in_downtrend(tmp_path):
     down = list(np.linspace(200, 100, 267))
     s = st.run_once(tmp_path, ["X"], http=object(), fetcher=lambda h, sym: bars(down, sym="X"))
     assert s["watchlist"][0]["signal"] is None and not s["positions"]
+
+
+def test_breakout_not_given_when_overextended():
+    base = list(np.linspace(100, 150, 250))
+    spike = base + [150] * 10 + [190]                      # salto de +27 % en un día con RSI disparado
+    a = st.analyze(bars(spike))
+    assert a["signal"] is None
+    assert any("salto brusco" in t and not ok for t, ok in a["checks"]["Ruptura"])

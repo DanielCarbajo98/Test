@@ -9,7 +9,8 @@ Estrategia swing (días a semanas), sobre velas diarias de Yahoo Finance (gratis
   VENTA (de las alertas de compra abiertas), lo primero que ocurra:
      · stop: precio < entrada − 2 × ATR(14)   · trailing: precio < máximo − 3 × ATR
      · pierde la tendencia: cierre < media de 200 días (retrocesos) o de 50 días (rupturas)
-     · sobrecompra: RSI(14) > 75
+     · sobrecompra extrema: RSI(14) > 80
+  La ruptura NO se da con RSI > 75 ni tras un salto de más del 15 % en un día (perseguir el precio).
 Cada alerta se sigue como una operación simulada para medir si las alertas funcionan (historial en el panel).
 No es asesoramiento financiero.
 """
@@ -165,6 +166,8 @@ def analyze(b: Bars) -> dict:
         ("Precio sobre la media de 200 días", last["price"] > last["sma200"]),
         (f"Rompe el máximo de 55 días ({last['hi55']:.2f})", last["price"] > last["hi55"]),
         (f"Volumen > 1,5x la media ({last['vol_ratio']:.1f}x)", last["vol_ratio"] > 1.5),
+        (f"Sin sobrecompra extrema (RSI ≤ 75): {last['rsi']:.0f}", last["rsi"] <= 75),
+        (f"Sin salto brusco de un día (≤ 15 %): {last['chg_1d']:+.1f}%", abs(last["chg_1d"]) <= 15),
     ]
     signal = None
     if all(ok for _, ok in checks_pull):
@@ -234,8 +237,8 @@ def exit_reason(pos: dict, a: dict) -> str:
             return "pierde la media de 200 días (tendencia rota)"
     elif p < a["sma50"]:
         return "pierde la media de 50 días"
-    if a["rsi"] > 75:
-        return f"sobrecompra (RSI {a['rsi']:.0f})"
+    if a["rsi"] > 80:
+        return f"sobrecompra extrema (RSI {a['rsi']:.0f})"
     return ""
 
 

@@ -68,13 +68,24 @@ def test_applies_update_and_never_touches_secrets_or_data(tmp_path):
     assert st2["state"] == "al día"
 
 
-def test_requirements_change_is_not_applied_half_way(tmp_path):
+def test_requirements_change_is_applied_and_asks_for_iniciar(tmp_path):
     w = setup_work(tmp_path)
     files = dict(BASE, **{"requirements.txt": "httpx\nnueva-libreria\n"})
     st = updater.check_once(w, "danielcarbajo98/test", "claude/bold-johnson-evz8g1", "t", test=False,
                             http=client("sha2", make_zip(files)))
-    assert st["state"] == "requiere INICIAR" and "requirements.txt" in st["files"]
-    assert (w / "bot" / "main.py").read_text() == "OLD"
+    assert st["state"] == "actualizado" and "requirements.txt" in st["files"]
+    assert (w / "bot" / "main.py").read_text() == "NEW"
+    assert (w / "requirements.txt").read_text() == "httpx\nnueva-libreria\n"   # INICIAR reconstruye con esto
+
+
+def test_tests_run_without_user_secrets(tmp_path, monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "real-token")
+    root = tmp_path / "r"
+    (root / "tests").mkdir(parents=True)
+    (root / "tests" / "test_env.py").write_text(
+        "import os\ndef test_no_secrets():\n    assert 'TELEGRAM_BOT_TOKEN' not in os.environ\n")
+    ok, out = updater.run_tests(root)
+    assert ok, out
 
 
 def test_broken_version_is_rejected(tmp_path):

@@ -71,11 +71,24 @@ def needs_rebuild(new: Path, cur: Path) -> list[str]:
     return out
 
 
+SECRET_VARS = ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "ANTHROPIC_API_KEY", "WALLET_PRIVATE_KEY",
+               "JUPITER_API_KEY", "GITHUB_TOKEN", "DASHBOARD_TOKEN", "SOLANA_RPC_URL")
+
+
 def run_tests(root: Path) -> tuple[bool, str]:
+    # los tests corren SIN tus claves: no pueden enviar mensajes ni tocar nada real
+    env = {k: v for k, v in os.environ.items() if k not in SECRET_VARS}
     r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-x", "-p", "no:cacheprovider"], cwd=root,
-                       capture_output=True, text=True, timeout=1800)
+                       capture_output=True, text=True, timeout=1800, env=env)
     tail = (r.stdout + r.stderr).strip().splitlines()[-3:]
     return r.returncode == 0, " | ".join(tail)
+
+
+def image_outdated(work: Path) -> bool:
+    """¿Las librerías del programa instalado (imagen Docker) son más antiguas que las del código actual?"""
+    img = Path("/app/requirements.txt")
+    disk = work / "requirements.txt"
+    return img.exists() and disk.exists() and img.read_bytes() != disk.read_bytes()
 
 
 def apply(new: Path, cur: Path, sha: str):
@@ -95,7 +108,7 @@ def apply(new: Path, cur: Path, sha: str):
             rel = p.relative_to(dst)
             if p.is_file() and "__pycache__" not in rel.parts and rel not in new_files and rel.as_posix() != "VERSION":
                 p.unlink()
-    for f in CODE_FILES:
+    for f in CODE_FILES + REBUILD_FILES:
         if (new / f).exists() and f not in NEVER_TOUCH:
             shutil.copyfile(new / f, cur / f)
     (cur / "bot" / "VERSION").write_text(sha + "\n")              # último paso: dispara los reinicios
@@ -126,25 +139,24 @@ def check_once(work: Path, repo: str, branch: str, token: str, test: bool = True
         status["state"] = "al día"
     elif status.get("rejected") == sha:
         status["state"] = "versión rechazada (tests fallidos)"
-    elif status.get("needs_rebuild_sha") == sha:
-        status["state"] = "requiere INICIAR"
     else:
         root = download(http, repo, sha, work / ".update" / "staged")
         rebuild = needs_rebuild(root, work)
-        if rebuild:
-            status.update({"state": "requiere INICIAR", "needs_rebuild_sha": sha, "files": rebuild})
-            notify(f"🔄 Hay una versión nueva del bot que necesita reinstalar ({', '.join(rebuild)}). "
-                   f"Haz doble clic en INICIAR cuando puedas; mientras, sigue funcionando la versión actual.")
+        ok, out = run_tests(root) if test else (True, "tests omitidos")
+        if not ok:
+            status.update({"state": "versión rechazada (tests fallidos)", "rejected": sha, "error": out})
+            notify(f"⚠️ Actualización {sha[:7]} descartada: no pasó los tests en tu equipo. Sigue la versión actual.")
         else:
-            ok, out = run_tests(root) if test else (True, "tests omitidos")
-            if not ok:
-                status.update({"state": "versión rechazada (tests fallidos)", "rejected": sha, "error": out})
-                notify(f"⚠️ Actualización {sha[:7]} descartada: no pasó los tests en tu equipo. Sigue la versión actual.")
+            apply(root, work, sha)
+            status.update({"state": "actualizado", "applied_at": int(time.time()), "current": sha, "tests": out,
+                           "files": rebuild})
+            if rebuild:
+                notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Trae librerías nuevas: "
+                       f"haz doble clic en INICIAR cuando puedas para completar la instalación.")
             else:
-                apply(root, work, sha)
-                status.update({"state": "actualizado", "applied_at": int(time.time()), "current": sha, "tests": out})
                 notify(f"✅ Bot actualizado a la versión {sha[:7]} (tests superados). Se reinicia solo.")
         shutil.rmtree(work / ".update", ignore_errors=True)
+    status["needs_iniciar"] = image_outdated(work)
     status_f.write_text(json.dumps(status, indent=1))
     return status
 

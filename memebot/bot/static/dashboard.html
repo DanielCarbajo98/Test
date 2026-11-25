@@ -481,6 +481,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("closeBtn").disabled = !(st.positions || []).length;
     const banner = $("banner");
     if (has && !S.online) { banner.style.display = "block"; banner.textContent = "El bot no ha escrito su estado recientemente: puede estar detenido. Revisa el proceso (systemctl status memebot o docker compose ps)."; }
+    else if ((S.update || {}).needs_iniciar) { banner.style.display = "block"; banner.textContent = "Hay una actualización con librerías nuevas: haz doble clic en INICIAR para completarla (el bot sigue funcionando mientras tanto)."; }
     else if (S.control.close_all_pending) { banner.style.display = "block"; banner.textContent = "Cierre de todas las posiciones solicitado: se ejecutará en el próximo ciclo del bot."; }
     else banner.style.display = "none";
 
