@@ -38,7 +38,8 @@ from .signals import STRATEGIES, features, to_series
 log = logging.getLogger("brain")
 
 FEATURES = ["age_h", "log_vol_5m", "log_vol_60m", "ret_5m", "ret_60m", "ret_6h", "drawdown_6h",
-            "vs_high_3h", "active_60m", "accel", "log_fdv", "fng", "sol_h1", "sol_h24", "news_score"]
+            "vs_high_3h", "active_60m", "accel", "log_fdv", "ext_vwap15", "wick_1m", "range_15m",
+            "fng", "sol_h1", "sol_h24", "news_score"]
 CTX_FEATURES = ["fng", "sol_h1", "sol_h24", "news_score"]
 MISSING = -1000.0
 NAMES_ES = {
@@ -46,6 +47,8 @@ NAMES_ES = {
     "ret_5m": "subida 5 min (%)", "ret_60m": "subida 1 h (%)", "ret_6h": "subida 6 h (%)",
     "drawdown_6h": "caída desde el máximo de 6 h (%)", "vs_high_3h": "distancia al máximo previo de 3 h (%)",
     "active_60m": "minutos con operaciones en 1 h", "accel": "aceleración del volumen", "log_fdv": "capitalización (FDV)",
+    "ext_vwap15": "distancia al precio medio de 15 min (%)", "wick_1m": "mecha superior de la última vela (%)",
+    "range_15m": "amplitud de 15 min (%)",
     "fng": "índice de miedo y codicia", "sol_h1": "variación de SOL en 1 h (%)", "sol_h24": "variación de SOL en 24 h (%)",
     "news_score": "tono de las noticias",
 }
@@ -80,6 +83,7 @@ def feature_matrix(f: dict, idx: np.ndarray, ctx: np.ndarray | None = None) -> n
         np.clip(f["ret_5m"][idx], -100, 500), np.clip(f["ret_60m"][idx], -100, 2000), np.clip(f["ret_6h"][idx], -100, 5000),
         f["drawdown_6h"][idx], np.clip(vs_high, -100, 1000), f["active_60m"][idx],
         np.clip(f["accel"][idx], 0, 12), np.log1p(np.maximum(f["fdv"][idx], 0)),
+        np.clip(f["ext_vwap15"][idx], -90, 500), np.clip(f["wick_1m"][idx], 0, 500), np.clip(f["range_15m"][idx], 0, 2000),
     ]
     base = np.column_stack(cols).astype(np.float64)
     if ctx is None:

@@ -122,6 +122,11 @@ def features(s: Series, created_at: int, supply: float) -> dict[str, np.ndarray]
         "active_60m": _rolling_sum((v > 0).astype(float), 60),
         "accel": np.divide(v5 * 12, v60, out=np.zeros(n), where=v60 > 0),
         "fdv": c * supply,
+        # ¿está comprando en pleno estirón? (evitar entrar justo en el pico)
+        "ext_vwap15": np.divide(c * _rolling_sum(v, 15), _rolling_sum(c * v, 15), out=np.ones(n),
+                                where=_rolling_sum(c * v, 15) > 0) * 100 - 100,
+        "wick_1m": np.divide(s.h - np.maximum(s.o, c), c, out=np.zeros(n), where=c > 0) * 100,
+        "range_15m": (_rolling_max(s.h, 15) / np.maximum(-_rolling_max(-s.l, 15), 1e-18) - 1) * 100,
     }
 
 

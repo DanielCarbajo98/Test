@@ -180,13 +180,15 @@ def analyze(b: Bars, learned: dict | None = None) -> dict:
     learned = learned or {}
     pp = (learned.get("Retroceso en tendencia") or (DEFAULT_PARAMS["Retroceso en tendencia"], True, {}))[0]
     bp = (learned.get("Ruptura") or (DEFAULT_PARAMS["Ruptura"], True, {}))[0]
+    mp = {**DEFAULT_PARAMS["Momentum"], **(learned.get("Momentum") or (DEFAULT_PARAMS["Momentum"], True, {}))[0]}
     c = b.c
     s50, s200, r, a = sma(c, 50), sma(c, 200), rsi(c), atr(b.h, b.l, c)
     vavg = sma(b.v, 20)
     hi55 = np.max(b.h[-56:-1]) if len(c) > 56 else np.nan
     last = {"price": float(c[-1]), "sma50": float(s50[-1]), "sma200": float(s200[-1]), "rsi": float(r[-1]),
             "atr": float(a[-1]), "hi55": float(hi55), "vol_ratio": float(b.v[-1] / vavg[-1]) if vavg[-1] else 0.0,
-            "chg_1d": float((c[-1] / c[-2] - 1) * 100), "chg_1m": float((c[-1] / c[-22] - 1) * 100) if len(c) > 22 else 0.0}
+            "chg_1d": float((c[-1] / c[-2] - 1) * 100), "chg_1m": float((c[-1] / c[-22] - 1) * 100) if len(c) > 22 else 0.0,
+            "mom6m": float((c[-22] / c[-127] - 1) * 100) if len(c) > 127 else float("nan")}
     up = np.isfinite(last["sma200"]) and last["price"] > last["sma200"] and last["sma50"] > last["sma200"]
     last["trend"] = "alcista" if up else ("bajista" if np.isfinite(last["sma200"]) and last["price"] < last["sma200"] else "lateral")
     checks_pull = [
@@ -201,9 +203,18 @@ def analyze(b: Bars, learned: dict | None = None) -> dict:
         (f"Sin sobrecompra extrema (RSI ≤ {bp['rsi_cap']}): {last['rsi']:.0f}", last["rsi"] <= bp["rsi_cap"]),
         (f"Sin salto brusco de un día (≤ 15 %): {last['chg_1d']:+.1f}%", abs(last["chg_1d"]) <= 15),
     ]
-    active = {k: (learned.get(k) or (None, True, {}))[1] for k in ("Retroceso en tendencia", "Ruptura")}
+    mom_ok = np.isfinite(last["mom6m"])
+    checks_mom = [
+        ("Precio sobre la media de 200 días y media 50 sobre la de 200", up),
+        (f"Subida de 6 meses (sin el último) ≥ {mp['mom_min']} %: {last['mom6m']:+.0f} %" if mom_ok else
+         "Subida de 6 meses: sin histórico suficiente", mom_ok and last["mom6m"] >= mp["mom_min"]),
+        (f"Último mes sin estirarse (entre −10 % y +{mp['ret21_max']} %): {last['chg_1m']:+.1f} %",
+         -10 <= last["chg_1m"] <= mp["ret21_max"]),
+    ]
+    setups = (("Retroceso en tendencia", checks_pull, pp), ("Ruptura", checks_brk, bp), ("Momentum", checks_mom, mp))
+    active = {k: (learned.get(k) or (None, True, {}))[1] for k, _, _ in setups}
     signal, blocked = None, None
-    for name, checks in (("Retroceso en tendencia", checks_pull), ("Ruptura", checks_brk)):
+    for name, checks, _ in setups:
         if all(ok for _, ok in checks):
             if active[name]:
                 signal = name
@@ -211,14 +222,14 @@ def analyze(b: Bars, learned: dict | None = None) -> dict:
             blocked = name
     last["signal"] = signal
     last["blocked_signal"] = blocked              # cumplía, pero esa estrategia está suspendida
-    last["params"] = {"Retroceso en tendencia": pp, "Ruptura": bp}
+    last["params"] = {k: v for k, _, v in setups}
     if signal:
-        sp = pp if signal == "Retroceso en tendencia" else bp
+        sp = last["params"][signal]
         last["plan"] = {"stop": last["price"] - sp["stop_atr"] * last["atr"],
                         "tp": last["price"] + sp["tp_atr"] * last["atr"], "max_days": sp["max_days"],
                         "stop_atr": sp["stop_atr"], "tp_atr": sp["tp_atr"],
                         "expected": ((learned.get(signal) or (None, None, {}))[2] or {}).get("out_of_sample")}
-    last["checks"] = {"Retroceso en tendencia": checks_pull, "Ruptura": checks_brk}
+    last["checks"] = {k: ch for k, ch, _ in setups}
     last["reasoning"] = reasoning(last)
     last["sma50_series"], last["sma200_series"] = s50, s200
     return last
@@ -283,7 +294,7 @@ def exit_reason(pos: dict, a: dict, now: float | None = None) -> str:
     if pos.get("tp") and p >= pos["tp"]:
         return f"TAKE PROFIT alcanzado ({pos['tp']:.2f})"
     # un «retroceso» compra precisamente bajo la media de 50: su tendencia se rompe al perder la de 200
-    if pos.get("setup") == "Retroceso en tendencia":
+    if pos.get("setup") in ("Retroceso en tendencia", "Momentum"):
         if p < a["sma200"]:
             return "pierde la media de 200 días (tendencia rota)"
     elif p < a["sma50"]:

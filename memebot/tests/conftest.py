@@ -19,4 +19,12 @@ def _no_secrets_no_messages(monkeypatch):
     import bot.main
     monkeypatch.setattr(bot.context, "build", lambda *a, **k: {})
     monkeypatch.setattr(bot.main, "jupiter_discover", lambda *a, **k: ([], {}))
+    import bot.watchdog
+    real_radar = bot.watchdog.market_radar
+    monkeypatch.setattr(bot.watchdog, "market_radar", lambda state, http=None: real_radar(state, http or _offline()))
     yield
+
+
+def _offline():
+    import httpx
+    return httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(503)))

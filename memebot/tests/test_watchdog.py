@@ -34,3 +34,15 @@ def test_daily_summary_once_a_day_at_21(tmp_path):
     assert w.maybe_daily_summary(tmp_path, memo, at_21, sent.append)
     assert not w.maybe_daily_summary(tmp_path, memo, at_21 + 600, sent.append)
     assert "RESUMEN DEL DÍA" in sent[0] and "+5.0%" in sent[0]
+
+
+def test_market_radar(tmp_path):
+    import httpx
+    (tmp_path / "context.json").write_text(json.dumps({"fng": 25, "fng_text": "Fear", "headlines": [
+        {"title": "Bitcoin ETF inflows surge", "score": 0.6}, {"title": "meh", "score": 0.0}]}))
+    (tmp_path / "stocks.json").write_text(json.dumps({"market_up": True}))
+    cg = httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(200, json={
+        "bitcoin": {"usd": 90000, "usd_24h_change": 1.5}, "solana": {"usd": 150, "usd_24h_change": -2}})))
+    txt = "\n".join(w.market_radar(tmp_path, cg))
+    assert "Miedo y codicia: 25" in txt and "BTC 90,000 $ (+1.5%)" in txt and "SOL 150 $ (-2.0%)" in txt
+    assert "alcista" in txt and "ETF inflows" in txt and "meh" not in txt

@@ -41,7 +41,7 @@ def cost_per_side(position_eur: float | None = None, fee_eur: float | None = Non
     return SPREAD + (fee / pos if pos > 0 else 0.0)
 
 
-MODEL_VERSION = 3                  # súbelo al cambiar cómo se aprende: obliga a reaprender al momento
+MODEL_VERSION = 4                  # súbelo al cambiar cómo se aprende: obliga a reaprender al momento
 
 
 def is_current(meta: dict) -> bool:
@@ -51,10 +51,12 @@ def is_current(meta: dict) -> bool:
 
 
 SIZES_EUR = [100, 250, 500, 1000, 2500, 5000]
-SETUPS = ["Retroceso en tendencia", "Ruptura"]
+SETUPS = ["Retroceso en tendencia", "Ruptura", "Momentum"]
 DEFAULT_PARAMS = {
     "Retroceso en tendencia": {"rsi_max": 35, "stop_atr": 2.0, "tp_atr": 3.0, "max_days": 20, "regime": 0},
     "Ruptura": {"rsi_cap": 75, "stop_atr": 2.0, "tp_atr": 4.0, "max_days": 30, "regime": 0},
+    # Momentum: las que más han subido en 6 meses (sin contar el último) suelen seguir subiendo; pocas operaciones
+    "Momentum": {"mom_min": 30, "ret21_max": 10, "stop_atr": 3.0, "tp_atr": 6.0, "max_days": 40, "regime": 1},
 }
 # regime = 1: solo comprar cuando el mercado general (S&P 500, SPY) está sobre su media de 200 días
 GRID = {
@@ -62,6 +64,8 @@ GRID = {
                                "max_days": [10, 20, 40], "regime": [0, 1]},
     "Ruptura": {"rsi_cap": [70, 75, 80], "stop_atr": [1.5, 2.0, 3.0], "tp_atr": [3.0, 4.0, 6.0],
                 "max_days": [15, 30, 60], "regime": [0, 1]},
+    "Momentum": {"mom_min": [20, 35, 50], "ret21_max": [5, 10, 20], "stop_atr": [2.0, 3.0, 4.0],
+                 "tp_atr": [4.0, 6.0, 10.0], "max_days": [20, 40, 60], "regime": [0, 1]},
 }
 REGIME_SYMBOL = "SPY"
 
@@ -95,9 +99,15 @@ def indicators(b: dict) -> dict:
         hi55[i] = h[i - 55:i].max()
     vavg = sma(v, 20)
     chg = np.concatenate([[0.0], (c[1:] / c[:-1] - 1) * 100])
+    mom = np.full(n, np.nan)                     # subida de 6 meses sin el último mes (en %)
+    ret21 = np.full(n, np.nan)
+    if n > 126:
+        mom[126:] = (c[105:n - 21] / c[:n - 126] - 1) * 100
+    if n > 21:
+        ret21[21:] = (c[21:] / c[:-21] - 1) * 100
     return {"c": c, "o": np.asarray(b["o"], float), "h": h, "l": lo, "ts": np.asarray(b["ts"], float),
             "sma50": sma(c, 50), "sma200": sma(c, 200), "rsi": rsi(c), "atr": atr(h, lo, c), "hi55": hi55,
-            "vol_ratio": np.divide(v, vavg, out=np.zeros(n), where=vavg > 0), "chg": chg}
+            "vol_ratio": np.divide(v, vavg, out=np.zeros(n), where=vavg > 0), "chg": chg, "mom": mom, "ret21": ret21}
 
 
 def signals(ind: dict, setup: str, p: dict) -> np.ndarray:
@@ -107,6 +117,11 @@ def signals(ind: dict, setup: str, p: dict) -> np.ndarray:
         ok = ok & ind["regime_ok"]
     if setup == "Retroceso en tendencia":
         return ok & (c > s200) & (s50 > s200) & (r < p["rsi_max"])
+    if setup == "Momentum":
+        m, r21 = ind["mom"], ind["ret21"]
+        good = np.isfinite(m) & np.isfinite(r21)
+        return (ok & good & (c > s200) & (s50 > s200) & (np.nan_to_num(m) >= p["mom_min"])
+                & (np.nan_to_num(r21) <= p["ret21_max"]) & (np.nan_to_num(r21) >= -10))
     return (ok & (c > s200) & (c > ind["hi55"]) & (ind["vol_ratio"] > 1.5) & (r <= p["rsi_cap"])
             & (np.abs(ind["chg"]) <= 15))
 
@@ -117,7 +132,7 @@ def simulate(ind: dict, setup: str, p: dict, cost: float | tuple[float, float] =
     c_in, c_out = cost if isinstance(cost, tuple) else (cost, cost)
     sig = np.flatnonzero(signals(ind, setup, p))
     o, h, lo, c, a = ind["o"], ind["h"], ind["l"], ind["c"], ind["atr"]
-    trend = ind["sma200"] if setup == "Retroceso en tendencia" else ind["sma50"]
+    trend = ind["sma200"] if setup in ("Retroceso en tendencia", "Momentum") else ind["sma50"]
     out, free = [], 0
     n = len(c)
     for i in sig:
@@ -211,6 +226,7 @@ def optimize(bars: dict[str, dict], cost: float | None = None, amount: float | N
                 st_o = _stats(ro)
                 by_region[rg] = {"in_sample": _stats(ri), "out_of_sample": st_o,
                                  "edge": bool(st_o["n"] >= MIN_TRADES_REGION and (st_o["expectancy"] or -1) > 0
+                                              and (st_o["lcb"] if st_o["lcb"] is not None else -9) > -1.0
                                               and (_stats(ri)["expectancy"] or -1) > 0)}
         regions = [rg for rg, v in by_region.items() if v["edge"]]
         if edge and not regions:

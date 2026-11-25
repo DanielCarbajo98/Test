@@ -35,10 +35,11 @@ def test_context_aligned_by_time_without_lookahead():
 
 def test_feature_matrix_marks_missing_context():
     f = {k: np.array([1.0, 2.0]) for k in ("age_min", "vol_5m", "vol_60m", "ret_5m", "ret_60m", "ret_6h",
-                                          "drawdown_6h", "price", "active_60m", "accel", "fdv")}
+                                          "drawdown_6h", "price", "active_60m", "accel", "fdv",
+                                          "ext_vwap15", "wick_1m", "range_15m")}
     f["high_prev_3h"] = np.array([np.inf, 1.0])
     X = feature_matrix(f, np.array([0, 1]))
-    assert X.shape[1] == 11 + len(CTX_FEATURES)
+    assert X.shape[1] == 14 + len(CTX_FEATURES)
     assert (X[:, -len(CTX_FEATURES):] == MISSING).all() and np.isfinite(X).all()
 
 

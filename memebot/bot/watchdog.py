@@ -107,10 +107,38 @@ def daily_summary(state: Path, now: float | None = None) -> str:
         if p:
             lines.append(f"   Cartera simulada: {p.get('total', 0):+.2f} € · abiertas {p.get('open', 0)} · cerradas "
                          f"{p.get('closed', 0)}")
+    lines += market_radar(state)
     up = _read(state / "update.json")
     if up.get("current"):
         lines.append(f"🔄 Versión {up['current'][:7]} · {up.get('state', '')}")
     return "\n".join(lines)
+
+
+def market_radar(state: Path, http: httpx.Client | None = None) -> list[str]:
+    """Foto del mercado: miedo/codicia, BTC/ETH/SOL, bolsa y titulares (solo informativo)."""
+    ctx, stocks = _read(state / "context.json"), _read(state / "stocks.json")
+    out = ["🌍 RADAR DE MERCADO"]
+    if ctx.get("fng") is not None:
+        out.append(f"   Miedo y codicia: {ctx['fng']} ({ctx.get('fng_text', '')})")
+    try:
+        r = (http or httpx.Client(timeout=10)).get(
+            "https://api.coingecko.com/api/v3/simple/price",
+            params={"ids": "bitcoin,ethereum,solana", "vs_currencies": "usd", "include_24hr_change": "true"})
+        d = r.json() if r.status_code == 200 else {}
+        parts = [f"{n} {d[k]['usd']:,.0f} $ ({d[k].get('usd_24h_change', 0):+.1f}%)"
+                 for k, n in (("bitcoin", "BTC"), ("ethereum", "ETH"), ("solana", "SOL")) if k in d]
+        if parts:
+            out.append("   " + " · ".join(parts))
+    except (httpx.HTTPError, ValueError, KeyError, TypeError):
+        if ctx.get("sol_price"):
+            out.append(f"   SOL {ctx['sol_price']:,.2f} $ ({(ctx.get('sol_h24') or 0):+.1f}% en 24 h)")
+    if stocks.get("market_up") is not None:
+        out.append("   Bolsa (S&P 500): " + ("tendencia alcista, sobre su media de 200 días" if stocks["market_up"]
+                                             else "bajo su media de 200 días: prudencia"))
+    heads = [h for h in ctx.get("headlines") or [] if abs(h.get("score", 0)) >= 0.3][:2]
+    for h in heads:
+        out.append(f"   📰 {h.get('title', '')[:110]}")
+    return out if len(out) > 1 else []
 
 
 def maybe_daily_summary(state: Path, memo: dict, now: float | None = None, send=notify) -> bool:

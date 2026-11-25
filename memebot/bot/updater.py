@@ -221,7 +221,13 @@ def main():
             reports.maybe_publish(state, repo, branch, token, notify)
         except Exception as e:  # noqa: BLE001
             log.warning("Vigilante: %s", e)
-        time.sleep(60)
+        from . import telegram_cmd             # comandos de Telegram: responde en ~5 s
+        for _ in range(12):
+            try:
+                telegram_cmd.poll(state, memo)
+            except Exception as e:  # noqa: BLE001
+                log.warning("Telegram: %s", e)
+            time.sleep(5)
 
 
 if __name__ == "__main__":
