@@ -818,8 +818,8 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("stkMute").textContent = muted ? "Activar alertas" : "Silenciar alertas";
     if (!p) { el.innerHTML = ""; return; }
     const eur = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
-    const open = (k.open_alerts || []).map(a => { const r = (a.price / a.entry - 1) * 100, pnl = (a.amount || p.per_alert) * r / 100 - (a.fees_eur != null ? a.fees_eur : 2 * p.fee);
-      return `<tr><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}</div></td><td class="sub">${dt(a.entry_ts)}</td>
+    const open = (k.open_alerts || []).map(a => { const r = a.pending_open ? 0 : (a.price / a.entry - 1) * 100, pnl = (a.amount || p.per_alert) * r / 100 - (a.fees_eur != null ? a.fees_eur : 2 * p.fee);
+      return `<tr><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}${a.pending_open ? " · compra en la apertura" : ""}</div></td><td class="sub">${dt(a.entry_ts)}</td>
         <td class="num">${a.entry.toFixed(2)}</td><td class="num">${(a.price || a.entry).toFixed(2)}</td>
         <td class="num">${a.stop.toFixed(2)} / ${a.tp ? a.tp.toFixed(2) : "—"}</td><td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(r)}">${pct(r)}</div></td></tr>`; }).join("");
     const closed = (k.closed || []).slice(0, 15).map(c => { const pnl = c.pnl_eur != null ? c.pnl_eur : (c.amount || p.per_alert) * c.ret / 100 - 2 * p.fee;
@@ -829,7 +829,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     el.innerHTML = `<div class="funnel" style="grid-template-columns:repeat(5,1fr)">
         <div><b class="${cls(p.total)}">${eur(p.total)}</b><span>Resultado total simulado</span></div>
         <div><b class="${cls(p.realized)}">${eur(p.realized)}</b><span>Cerradas (${p.closed})</span></div>
-        <div><b class="${cls(p.open_pnl)}">${eur(p.open_pnl)}</b><span>Abiertas (${p.open})</span></div>
+        <div><b class="${cls(p.open_pnl)}">${eur(p.open_pnl)}</b><span>Abiertas (${p.open}${p.pending_open ? `, ${p.pending_open} esperando la apertura` : ""})${p.fees_open != null ? `: ${eur(p.move_open)} por precio y ${eur(-p.fees_open)} de comisiones` : ""}</span></div>
         <div><b>${p.win_rate != null ? p.win_rate + "%" : "—"}</b><span>Acierto</span></div>
         <div><b>${p.per_alert.toFixed(0)} €</b><span>por alerta · costes de ${p.broker || "tu broker"}</span></div></div>
       <p class="sub" style="margin:0 0 10px">Lo que habría pasado invirtiendo ${p.per_alert.toFixed(0)} € en cada alerta de compra, con la comisión de tu broker. Precios en la moneda de cada acción.</p>

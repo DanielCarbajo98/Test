@@ -338,12 +338,14 @@ def paper_summary(st: dict) -> dict:
     closed = st.get("closed") or []
     open_pnl = sum(paper_pnl((p.get("price", p["entry"]) / p["entry"] - 1) * 100, p.get("amount", PAPER_EUR),
                              fees_total=p.get("fees_eur")) for p in opened)
+    fees_open = sum(p.get("fees_eur", 2 * BROKER_FEE_EUR) for p in opened)
     realized = [c.get("pnl_eur", paper_pnl(c["ret"], c.get("amount", PAPER_EUR))) for c in closed if c.get("ret") is not None]
     wins = [x for x in realized if x > 0]
     from . import brokers
     bk = brokers.BROKERS[brokers.broker_key()]
     return {"per_alert": PAPER_EUR, "fee": BROKER_FEE_EUR, "broker": bk["name"], "broker_note": bk["note"],
-            "open": len(opened),
+            "open": len(opened), "fees_open": round(fees_open, 2), "move_open": round(open_pnl + fees_open, 2),
+            "pending_open": sum(1 for p in opened if p.get("pending_open")),
             "invested_open": round(sum(p.get("amount", PAPER_EUR) for p in opened), 2),
             "open_pnl": round(open_pnl, 2), "realized": round(sum(realized), 2),
             "total": round(open_pnl + sum(realized), 2), "closed": len(realized),
@@ -358,6 +360,9 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
     http = http or httpx.Client(timeout=20)
     f = state_dir / "stocks.json"
     st = json.loads(f.read_text()) if f.exists() else {"positions": {}, "alerts": [], "closed": []}
+    for sym, pos in (st.get("positions") or {}).items():       # alertas antiguas: costes reales del broker
+        if pos.get("fees_eur") is None:
+            pos["fees_eur"] = trade_fees(sym, pos.get("amount", PAPER_EUR))
     charts = state_dir / "stock_charts"
     charts.mkdir(parents=True, exist_ok=True)
     today = time.strftime("%Y-%m-%d")
@@ -408,6 +413,31 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                 a.pop("plan", None)
         pos = st["positions"].get(sym)
         status = "vigilando"
+        if pos and pos.get("pending_open"):
+            # alerta dada con el mercado cerrado: en la realidad comprarías en la apertura, no al cierre de ayer
+            if b.market_open:
+                d = a["price"] - pos["entry"]
+                cand = {**pos, "entry": a["price"], "price": a["price"], "peak": a["price"], "stop": pos["stop"] + d,
+                        "tp": (pos["tp"] + d) if pos.get("tp") else None, "entry_ts": int(time.time()), "pending_open": False}
+                why = exit_reason(cand, a) or ("abre por debajo del stop de la alerta" if a["price"] <= pos["stop"] else "")
+                if why:                     # en la apertura ya no se cumple: no se compra (sin comisiones)
+                    del st["positions"][sym]
+                    st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "CANCELADA", "price": a["price"],
+                                         "reason": why})
+                    notify(f"📈 ACCIONES · ⚪ ALERTA CANCELADA · {sym}\nEn la apertura ya no se cumple ({why}): no comprar.")
+                    pos = None
+                else:
+                    pos.update(cand)
+            status = "pendiente de apertura" if pos and pos.get("pending_open") else "en cartera"
+            if status == "pendiente de apertura":
+                pos = None
+                rows.append({"symbol": sym, "name": b.name, "currency": b.currency, "price": a["price"], "chg_1d": a["chg_1d"],
+                             "chg_1m": a["chg_1m"], "rsi": a["rsi"], "trend": a["trend"], "signal": a["signal"],
+                             "status": status, "market_open": b.market_open, "checked": int(time.time()),
+                             "reasoning": a["reasoning"], "plan": a.get("plan"),
+                             "eur_rate": eur_rate(http, b.currency) if b.currency.upper() != "EUR" else 1.0,
+                             "checks": {k: [[t, bool(ok)] for t, ok in v] for k, v in a["checks"].items()}})
+                continue
         if pos:
             pos["peak"] = max(pos["peak"], a["price"])
             pos["price"] = a["price"]
@@ -478,7 +508,8 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                                 "entry_ts": int(time.time()), "stop": pl["stop"], "tp": pl["tp"],
                                 "max_days": pl["max_days"], "peak": a["price"], "atr": a["atr"],
                                 "setup": a["signal"], "price": a["price"], "expected": pl.get("expected"),
-                                "amount": PAPER_EUR, "fees_eur": trade_fees(sym, PAPER_EUR)}
+                                "amount": PAPER_EUR, "fees_eur": trade_fees(sym, PAPER_EUR),
+                                "pending_open": not b.market_open}
         st.setdefault("last_buy", {})[sym] = today
         st["alerts"].append({"ts": int(time.time()), "symbol": sym, "side": "COMPRA", "price": a["price"],
                              "reason": a["signal"], "stop": pl["stop"], "tp": pl["tp"]})
@@ -495,7 +526,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
                f"🛑 Stop loss: {pl['stop']:.2f}{e(pl['stop'])} (−{risk:.1f}%)\n"
                f"🎯 Take profit: {pl['tp']:.2f}{e(pl['tp'])} (+{reward:.1f}%)\n"
                f"⏳ Plazo máximo: {pl['max_days']} días de mercado{hist}"
-               f"{'' if b.market_open else chr(10) + 'Mercado cerrado: precio del último cierre.'}\n"
+               f"{'' if b.market_open else chr(10) + 'Mercado cerrado: la cartera simulada comprará al precio de la apertura (stop y objetivo se ajustan igual).'}\n"
                f"{cap_line}"
                f"Costes con {paper_summary(st)['broker']} (comisión, divisa e impuestos, ida y vuelta): "
                f"~{fmt_eur(st['positions'][sym]['fees_eur'])} con {PAPER_EUR:.0f} €.\n"

@@ -128,3 +128,37 @@ def test_mute_switch_stops_alerts(tmp_path):
     pull = list(np.linspace(100, 200, 260)) + [200 - 3 * i for i in range(1, 8)]
     s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: bars(pull))
     assert not s["positions"] and s["watchlist"][0]["status"] == "señal (silenciada)"
+
+
+def test_alert_with_market_closed_buys_at_next_open(tmp_path):
+    activate_all(tmp_path)
+    pull = list(np.linspace(100, 200, 260)) + [200 - 3 * i for i in range(1, 8)]
+    closed_mkt = bars(pull)._replace(market_open=False) if hasattr(bars(pull), "_replace") else None
+    b = bars(pull)
+    import dataclasses
+    shut = dataclasses.replace(b, market_open=False) if dataclasses.is_dataclass(b) else closed_mkt
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: shut)
+    p = s["positions"]["TEST"]
+    assert p["pending_open"] and s["paper"]["pending_open"] == 1
+    assert abs(s["paper"]["move_open"]) < 1e-9                      # sin movimiento hasta que abra
+    # el precio cae de noche por debajo del stop: no salta, porque aún no se ha comprado
+    low = pull + [150]
+    s = st.run_once(tmp_path, ["TEST"], http=object(),
+                    fetcher=lambda h, sym: dataclasses.replace(bars(low), market_open=False) if dataclasses.is_dataclass(b) else None)
+    assert "TEST" in s["positions"] and not s["closed"]
+    # abre el mercado por debajo de la media de 200: ya no se cumple -> alerta cancelada, sin comisiones
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: bars(low))
+    assert "TEST" not in s["positions"] and not s["closed"] and s["alerts"][-1]["side"] == "CANCELADA"
+
+
+def test_pending_alert_buys_at_open_and_shifts_stop(tmp_path):
+    import dataclasses
+    activate_all(tmp_path)
+    pull = list(np.linspace(100, 200, 260)) + [200 - 3 * i for i in range(1, 8)]
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: dataclasses.replace(bars(pull), market_open=False))
+    old = s["positions"]["TEST"]
+    gap = pull + [pull[-1] + 2]                                        # abre 2 $ más arriba
+    s = st.run_once(tmp_path, ["TEST"], http=object(), fetcher=lambda h, sym: bars(gap))
+    p = s["positions"]["TEST"]
+    assert not p["pending_open"] and p["entry"] == gap[-1]
+    assert abs((p["entry"] - p["stop"]) - (old["entry"] - old["stop"])) < 1e-9
