@@ -43,4 +43,12 @@ def test_positions_show_return_and_profit(tmp_path):
     (tmp_path / "stocks.json").write_text(json.dumps({"positions": {
         "SAP.DE": {"entry": 100, "price": 105, "amount": 500, "fees_eur": 0.0}}}))
     t = tc.answer(tmp_path, "/posiciones")
-    assert "4CHAN: -6.2% · −$12.50" in t and "SAP.DE: +5.0% · +25.00 €" in t and "1 h 0 min" in t
+    assert "4CHAN: -6.2% · −$12.50" in t and "1 h 0 min" in t
+    assert "SAP.DE: invertido 500 € → vale 525.00 € · +25.00 € (+5.0%)" in t
+
+
+def test_old_stock_alerts_without_amount_count_as_100(tmp_path):
+    (tmp_path / "stocks.json").write_text(json.dumps({"positions": {
+        "XOM": {"entry": 100, "price": 100.6, "fees_eur": 1.0}}}))
+    t = tc.answer(tmp_path, "/posiciones")
+    assert "XOM: invertido 100 € → vale 99.60 € · −0.40 € (-0.4%) · precio +0.6%, comisiones 1.00 €" in t

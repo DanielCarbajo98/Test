@@ -886,11 +886,11 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("stkMute").textContent = muted ? "Activar alertas" : "Silenciar alertas";
     if (!p) { el.innerHTML = ""; return; }
     const eur = v => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
-    const open = (k.open_alerts || []).map(a => { const r = a.pending_open ? 0 : (a.price / a.entry - 1) * 100, pnl = (a.amount || p.per_alert) * r / 100 - (a.fees_eur != null ? a.fees_eur : 2 * p.fee);
+    const open = (k.open_alerts || []).map(a => { const r = a.pending_open ? 0 : (a.price / a.entry - 1) * 100, pnl = (a.amount || 100) * r / 100 - (a.fees_eur != null ? a.fees_eur : 2 * p.fee);
       return `<tr class="click" data-sym="${esc(a.symbol)}" title="Ver velas en directo"><td><b>${esc(a.symbol)}</b><div class="sub">${esc(a.setup || "")}${a.pending_open ? " · compra en cuanto se pueda operar" : a.price_session === "pre" ? " · precio pre-market" : a.price_session === "post" ? " · precio after-hours" : a.price_session === "cierre" ? " · bolsa cerrada" : ""}</div></td><td class="sub">${dt(a.entry_ts)}</td>
         <td class="num">${a.entry.toFixed(2)}</td><td class="num">${(a.price || a.entry).toFixed(2)}</td>
         <td class="num">${a.stop.toFixed(2)} / ${a.tp ? a.tp.toFixed(2) : "—"}</td><td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(r)}">${pct(r)}</div></td></tr>`; }).join("");
-    const closed = (k.closed || []).slice(0, 15).map(c => { const pnl = c.pnl_eur != null ? c.pnl_eur : (c.amount || p.per_alert) * c.ret / 100 - 2 * p.fee;
+    const closed = (k.closed || []).slice(0, 15).map(c => { const pnl = c.pnl_eur != null ? c.pnl_eur : (c.amount || 100) * c.ret / 100 - 2 * p.fee;
       return `<tr class="click" data-sym="${esc(c.symbol)}" title="Ver gráfico con tu entrada y salida"><td><b>${esc(c.symbol)}</b><div class="sub">${esc(c.setup || "")}</div></td><td class="sub">${dt(c.exit_ts)}</td>
         <td class="num">${c.entry.toFixed(2)}</td><td class="num">${c.exit.toFixed(2)}</td><td class="sub">${esc(c.reason || "")}</td>
         <td class="num ${cls(pnl)}">${eur(pnl)}<div class="sub ${cls(c.ret)}">${pct(c.ret)}</div></td></tr>`; }).join("");
@@ -1151,7 +1151,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const ses = { pre: "pre-market", post: "after-hours", cierre: "bolsa cerrada" };
     if (!ps.length) { $("resStocks").innerHTML = `<div class="empty" style="height:90px">Sin posiciones de acciones abiertas.</div>`; $("resStkSub").textContent = ""; return; }
     const rows = ps.map(a => {
-      const amt = a.amount || p.per_alert || 0, r = a.pending_open ? 0 : ((a.price || a.entry) / a.entry - 1) * 100;
+      const amt = a.amount || 100, r = a.pending_open ? 0 : ((a.price || a.entry) / a.entry - 1) * 100;
       const pnl = amt * r / 100 - (a.fees_eur ?? 0);
       const dist = a.stop ? ((a.price || a.entry) / a.stop - 1) * 100 : null;
       return { a, amt, r, pnl, dist };

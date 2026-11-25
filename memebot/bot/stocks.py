@@ -317,6 +317,7 @@ def notify(text: str):
             pass
 
 
+LEGACY_AMOUNT_EUR = 100.0      # importe de las alertas antiguas que no guardaban «amount»
 PAPER_EUR = float(os.getenv("STOCKS_PAPER_EUR", "500"))      # € que invierte la cuenta simulada en cada compra
 CAPITAL_EUR = float(os.getenv("STOCKS_CAPITAL_EUR", "10000"))  # capital inicial de la cuenta simulada de acciones
 BROKER_FEE_EUR = float(os.getenv("STOCKS_FEE_EUR", "1"))      # (antiguo) comisión fija si no se sabe el valor
@@ -332,6 +333,17 @@ def paper_pnl(ret_pct: float, amount: float = PAPER_EUR, fee: float | None = Non
     """€ ganados o perdidos invirtiendo `amount` en la alerta, descontando los costes de compra y venta."""
     costs = fees_total if fees_total is not None else 2 * (BROKER_FEE_EUR if fee is None else fee)
     return amount * ret_pct / 100 - costs
+
+
+def migrate_positions(st: dict) -> None:
+    """Alertas antiguas sin importe guardado: se abrieron con 100 €. Sin esto contaban como el importe nuevo."""
+    for sym, pos in (st.get("positions") or {}).items():
+        if not pos.get("amount"):
+            pos["amount"] = LEGACY_AMOUNT_EUR
+            pos["fees_eur"] = trade_fees(sym, LEGACY_AMOUNT_EUR)
+    for c in st.get("closed") or []:
+        if not c.get("amount"):
+            c["amount"] = LEGACY_AMOUNT_EUR
 
 
 def account(st: dict) -> dict:
@@ -467,6 +479,7 @@ def run_once(state_dir: Path, watchlist: list[str], http: httpx.Client | None = 
     http = http or httpx.Client(timeout=20)
     f = state_dir / "stocks.json"
     st = json.loads(f.read_text()) if f.exists() else {"positions": {}, "alerts": [], "closed": []}
+    migrate_positions(st)
     for sym, pos in (st.get("positions") or {}).items():       # alertas antiguas: costes reales del broker
         if pos.get("fees_eur") is None:
             pos["fees_eur"] = trade_fees(sym, pos.get("amount", PAPER_EUR))
@@ -754,6 +767,7 @@ def live_tick(state_dir: Path, http: httpx.Client, ext_fetcher=fetch_ext) -> int
         st = json.loads(f.read_text())
     except (OSError, ValueError):
         return 0
+    migrate_positions(st)
     pos_all = st.get("positions") or {}
     if not pos_all:
         return 0

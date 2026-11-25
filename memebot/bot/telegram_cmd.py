@@ -56,17 +56,22 @@ def positions_text(state: Path) -> str:
     st = _read(state / "stocks.json").get("positions") or {}
     rows = []
     for sym, p in st.items():
-        amt = p.get("amount", 0)
+        amt = p.get("amount") or 100.0                         # alertas antiguas: se abrieron con 100 €
         r = 0.0 if p.get("pending_open") else (p.get("price", p["entry"]) / p["entry"] - 1) * 100
         rows.append((amt * r / 100 - (p.get("fees_eur") or 0), r, sym, p, amt))
     tot_s = sum(x[0] for x in rows)
+    inv_s = sum(x[4] for x in rows)
     out.append("")
-    out.append(f"📈 ACCIONES · {len(rows)} abiertas · {'+' if tot_s >= 0 else '−'}{abs(tot_s):.2f} €" if rows else "📈 ACCIONES · sin posiciones abiertas")
+    out.append(f"📈 ACCIONES · {len(rows)} abiertas · invertido {inv_s:,.0f} € · {'+' if tot_s >= 0 else '−'}{abs(tot_s):.2f} € "
+               f"({100 * tot_s / inv_s:+.1f}%)".replace(",", ".") if rows else "📈 ACCIONES · sin posiciones abiertas")
+    out.append("(beneficio = lo que darían hoy al vender, ya descontadas comisiones de compra y venta)" if rows else "")
     for pnl, r, sym, p, amt in sorted(rows, key=lambda x: -x[0]):
         tag = " · esperando a poder comprar" if p.get("pending_open") else (" · pre-market" if p.get("price_session") == "pre" else
                                                                          " · after-hours" if p.get("price_session") == "post" else "")
-        out.append(f"{'🟢' if pnl >= 0 else '🔴'} {sym}: {r:+.1f}% · {'+' if pnl >= 0 else '−'}{abs(pnl):.2f} € "
-                   f"(invertido {amt:.0f} €){tag}")
+        fees = p.get("fees_eur") or 0
+        out.append(f"{'🟢' if pnl >= 0 else '🔴'} {sym}: invertido {amt:.0f} € → vale {amt + pnl:.2f} € · "
+                   f"{'+' if pnl >= 0 else '−'}{abs(pnl):.2f} € ({100 * pnl / amt:+.1f}%)"
+                   f"{f' · precio {r:+.1f}%, comisiones {fees:.2f} €' if fees >= 0.01 else ''}{tag}")
     return "\n".join(out)[:4000]
 
 

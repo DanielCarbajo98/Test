@@ -37,7 +37,7 @@ def _read(p: Path, tries: int = 5) -> dict:
 
 def stocks_side(st: dict) -> dict:
     """Lo que las acciones aportan/consumen, en euros: comprometido (abiertas), realizado y flotante."""
-    from .stocks import paper_pnl, PAPER_EUR
+    from .stocks import paper_pnl, LEGACY_AMOUNT_EUR as PAPER_EUR   # sin importe guardado = alerta antigua (100 €)
     pos = (st.get("positions") or {}).values()
     committed = sum(p.get("amount", PAPER_EUR) for p in pos)
     realized = sum(c.get("pnl_eur", 0.0) or 0.0 for c in st.get("closed") or [] if c.get("ret") is not None)
