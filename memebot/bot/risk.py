@@ -72,7 +72,8 @@ def evaluate_exit(pos: Position, price: float, liquidity_usd: float, now: float,
     minutes = (now - pos.opened_at) / 60
     # solo si NUNCA llegó a +time_stop_min_gain_pct: si subió y luego bajó, lo gestiona el candado
     if not pos.tp_levels_hit and minutes >= e.time_stop_minutes and peak_gain < e.time_stop_min_gain_pct:
-        return all_out(f"time stop ({minutes:.0f} min, {gain_pct:+.1f}%)")
+        return all_out(f"time stop: en {minutes:.0f} min nunca llegó a +{e.time_stop_min_gain_pct:g}% "
+                       f"(ahora {gain_pct:+.1f}%); se cierra para no esperar al stop de −{e.stop_loss_pct:g}%")
 
     # 5) Escalera de take-profits (porcentaje sobre la cantidad inicial).
     qty, hit = 0.0, list(pos.tp_levels_hit)

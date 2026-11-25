@@ -34,3 +34,13 @@ def test_close_all_needs_confirmation(tmp_path):
     assert json.loads((tmp_path / "control.json").read_text())["close_all"] is True
     assert tc.answer(tmp_path, "hola") is None and "Comandos" in tc.answer(tmp_path, "/ayuda")
     assert "ESTADO" in tc.answer(tmp_path, "/estado")
+
+
+def test_positions_show_return_and_profit(tmp_path):
+    import time
+    (tmp_path / "status.json").write_text(json.dumps({"positions": [
+        {"symbol": "4CHAN", "pnl_usd": -12.5, "pnl_pct": -6.25, "cost": 200, "value": 187.5, "opened_at": time.time() - 3600}]}))
+    (tmp_path / "stocks.json").write_text(json.dumps({"positions": {
+        "SAP.DE": {"entry": 100, "price": 105, "amount": 500, "fees_eur": 0.0}}}))
+    t = tc.answer(tmp_path, "/posiciones")
+    assert "4CHAN: -6.2% · −$12.50" in t and "SAP.DE: +5.0% · +25.00 €" in t and "1 h 0 min" in t

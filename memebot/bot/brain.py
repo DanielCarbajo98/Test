@@ -62,6 +62,8 @@ ML_EXIT_CHOICES = {
               "lock_act": 20, "lock_keep": 50},
     "por defecto": DEFAULT_EXITS,
     "sin candado": {"sl": 25, "tp": [[100, 50], [300, 25]], "trail": 30, "trail_act": 50, "time": 90, "time_gain": 10},
+    "sin time stop": {"sl": 25, "tp": [[100, 50], [300, 25]], "trail": 30, "trail_act": 50, "time": 100_000,
+                      "time_gain": 10, "lock_act": 20, "lock_keep": 50},
     "larga": {"sl": 35, "tp": [[100, 50], [300, 25]], "trail": 35, "trail_act": 50, "time": 240, "time_gain": 10,
               "lock_act": 30, "lock_keep": 50},
 }

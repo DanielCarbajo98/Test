@@ -37,6 +37,39 @@ def _control(state: Path, **kv):
     f.write_text(json.dumps(ctl))
 
 
+def _dur(sec: float) -> str:
+    m = int(max(0, sec) // 60)
+    return f"{m // 1440} d {m % 1440 // 60} h" if m >= 1440 else (f"{m // 60} h {m % 60} min" if m >= 60 else f"{m} min")
+
+
+def positions_text(state: Path) -> str:
+    """Posiciones abiertas de cripto y de acciones, con su rendimiento y su beneficio o pérdida."""
+    now = time.time()
+    out = []
+    pos = _read(state / "status.json").get("positions") or []
+    tot = sum(p.get("pnl_usd", 0) for p in pos)
+    out.append(f"🪙 CRIPTO · {len(pos)} abiertas · {'+' if tot >= 0 else '−'}${abs(tot):.2f}" if pos else "🪙 CRIPTO · sin posiciones abiertas")
+    for p in sorted(pos, key=lambda x: -x.get("pnl_usd", 0)):
+        pnl, pc = p.get("pnl_usd", 0), p.get("pnl_pct", 0)
+        out.append(f"{'🟢' if pnl >= 0 else '🔴'} {p.get('symbol', '?')}: {pc:+.1f}% · {'+' if pnl >= 0 else '−'}${abs(pnl):.2f} "
+                   f"(invertido ${p.get('cost', 0):.0f}, vale ${p.get('value', 0):.0f}) · {_dur(now - p.get('opened_at', now))}")
+    st = _read(state / "stocks.json").get("positions") or {}
+    rows = []
+    for sym, p in st.items():
+        amt = p.get("amount", 0)
+        r = 0.0 if p.get("pending_open") else (p.get("price", p["entry"]) / p["entry"] - 1) * 100
+        rows.append((amt * r / 100 - (p.get("fees_eur") or 0), r, sym, p, amt))
+    tot_s = sum(x[0] for x in rows)
+    out.append("")
+    out.append(f"📈 ACCIONES · {len(rows)} abiertas · {'+' if tot_s >= 0 else '−'}{abs(tot_s):.2f} €" if rows else "📈 ACCIONES · sin posiciones abiertas")
+    for pnl, r, sym, p, amt in sorted(rows, key=lambda x: -x[0]):
+        tag = " · esperando a poder comprar" if p.get("pending_open") else (" · pre-market" if p.get("price_session") == "pre" else
+                                                                         " · after-hours" if p.get("price_session") == "post" else "")
+        out.append(f"{'🟢' if pnl >= 0 else '🔴'} {sym}: {r:+.1f}% · {'+' if pnl >= 0 else '−'}{abs(pnl):.2f} € "
+                   f"(invertido {amt:.0f} €){tag}")
+    return "\n".join(out)[:4000]
+
+
 def answer(state: Path, text: str) -> str | None:
     cmd = (text or "").strip().split()
     if not cmd or not cmd[0].startswith("/"):
@@ -48,14 +81,7 @@ def answer(state: Path, text: str) -> str | None:
         from .watchdog import daily_summary
         return daily_summary(state).replace("RESUMEN DEL DÍA", "ESTADO AHORA")
     if c == "/posiciones":
-        pos = _read(state / "status.json").get("positions") or []
-        if not pos:
-            return "🪙 No hay posiciones de cripto abiertas."
-        lines = ["🪙 Posiciones abiertas:"]
-        for p in pos:
-            r = (p.get("price", p.get("entry", 0)) / p["entry"] - 1) * 100 if p.get("entry") else 0
-            lines.append(f"· {p.get('symbol', '?')}: {r:+.1f}% · stop {p.get('stop', 0):.6g}")
-        return "\n".join(lines)
+        return positions_text(state)
     if c == "/cazador":
         h = _read(state / "hunter.json").get("summary") or {}
         st, cp = _read(state / "moonshot.json"), _read(state / "copy.json")
