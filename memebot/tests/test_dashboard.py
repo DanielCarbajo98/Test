@@ -151,3 +151,18 @@ def test_open_chart_is_live(tmp_path):
     d = dash.live_candles(dict(data), c, now)
     assert d["candles"][-1][0] == now // 60 * 60 and d["candles"][-1][4] == 1.2 and d["price_now"] == 1.2
     assert len(d["candles"]) == 3                       # velas frescas + la del minuto actual
+
+
+def test_stale_candles_are_not_bridged_with_a_fake_candle():
+    import httpx
+    from bot import dashboard as dash
+    dash._LIVE_CANDLES.clear(); dash._LIVE_PRICE.clear()
+    now = 1_795_600_000
+    data = {"pool": "POOL2", "mint": "MINT2", "ts": now - 3600, "candles": [[now - 3600, 1, 1, 1, 1, 5]]}
+
+    def handler(req):
+        if "price/v3" in str(req.url):
+            return httpx.Response(200, json={"MINT2": {"usdPrice": 0.4}})
+        return httpx.Response(429)                                  # GeckoTerminal saturado
+    d = dash.live_candles(dict(data), httpx.Client(transport=httpx.MockTransport(handler)), now)
+    assert d["stale_candles"] and len(d["candles"]) == 1 and d["price_now"] == 0.4

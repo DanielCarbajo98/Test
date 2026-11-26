@@ -971,12 +971,15 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     $("liveSub").textContent = list.length ? `${list.length} tokens analizados recientemente` : "";
     if (!list.length) { $("tlist").innerHTML = `<div class="empty" style="height:120px">Aún sin análisis. Aparecen en el primer minuto.</div>`; return; }
     if (!selPool || !list.some(c => c.pool === selPool)) selPool = list[0].pool;
-    const key = selPool + "|" + list.map(c => [c.pool, c.ts, c.position, c.signal, c.failed].join(":")).join(",");
+    const key = selPool + "|" + Math.floor(S.now / 60) + "|" + list.map(c => [c.pool, c.ts, c.position, c.signal, c.failed].join(":")).join(",");
     if (key === tlistKey) return;            // sin cambios: no redibujar (así no se pierden clics)
     tlistKey = key;
     $("tlist").innerHTML = list.map(c => {
-      const b = c.position ? '<span class="badge pos">En cartera</span>' : c.signal ? '<span class="badge sig">Señal</span>'
-        : `<span class="badge no">${c.checks ? (c.checks - c.failed) + "/" + c.checks : "—"}</span>`;
+      const fresh = S.now - c.ts < 600;
+      const b = c.position ? '<span class="badge pos" title="El bot tiene comprada esta moneda ahora mismo">En cartera</span>'
+        : c.signal ? (fresh ? '<span class="badge sig" title="Cumple todas las condiciones de compra ahora">Para comprar</span>'
+                            : '<span class="badge no" title="Cumplía las condiciones en su último análisis; puede haber cambiado">Cumplía</span>')
+        : `<span class="badge no" title="Condiciones de compra que cumple">${c.checks ? (c.checks - c.failed) + "/" + c.checks : "—"}</span>`;
       return `<button data-pool="${esc(c.pool)}" class="${c.pool === selPool ? "on" : ""}">${avatar(c.symbol)}<span class="meta"><b>${esc(c.symbol)}</b><span>${price(c.price)} · ${ago(S.now - c.ts)}</span></span>${b}</button>`;
     }).join("");
 
@@ -1014,7 +1017,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const first = d.candles.length ? d.candles[Math.max(0, d.candles.length - 61)][4] : 0;
     const ch = first ? 100 * (last / first - 1) : 0;
     $("chead").innerHTML = `<b>${esc(d.symbol)}</b><span class="px">${price(nowPx)}</span><span class="${cls(ch)}">${pct(ch)} 1 h</span>
-      <a href="${dexLink(d.mint, d.pool)}" target="_blank" rel="noopener">DexScreener ↗</a><span class="sub">${d.price_now ? `<span class="up">● en directo</span> · ` : ""}analizado ${ago(S.now - d.ts)}</span>`;
+      <a href="${dexLink(d.mint, d.pool)}" target="_blank" rel="noopener">DexScreener ↗</a><span class="sub">${d.stale_candles ? `<span class="flat">velas de ${ago(S.now - d.candles[d.candles.length - 1][0])} (GeckoTerminal saturado)${d.price_now ? " · precio ahora " + price(d.price_now) : ""}</span> · ` : d.price_now ? `<span class="up">● en directo</span> · ` : ""}analizado ${ago(S.now - d.ts)}</span>`;
     if (!window.LightweightCharts) { $("candle").innerHTML = `<div class="empty">No se pudo cargar la librería de gráficos.</div>`; renderAnalysis(d); return; }
     ensureChart();
     const prec = precisionFor(last);
@@ -1069,8 +1072,13 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
         <div class="kv"><span>Entrada</span><b>${price(pos.entry_price)}</b><span>Precio</span><b>${price(pos.price)}</b>
         <span>Stop</span><b>${price(pos.stop)}</b><span>Máximo</span><b>${price(pos.peak)}</b><span>Tiempo</span><b>${dur(S.now - pos.opened_at)}</b></div>`;
     } else {
-      const ok = d.signal;
-      html += `<div class="verdict ${ok ? "yes" : "no"}">${ok ? "✓ Señal de compra" : "✗ Sin señal de compra"}</div>`;
+      const ok = d.signal, age = S.now - d.ts;
+      const bought = (d.trades || []).filter(t => t.side === "BUY").pop();
+      html += `<div class="verdict ${ok && age < 600 ? "yes" : "no"}">${ok ? (age < 600 ? "✓ Cumple todo para comprar" : `✓ Cumplía todo hace ${ago(age).replace("hace ", "")}`) : "✗ No cumple para comprar"}</div>`;
+      if (ok) html += `<p class="sub" style="margin:0">${bought
+        ? `Ya la compró (${dt(isoTs(bought.ts))}) y la vendió; no vuelve a entrar en la misma moneda hasta pasadas unas horas.`
+        : age >= 600 ? "Este análisis es antiguo: el bot la vuelve a revisar cuando le toca y, si sigue cumpliendo, la compra."
+        : "Si no la compra enseguida es porque no hay liquidez libre, el riesgo abierto está al máximo o no pasó los filtros anti-estafa."}</p>`;
     }
     if (checks.length) {
       const n = checks.filter(c => c.ok).length;

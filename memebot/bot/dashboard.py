@@ -110,6 +110,12 @@ def live_candles(data: dict, client=None, now: float | None = None) -> dict:
             px = None
         if px:
             _LIVE_PRICE[mint] = ph = (now, px)
+    if candles and now - candles[-1][0] > 300:            # velas viejas: no inventar una vela que una el hueco
+        data["stale_candles"] = True
+        data["price_now"] = ph[1] if ph and now - ph[0] < 30 else None
+        data["candles"] = candles[-420:]
+        data["live_ts"] = int(now)
+        return data
     if ph and candles and now - ph[0] < 30:
         px, minute = ph[1], int(now // 60 * 60)
         last = candles[-1]
