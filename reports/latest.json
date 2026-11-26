@@ -1,5 +1,5 @@
 {
- "generated_at": 1795691003,
+ "generated_at": 1795701831,
  "days": 30,
  "version": "86cb7ce942d4",
  "crypto": {
@@ -7,25 +7,25 @@
    "mode": "paper",
    "strategy": "momentum",
    "paused": false,
-   "equity": 9607.111700411802,
+   "equity": 9528.088201396,
    "start_equity": 10000.0,
-   "daily_pnl": -83.68412006499993,
+   "daily_pnl": -130.99126348999994,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795690993,
+    "ts": 1795701732,
     "discovered": 200,
     "with_data": 200,
-    "prefilter": 0,
-    "analyzed": 0,
+    "prefilter": 1,
+    "analyzed": 1,
     "signals": 0,
     "rejected": {
-     "dex": 21,
-     "liquidez": 90,
-     "volumen": 182,
-     "pocas": 160,
-     "edad": 152,
-     "FDV": 3,
-     "sin": 2,
+     "edad": 156,
+     "volumen": 168,
+     "dex": 12,
+     "liquidez": 93,
+     "pocas": 147,
+     "sin": 3,
+     "FDV": 6,
      "parece": 1
     },
     "filters": {
@@ -39,7 +39,7 @@
    },
    "interval": 20
   },
-  "open_positions": 1,
+  "open_positions": 2,
   "closed_last_days": [
    {
     "symbol": "BOOBS",
@@ -416,29 +416,73 @@
     "reasons": [
      "candado de beneficio (+8.4%, máximo +21%)"
     ]
+   },
+   {
+    "symbol": "Grodia",
+    "opened": "2026-11-26T11:21:49+00:00",
+    "closed": "2026-11-26T11:43:45+00:00",
+    "ret": -0.2670214052485186,
+    "cost": 82.69,
+    "got": 60.61,
+    "reasons": [
+     "stop loss -26.8%"
+    ]
+   },
+   {
+    "symbol": "NORFEATH",
+    "opened": "2026-11-26T11:43:47+00:00",
+    "closed": "2026-11-26T11:57:42+00:00",
+    "ret": -0.3124302887594498,
+    "cost": 80.69,
+    "got": 55.48,
+    "reasons": [
+     "stop loss -29.6%"
+    ]
+   },
+   {
+    "symbol": "Elonmas",
+    "opened": "2026-11-26T11:22:40+00:00",
+    "closed": "2026-11-26T12:00:45+00:00",
+    "ret": -0.2598815423667352,
+    "cost": 82.73,
+    "got": 61.23,
+    "reasons": [
+     "stop loss -26.3%"
+    ]
+   },
+   {
+    "symbol": "UHI",
+    "opened": "2026-11-26T05:33:03+00:00",
+    "closed": "2026-11-26T13:09:29+00:00",
+    "ret": 0.28196377001837747,
+    "cost": 76.18,
+    "got": 97.66,
+    "reasons": [
+     "candado de beneficio (+28.4%, máximo +58%)"
+    ]
    }
   ],
   "closed_stats": {
-   "n": 34,
-   "win_rate": 35.3,
-   "avg_ret_pct": -8.13
+   "n": 38,
+   "win_rate": 34.2,
+   "avg_ret_pct": -8.74
   }
  },
  "crypto_brain": {
   "status": "defensivo",
   "status_text": "Ninguna estrategia demuestra ventaja en datos no vistos. Modo defensivo: en real no se abren posiciones.",
-  "samples": 11936,
-  "pools": 216,
+  "samples": 12807,
+  "pools": 234,
   "version": 0,
   "reality": {
-   "n": 34,
-   "expectancy": -8.13,
-   "win_rate": 35.3,
+   "n": 38,
+   "expectancy": -8.74,
+   "win_rate": 34.2,
    "expected": null,
    "by_exit": {
     "stop": {
-     "n": 14,
-     "avg": -29.2
+     "n": 17,
+     "avg": -28.9
     },
     "time": {
      "n": 8,
@@ -449,8 +493,8 @@
      "avg": 66.7
     },
     "candado": {
-     "n": 9,
-     "avg": 16.7
+     "n": 10,
+     "avg": 17.9
     },
     "liquidez": {
      "n": 1,
@@ -463,122 +507,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795690886,
+  "updated_at": 1795701731,
   "history": [
-   {
-    "ts": 1795639223,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 7545,
-    "pools": 146,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 25.83,
-      "n": 6
-     }
-    ]
-   },
-   {
-    "ts": 1795641028,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 7842,
-    "pools": 147,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 25.83,
-      "n": 6
-     }
-    ]
-   },
-   {
-    "ts": 1795642833,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 8306,
-    "pools": 152,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 25.83,
-      "n": 6
-     }
-    ]
-   },
-   {
-    "ts": 1795644638,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 8409,
-    "pools": 158,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 25.83,
-      "n": 6
-     }
-    ]
-   },
-   {
-    "ts": 1795646443,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 8409,
-    "pools": 159,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 25.83,
-      "n": 6
-     }
-    ]
-   },
-   {
-    "ts": 1795648248,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 8409,
-    "pools": 159,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 25.83,
-      "n": 6
-     }
-    ]
-   },
    {
     "ts": 1795650053,
     "decision": "defensivo",
@@ -1174,6 +1104,210 @@
       "n": 115
      }
     ]
+   },
+   {
+    "ts": 1795692694,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -6.33,
+    "samples": 12078,
+    "pools": 219,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 8.05,
+      "n": 8
+     },
+     {
+      "s": "dip",
+      "e": 1.32,
+      "n": 5
+     },
+     {
+      "s": "breakout",
+      "e": -4.88,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -3.41,
+      "n": 112
+     }
+    ]
+   },
+   {
+    "ts": 1795694501,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -6.87,
+    "samples": 12321,
+    "pools": 225,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 8.05,
+      "n": 8
+     },
+     {
+      "s": "dip",
+      "e": 1.32,
+      "n": 5
+     },
+     {
+      "s": "breakout",
+      "e": -4.88,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -3.39,
+      "n": 96
+     }
+    ]
+   },
+   {
+    "ts": 1795696307,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -6.87,
+    "samples": 12321,
+    "pools": 230,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 8.05,
+      "n": 8
+     },
+     {
+      "s": "dip",
+      "e": 1.32,
+      "n": 5
+     },
+     {
+      "s": "breakout",
+      "e": -4.88,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -3.39,
+      "n": 96
+     }
+    ]
+   },
+   {
+    "ts": 1795698118,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -6.87,
+    "samples": 12321,
+    "pools": 230,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 8.05,
+      "n": 8
+     },
+     {
+      "s": "dip",
+      "e": 1.32,
+      "n": 5
+     },
+     {
+      "s": "breakout",
+      "e": -4.88,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -3.39,
+      "n": 96
+     }
+    ]
+   },
+   {
+    "ts": 1795699925,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -10.49,
+    "samples": 12652,
+    "pools": 230,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 8.05,
+      "n": 8
+     },
+     {
+      "s": "dip",
+      "e": 1.32,
+      "n": 5
+     },
+     {
+      "s": "breakout",
+      "e": -4.88,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -4.37,
+      "n": 55
+     }
+    ]
+   },
+   {
+    "ts": 1795701732,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -11.18,
+    "samples": 12807,
+    "pools": 234,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 8.05,
+      "n": 8
+     },
+     {
+      "s": "dip",
+      "e": 1.32,
+      "n": 5
+     },
+     {
+      "s": "breakout",
+      "e": -4.88,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -6.91,
+      "n": 74
+     }
+    ]
    }
   ]
  },
@@ -1184,9 +1318,9 @@
    "broker": "XTB",
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
    "capital": 10000.0,
-   "cash": -3089.68,
-   "equity": 2641.92,
-   "ret_pct": -73.58,
+   "cash": 2679.47,
+   "equity": 2640.69,
+   "ret_pct": -73.59,
    "history": [
     [
      1795615348,
@@ -1455,16 +1589,60 @@
     [
      1795689938,
      2642.33
+    ],
+    [
+     1795691016,
+     2641.92
+    ],
+    [
+     1795692091,
+     2641.53
+    ],
+    [
+     1795693169,
+     2641.56
+    ],
+    [
+     1795694245,
+     2641.61
+    ],
+    [
+     1795695325,
+     2641.06
+    ],
+    [
+     1795696403,
+     2640.88
+    ],
+    [
+     1795697481,
+     2640.76
+    ],
+    [
+     1795698561,
+     2640.71
+    ],
+    [
+     1795699640,
+     2640.67
+    ],
+    [
+     1795700718,
+     2640.82
+    ],
+    [
+     1795701798,
+     2640.69
     ]
    ],
    "open": 29,
    "fees_open": 55.9,
-   "move_open": 27.5,
+   "move_open": 26.27,
    "pending_open": 0,
    "invested_open": 5760.0,
-   "open_pnl": -28.4,
+   "open_pnl": -29.63,
    "realized": -111.5,
-   "total": -139.9,
+   "total": -141.13,
    "closed": 17,
    "win_rate": 0.0,
    "best": -1.69,
@@ -2458,14 +2636,14 @@
  "hunter": {
   "summary": {
    "cazador": {
-    "equity": 911.26,
-    "pnl": -88.74,
+    "equity": 894.53,
+    "pnl": -105.47,
     "open": 25,
-    "closed": 24,
-    "win_rate": 4.2,
+    "closed": 34,
+    "win_rate": 2.9,
     "best_x": 1.15,
     "worst_pct": -100.0,
-    "mean_pct": -33.99
+    "mean_pct": -28.07
    },
    "copia": {
     "equity": 1227.7,
@@ -3007,6 +3185,226 @@
      "exit_ts": 1795689604,
      "reason": "plazo de 24 h",
      "ret": -0.05875017960138762
+    },
+    {
+     "pair": "Grxhipe8qwqKUctFn3R8sQ5C7uD7c3tMy6HX2cT1BFam",
+     "mint": "BoTbRJ3SpyNVfLXq7CZxPUQsbk362Zdkdo3Ck4c3FDPi",
+     "name": "BoT / SOL",
+     "source": "cazador",
+     "entry": 2.0157100000000003e-06,
+     "qty": 4961031.10070397,
+     "cost_usd": 10.0,
+     "got_usd": 9.532968532179728,
+     "ts": 1795607742,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.981e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.981e-06,
+     "exit_ts": 1795694164,
+     "reason": "plazo de 24 h",
+     "ret": -0.04670314678202714
+    },
+    {
+     "pair": "EaWZ5hJUM4yenraTLay4RKxfcuaJW9a3b4aiBJB64miU",
+     "mint": "AizjwqKyKNLbDK6wJTeG6mUvywYqABcFjfPeLuZepump",
+     "name": "DISGUISE / SOL",
+     "source": "cazador",
+     "entry": 1.96112e-06,
+     "qty": 5099127.029452558,
+     "cost_usd": 10.0,
+     "got_usd": 9.323762679749667,
+     "ts": 1795610442,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.8850533470629553e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.8850533470629553e-06,
+     "exit_ts": 1795696864,
+     "reason": "plazo de 24 h",
+     "ret": -0.06762373202503336
+    },
+    {
+     "pair": "5j1QkjLxks5ze45w7RKF3hNSoamcKsWQTG1cbebYuKiq",
+     "mint": "6PYawrTydeNEtio2YYmw5jwE4LXGJGr3mPdLc4txmzLs",
+     "name": "Froovik / SOL",
+     "source": "cazador",
+     "entry": 1.97451e-06,
+     "qty": 5064547.659925753,
+     "cost_usd": 10.0,
+     "got_usd": 9.75922081170587,
+     "ts": 1795610442,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.986564854115604e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.986564854115604e-06,
+     "exit_ts": 1795696864,
+     "reason": "plazo de 24 h",
+     "ret": -0.024077918829413014
+    },
+    {
+     "pair": "2wW9bbcuuCE7dps9Y7esULqnMPJatYRBTFEk5RYGhqfx",
+     "mint": "9oTRxqmSRAu2CkixoMX3bkAiCbTcZ8enqwWBLhxwpump",
+     "name": "dolly / USDC",
+     "source": "cazador",
+     "entry": 4.1199999999999995e-06,
+     "qty": 2427184.4660194176,
+     "cost_usd": 10.0,
+     "got_usd": 9.413924306353016,
+     "ts": 1795610442,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.9984915610489095e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.9984915610489095e-06,
+     "exit_ts": 1795696864,
+     "reason": "plazo de 24 h",
+     "ret": -0.058607569364698464
+    },
+    {
+     "pair": "GGjQZsyvjzQhixRwJFnoVgqFdMWu2TEzsjhJPZj7guGP",
+     "mint": "8YBPTbxrgtA9465jaF7ow53uGbnq6Dz9ZEmBaTRikaaa",
+     "name": "BI / SOL",
+     "source": "cazador",
+     "entry": 4.1663349684281366e-05,
+     "qty": 240019.10733962836,
+     "cost_usd": 10.0,
+     "got_usd": 6.782003898899273,
+     "ts": 1795696924,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.913e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.913e-05,
+     "exit_ts": 1795697044,
+     "reason": "stop −30 %",
+     "ret": -0.32179961011007274
+    },
+    {
+     "pair": "5KAnwXxM23wung8VkYfR9eWkoHM2ohgALwkJnZAUHcFx",
+     "mint": "EhQuhywnDz4mUxyx1eTuS2LktbGsAKTUdThnJ6uHpump",
+     "name": "NVIDIA / SOL",
+     "source": "cazador",
+     "entry": 5.934751205190197e-06,
+     "qty": 1684990.6009968147,
+     "cost_usd": 10.0,
+     "got_usd": 3.299018918541043,
+     "ts": 1795688584,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.018438814717187e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.018438814717187e-06,
+     "exit_ts": 1795697344,
+     "reason": "stop −30 %",
+     "ret": -0.6700981081458957
+    },
+    {
+     "pair": "AfEoc5ytUgzUxrpcbXvuB1h5Vhz6ENVVPn1THhmbfpvq",
+     "mint": "npc7uJJeG71WhnXPTpeAFbAZcD11nyVsahpp54PVGdN",
+     "name": "N0TNPC / SOL",
+     "source": "cazador",
+     "entry": 1.94876e-06,
+     "qty": 5131468.215685872,
+     "cost_usd": 10.0,
+     "got_usd": 9.459511558636402,
+     "ts": 1795611762,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9004451283513684e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9004451283513684e-06,
+     "exit_ts": 1795698184,
+     "reason": "plazo de 24 h",
+     "ret": -0.0540488441363598
+    },
+    {
+     "pair": "3tgqkWLhoAnvxF3EutuPmepCj9LumdCu5bkWRd5h96oW",
+     "mint": "TEKKuFbgcnd2BYnspacUd3gvcQsGVjppfcNis9Uqikw",
+     "name": "420tekk / SOL",
+     "source": "cazador",
+     "entry": 2.05073e-06,
+     "qty": 4876312.337557845,
+     "cost_usd": 10.0,
+     "got_usd": 9.76276740477781,
+     "ts": 1795612782,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.064e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.064e-06,
+     "exit_ts": 1795699204,
+     "reason": "plazo de 24 h",
+     "ret": -0.023723259522218987
+    },
+    {
+     "pair": "83ZzibQXfrFUnMQPnxT4cnDpvXPWLsppLe24JdW5aUMf",
+     "mint": "DmEuQrDPVyM22EXYnUj5UXUwuYph12FxdbhdsKZzpump",
+     "name": "JENSEN / SOL",
+     "source": "cazador",
+     "entry": 1.95391e-06,
+     "qty": 5117942.996350907,
+     "cost_usd": 10.0,
+     "got_usd": 9.28343680108091,
+     "ts": 1795613922,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.87e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.87e-06,
+     "exit_ts": 1795700344,
+     "reason": "plazo de 24 h",
+     "ret": -0.07165631989190901
+    },
+    {
+     "pair": "DA7aSKj8Qcq81YjNJ5QFNn2dfXu2mm8wf9pKptFG3Tvj",
+     "mint": "wiki8fnxzzYRLN7qy8sGJYoDpdmhUZi87w7KDwXTQFh",
+     "name": "MEMEOPEDIA / SOL",
+     "source": "cazador",
+     "entry": 1.9364000000000002e-06,
+     "qty": 5164222.26812642,
+     "cost_usd": 10.0,
+     "got_usd": 9.541429235063726,
+     "ts": 1795614642,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9047446980182886e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9047446980182886e-06,
+     "exit_ts": 1795701064,
+     "reason": "plazo de 24 h",
+     "ret": -0.04585707649362747
     }
    ],
    "copia": [
