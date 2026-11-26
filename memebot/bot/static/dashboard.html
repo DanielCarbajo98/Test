@@ -226,8 +226,8 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 }
 
 /* ---------- mercado en directo ---------- */
-.live { display: grid; grid-template-columns: 220px minmax(0, 1fr) 290px; gap: 0; min-height: 460px; }
-.live > * { min-width: 0; }
+.mlive { display: grid; grid-template-columns: 220px minmax(0, 1fr) 290px; gap: 0; min-height: 460px; }
+.mlive > * { min-width: 0; }
 .tlist { border-right: 1px solid var(--border); overflow-y: auto; max-height: 520px; }
 .tlist button { display: flex; width: 100%; align-items: center; gap: 10px; padding: 10px 14px; border: 0; border-bottom: 1px solid var(--border);
   background: transparent; color: var(--text); cursor: pointer; text-align: left; font: inherit; }
@@ -260,7 +260,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
 .chk .v { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; white-space: nowrap; }
 .chk .ic { font-weight: 700; }
 .chk.ok .ic { color: var(--good-text); } .chk.ko .ic { color: var(--bad-text); }
-@media (max-width: 1100px) { .live { grid-template-columns: 1fr; } .tlist { border-right: 0; border-bottom: 1px solid var(--border); max-height: 180px; }
+@media (max-width: 1100px) { .mlive { grid-template-columns: 1fr; } .tlist { border-right: 0; border-bottom: 1px solid var(--border); max-height: 180px; }
   .analysis { border-left: 0; border-top: 1px solid var(--border); max-height: none; } }
 
 .ctx { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)) minmax(0, 2.2fr); gap: 0; }
@@ -391,7 +391,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
   <div class="page-h" data-tab="cripto"><h1>Cripto</h1><p>Memecoins de Solana: mercado en directo, operaciones y escáner.</p></div>
   <section class="card" data-tab="cripto" id="liveCard">
     <div class="card-h"><h2>Mercado en directo</h2><span class="sub" id="liveSub" style="margin-left:auto"></span></div>
-    <div class="live" style="margin-top:12px; border-top:1px solid var(--border)">
+    <div class="mlive" style="margin-top:12px; border-top:1px solid var(--border)">
       <div class="tlist" id="tlist"></div>
       <div class="cwrap">
         <div class="chead" id="chead"></div>
@@ -929,7 +929,7 @@ footer { margin-top: 24px; color: var(--muted); font-size: 12px; display: flex; 
     const pc = v => v == null ? "—" : (v >= 0 ? "+" : "") + v + "%";
     const anyEdge = st.edge || cp.edge;
     $("huntPill").textContent = anyEdge ? "Con ventaja demostrada: avisa por Telegram" : "Midiendo en silencio";
-    $("huntPill").className = "pill " + (anyEdge ? "live" : "paper");
+    $("huntPill").className = "pill " + (anyEdge ? "good" : "paper");
     const d = st.distribution || {};
     const dist = d.n ? `<p class="sub" style="margin:0 0 10px">De <b>${d.n}</b> lanzamientos reales (muestra sin trampas, apuntados al nacer), comprando a los 5 minutos:
       llegan a 2x el <b>${d.reach_2x}%</b>, a 10x el <b>${d.reach_10x}%</b>, a 100x el <b>${d.reach_100x}%</b>; a las 24 h el <b>${d.below_entry_24h}%</b> vale menos que la entrada y el <b>${d.dead_24h}%</b> ha perdido más del 90 %.</p>`

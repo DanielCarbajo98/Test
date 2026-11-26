@@ -28,6 +28,7 @@ RUGCHECK = "https://api.rugcheck.xyz/v1/tokens/{mint}/report/summary"
 START_USD = 1000.0
 BET_USD = float(os.getenv("HUNTER_BET_USD", "10"))          # 1 % del saldo simulado por apuesta
 MAX_OPEN = 25
+GLITCH_X = 20          # un salto de ×20 entre dos lecturas seguidas se trata como dato erróneo si no lo confirma Jupiter
 DEFAULT_RULE = {"entry_min": 15, "min_vol": 10_000, "mom5": 0.0, "runup_max": 10.0, "stop": 0.5, "trail": 0.4,
                 "hours": 24}
 
@@ -132,9 +133,20 @@ class Hunter:
         self.f = state / "hunter.json"
         self.db = _read(self.f) or {}
         self.db.setdefault("sleeves", {"cazador": new_sleeve(), "copia": new_sleeve()})
+        self.repair()
         self.db.setdefault("watch", {})
         self.db.setdefault("seen_sigs", {})
         self.last = {"gecko": 0.0, "study": 0.0, "copy_poll": 0.0, "copy_record": 0.0}
+
+    def repair(self):
+        """Precios absurdos guardados (p. ej. un dato erróneo de DexScreener) inflaban el saldo simulado: las
+        posiciones abiertas valoradas a más de ×50 de su entrada vuelven a valorarse a la entrada hasta tener
+        un precio fiable, y se recalcula el resumen."""
+        for s in self.db["sleeves"].values():
+            for p in s["positions"].values():
+                if p.get("entry") and p.get("last", 0) > p["entry"] * 50:
+                    p["last"], p["peak"], p["suspect_price"] = p["entry"], 1.0, True
+        self.db["summary"] = {k: summary(s) for k, s in self.db["sleeves"].items()}
 
     # ---------------------------------------------------------------- datos de mercado
     def pairs(self, addrs: list[str]) -> dict[str, dict]:
@@ -155,6 +167,14 @@ class Hunter:
         except (httpx.HTTPError, ValueError):
             return None
         return max(ps, key=lambda p: (p.get("liquidity") or {}).get("usd") or 0) if ps else None
+
+    def entry_price(self, mint: str, dex_price: float) -> float:
+        """Precio de entrada: el de Jupiter (fiable y al momento) si lo hay; si no, DexScreener."""
+        from .market import jupiter_prices
+        try:
+            return jupiter_prices([mint], client=self.http).get(mint) or dex_price
+        except Exception:  # noqa: BLE001
+            return dex_price
 
     def rug_ok(self, mint: str) -> bool:
         try:
@@ -217,7 +237,7 @@ class Hunter:
             f = {"vol": float(vol), "mom5": float(pc.get("m5") or 0) / 100, "runup": 1 + float(pc.get("h1") or 0) / 100}
             if not rule_ok(f, rule) or not self.rug_ok(v["mint"]):
                 continue
-            price = float(p.get("priceUsd") or 0)
+            price = self.entry_price(v["mint"], float(p.get("priceUsd") or 0))
             pos = open_pos(s, a, {"pair": a, "mint": v["mint"], "name": v["name"], "source": "cazador"}, price, rule,
                            now, self.cost)
             if pos and edge:
@@ -247,7 +267,8 @@ class Hunter:
             key = pair["pairAddress"]
             name = (pair.get("baseToken") or {}).get("symbol", b["mint"][:6])
             pos = open_pos(s, key, {"pair": key, "mint": b["mint"], "name": name, "source": "copia",
-                                    "wallet": b["wallet"]}, float(pair.get("priceUsd") or 0), rule, now, self.cost)
+                                    "wallet": b["wallet"]}, self.entry_price(b["mint"], float(pair.get("priceUsd") or 0)),
+                                    rule, now, self.cost)
             if pos and cp.get("edge"):
                 self.notify(f"👥 COPIA (simulado) · 🟢 COMPRA {name}\nLa cartera {b['wallet'][:4]}…{b['wallet'][-4:]} "
                             f"lo acaba de comprar · apuesta {pos['cost_usd']:.0f} $\n"
@@ -258,12 +279,24 @@ class Hunter:
         if not keys:
             return
         info = self.pairs(keys)
+        from .market import jupiter_prices                   # precio al momento y fiable (rutas reales de venta)
+        mints = list({p.get("mint") for s in self.db["sleeves"].values() for p in s["positions"].values() if p.get("mint")})
+        try:
+            jup = jupiter_prices(mints, client=self.http)
+        except Exception:  # noqa: BLE001
+            jup = {}
         _, edge = self.rule()
         copy_edge = bool(_read(self.state / "copy.json").get("edge"))
         for name, s in self.db["sleeves"].items():
             for k in list(s["positions"]):
                 p = info.get(k)
-                px = float(p["priceUsd"]) if p and p.get("priceUsd") else None
+                pos = s["positions"][k]
+                jpx = jup.get(pos.get("mint"))
+                px = jpx or (float(p["priceUsd"]) if p and p.get("priceUsd") else None)
+                ref = pos.get("last") or pos["entry"]
+                if px and not jpx and (px > ref * GLITCH_X or px < ref / GLITCH_X):
+                    continue                               # salto imposible sin confirmar: dato erróneo, se ignora
+                pos.pop("suspect_price", None)
                 ev = step_pos(s, k, px, now, self.cost)
                 if not ev or not (edge if name == "cazador" else copy_edge):
                     continue

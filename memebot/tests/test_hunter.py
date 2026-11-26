@@ -165,3 +165,20 @@ def test_analyze_traders_profiles_frequent_early_buyers():
     assert set(res["profiles"]) == {"W1"}                       # W2 solo aparece una vez
     p = res["profiles"]["W1"]
     assert p["closed"] == 2 and p["pnl_sol"] == 1.0 and p["verdict"] == "pocos datos"
+
+
+def test_absurd_prices_do_not_inflate_the_sleeve(tmp_path):
+    import httpx
+    s = hunter.new_sleeve()
+    hunter.open_pos(s, "P", {"name": "X", "mint": "M"}, 1.0, {"stop": 0.5, "trail": 0.3, "hours": 24}, 0, 0.0)
+    s["positions"]["P"]["last"] = 50_000.0                  # dato erróneo guardado
+    (tmp_path / "hunter.json").write_text(json.dumps({"sleeves": {"cazador": hunter.new_sleeve(), "copia": s}}))
+
+    def handler(req):
+        if "/pairs/solana/" in str(req.url):                # DexScreener vuelve a dar un precio absurdo
+            return httpx.Response(200, json={"pairs": [{"pairAddress": "P", "priceUsd": "40000"}]})
+        return httpx.Response(404)                          # Jupiter sin precio
+    h = hunter.Hunter(tmp_path, tmp_path, http=httpx.Client(transport=httpx.MockTransport(handler)))
+    assert h.db["summary"]["copia"]["equity"] < 1_100      # reparado al cargar
+    h.manage(time.time())
+    assert h.db["sleeves"]["copia"]["positions"]["P"]["last"] == 1.0 and "P" in h.db["sleeves"]["copia"]["positions"]
