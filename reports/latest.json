@@ -1,5 +1,5 @@
 {
- "generated_at": 1795647631,
+ "generated_at": 1795658473,
  "days": 30,
  "version": "e97790c03dd4",
  "crypto": {
@@ -7,25 +7,25 @@
    "mode": "paper",
    "strategy": "momentum",
    "paused": false,
-   "equity": 9670.456448800003,
+   "equity": 9606.423006465231,
    "start_equity": 10000.0,
-   "daily_pnl": -329.54355119999997,
+   "daily_pnl": -56.08636557999999,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795647573,
+    "ts": 1795658403,
     "discovered": 200,
-    "with_data": 200,
+    "with_data": 198,
     "prefilter": 2,
     "analyzed": 2,
     "signals": 0,
     "rejected": {
-     "dex": 25,
-     "liquidez": 94,
-     "edad": 153,
-     "volumen": 170,
-     "pocas": 147,
-     "sin": 5,
-     "FDV": 5
+     "edad": 151,
+     "liquidez": 92,
+     "volumen": 164,
+     "dex": 19,
+     "pocas": 138,
+     "sin": 2,
+     "FDV": 4
     },
     "filters": {
      "min_liq": 40000,
@@ -38,7 +38,7 @@
    },
    "interval": 20
   },
-  "open_positions": 0,
+  "open_positions": 2,
   "closed_last_days": [
    {
     "symbol": "BOOBS",
@@ -271,33 +271,66 @@
     "reasons": [
      "candado de beneficio (+12.0%, máximo +33%)"
     ]
+   },
+   {
+    "symbol": "PVE",
+    "opened": "2026-11-26T00:33:51+00:00",
+    "closed": "2026-11-26T00:36:47+00:00",
+    "ret": -0.32602862254025045,
+    "cost": 89.44,
+    "got": 60.28,
+    "reasons": [
+     "stop loss -27.9%"
+    ]
+   },
+   {
+    "symbol": "Grodia",
+    "opened": "2026-11-26T00:50:51+00:00",
+    "closed": "2026-11-26T00:58:11+00:00",
+    "ret": -0.2747607517583305,
+    "cost": 86.73,
+    "got": 62.9,
+    "reasons": [
+     "stop loss -26.1%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T23:42:54+00:00",
+    "closed": "2026-11-26T01:13:02+00:00",
+    "ret": -0.045872921615201956,
+    "cost": 67.36,
+    "got": 64.27,
+    "reasons": [
+     "time stop: en 90 min nunca llegó a +10% (ahora -2.3%); se cierra para no esperar al stop de −25%"
+    ]
    }
   ],
   "closed_stats": {
-   "n": 21,
-   "win_rate": 28.6,
-   "avg_ret_pct": -8.75
+   "n": 24,
+   "win_rate": 25.0,
+   "avg_ret_pct": -10.35
   }
  },
  "crypto_brain": {
   "status": "defensivo",
   "status_text": "Ninguna estrategia demuestra ventaja en datos no vistos. Modo defensivo: en real no se abren posiciones.",
-  "samples": 8409,
-  "pools": 159,
+  "samples": 9481,
+  "pools": 162,
   "version": 0,
   "reality": {
-   "n": 21,
-   "expectancy": -8.75,
-   "win_rate": 28.6,
+   "n": 24,
+   "expectancy": -10.35,
+   "win_rate": 25.0,
    "expected": null,
    "by_exit": {
     "stop": {
-     "n": 11,
-     "avg": -28.6
+     "n": 13,
+     "avg": -28.8
     },
     "time": {
-     "n": 5,
-     "avg": -6.0
+     "n": 6,
+     "avg": -5.8
     },
     "trailing": {
      "n": 2,
@@ -314,98 +347,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795646442,
+  "updated_at": 1795657280,
   "history": [
-   {
-    "ts": 1795605898,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -2.8,
-    "samples": 3693,
-    "pools": 100,
-    "mode": "completo",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "ml",
-      "e": 3.36,
-      "n": 42
-     }
-    ]
-   },
-   {
-    "ts": 1795607706,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 4010,
-    "pools": 101,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": []
-   },
-   {
-    "ts": 1795609513,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 4121,
-    "pools": 103,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": []
-   },
-   {
-    "ts": 1795611322,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -15.76,
-    "samples": 4191,
-    "pools": 107,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "ml",
-      "e": -9.33,
-      "n": 27
-     }
-    ]
-   },
-   {
-    "ts": 1795613128,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 4535,
-    "pools": 107,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": []
-   },
-   {
-    "ts": 1795614935,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 4689,
-    "pools": 108,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": []
-   },
    {
     "ts": 1795615185,
     "decision": "defensivo",
@@ -861,6 +804,135 @@
       "n": 6
      }
     ]
+   },
+   {
+    "ts": 1795648248,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 8409,
+    "pools": 159,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
+   },
+   {
+    "ts": 1795650053,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -10.24,
+    "samples": 8997,
+    "pools": 159,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -7.04,
+      "n": 54
+     }
+    ]
+   },
+   {
+    "ts": 1795651862,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 9142,
+    "pools": 159,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
+   },
+   {
+    "ts": 1795653667,
+    "decision": "defensivo",
+    "version": 0,
+    "best": null,
+    "best_score": null,
+    "samples": 9428,
+    "pools": 159,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     }
+    ]
+   },
+   {
+    "ts": 1795655475,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -7.33,
+    "samples": 9474,
+    "pools": 161,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -3.66,
+      "n": 68
+     }
+    ]
+   },
+   {
+    "ts": 1795657281,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -5.54,
+    "samples": 9481,
+    "pools": 162,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 25.83,
+      "n": 6
+     },
+     {
+      "s": "ml",
+      "e": -1.64,
+      "n": 37
+     }
+    ]
    }
   ]
  },
@@ -872,8 +944,8 @@
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
    "capital": 10000.0,
    "cash": -3089.68,
-   "equity": 2638.29,
-   "ret_pct": -73.62,
+   "equity": 2638.62,
+   "ret_pct": -73.61,
    "history": [
     [
      1795615348,
@@ -986,16 +1058,56 @@
     [
      1795647236,
      2636.17
+    ],
+    [
+     1795648309,
+     2640.63
+    ],
+    [
+     1795649379,
+     2639.1
+    ],
+    [
+     1795650450,
+     2640.95
+    ],
+    [
+     1795651528,
+     2639.85
+    ],
+    [
+     1795652605,
+     2640.05
+    ],
+    [
+     1795653680,
+     2640.35
+    ],
+    [
+     1795654757,
+     2639.62
+    ],
+    [
+     1795655833,
+     2638.62
+    ],
+    [
+     1795656911,
+     2638.62
+    ],
+    [
+     1795657985,
+     2638.62
     ]
    ],
    "open": 29,
    "fees_open": 55.9,
-   "move_open": 23.86,
+   "move_open": 24.2,
    "pending_open": 0,
    "invested_open": 5760.0,
-   "open_pnl": -32.04,
+   "open_pnl": -31.7,
    "realized": -111.5,
-   "total": -143.54,
+   "total": -143.2,
    "closed": 17,
    "win_rate": 0.0,
    "best": -1.69,
@@ -1973,8 +2085,8 @@
  "hunter": {
   "summary": {
    "cazador": {
-    "equity": 917.39,
-    "pnl": -82.61,
+    "equity": 918.14,
+    "pnl": -81.86,
     "open": 25,
     "closed": 10,
     "win_rate": 0.0,
