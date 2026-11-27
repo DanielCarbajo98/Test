@@ -1,5 +1,5 @@
 {
- "generated_at": 1795780357,
+ "generated_at": 1795791215,
  "days": 30,
  "version": "86cb7ce942d4",
  "crypto": {
@@ -7,25 +7,25 @@
    "mode": "paper",
    "strategy": "ml v1 (cerebro)",
    "paused": false,
-   "equity": 9449.822684375027,
+   "equity": 9260.129142004998,
    "start_equity": 10000.0,
-   "daily_pnl": -102.72700649000001,
+   "daily_pnl": -240.56929571500004,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795780265,
+    "ts": 1795791102,
     "discovered": 200,
-    "with_data": 200,
-    "prefilter": 5,
-    "analyzed": 5,
+    "with_data": 197,
+    "prefilter": 9,
+    "analyzed": 8,
     "signals": 0,
     "rejected": {
-     "liquidez": 90,
-     "dex": 16,
-     "volumen": 174,
-     "pocas": 129,
-     "edad": 85,
-     "sin": 3,
-     "FDV": 2
+     "liquidez": 93,
+     "volumen": 158,
+     "pocas": 109,
+     "edad": 67,
+     "dex": 10,
+     "sin": 4,
+     "FDV": 1
     },
     "filters": {
      "min_liq": 40000,
@@ -34,11 +34,11 @@
      "max_age_h": 2160.0,
      "relaxed": true
     },
-    "queue": 0
+    "queue": 1
    },
    "interval": 20
   },
-  "open_positions": 1,
+  "open_positions": 0,
   "closed_last_days": [
    {
     "symbol": "BOOBS",
@@ -569,12 +569,45 @@
     "reasons": [
      "time stop: en 588 min nunca llegó a +10% (ahora -16.8%); se cierra para no esperar al stop de −25%"
     ]
+   },
+   {
+    "symbol": "Huss",
+    "opened": "2026-11-26T22:48:34+00:00",
+    "closed": "2026-11-27T12:05:38+00:00",
+    "ret": 0.10130070917218448,
+    "cost": 297.53,
+    "got": 327.67,
+    "reasons": [
+     "candado de beneficio (+10.4%, máximo +21%)"
+    ]
+   },
+   {
+    "symbol": "Kibo",
+    "opened": "2026-11-27T12:41:04+00:00",
+    "closed": "2026-11-27T13:04:41+00:00",
+    "ret": -0.2643068031911553,
+    "cost": 318.38,
+    "got": 234.23,
+    "reasons": [
+     "stop loss -25.0%"
+    ]
+   },
+   {
+    "symbol": "TWORBIT",
+    "opened": "2026-11-27T14:30:04+00:00",
+    "closed": "2026-11-27T14:35:37+00:00",
+    "ret": -0.2893183779119931,
+    "cost": 289.75,
+    "got": 205.92,
+    "reasons": [
+     "stop loss -26.6%"
+    ]
    }
   ],
   "closed_stats": {
-   "n": 48,
-   "win_rate": 35.4,
-   "avg_ret_pct": -8.68
+   "n": 51,
+   "win_rate": 35.3,
+   "avg_ret_pct": -9.06
   }
  },
  "crypto_brain": {
@@ -651,14 +684,22 @@
    "promoted_at": 1795727038
   },
   "reality": {
-   "n": 3,
-   "expectancy": -11.46,
+   "n": 6,
+   "expectancy": -13.27,
    "win_rate": 33.3,
    "expected": 8.69,
    "by_exit": {
     "time": {
      "n": 3,
      "avg": -11.5
+    },
+    "candado": {
+     "n": 1,
+     "avg": 10.1
+    },
+    "stop": {
+     "n": 2,
+     "avg": -27.7
     }
    }
   },
@@ -667,246 +708,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795778594,
+  "updated_at": 1795790900,
   "history": [
-   {
-    "ts": 1795694501,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -6.87,
-    "samples": 12321,
-    "pools": 225,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 8.05,
-      "n": 8
-     },
-     {
-      "s": "dip",
-      "e": 1.32,
-      "n": 5
-     },
-     {
-      "s": "breakout",
-      "e": -4.88,
-      "n": 6
-     },
-     {
-      "s": "ml",
-      "e": -3.39,
-      "n": 96
-     }
-    ]
-   },
-   {
-    "ts": 1795696307,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -6.87,
-    "samples": 12321,
-    "pools": 230,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 8.05,
-      "n": 8
-     },
-     {
-      "s": "dip",
-      "e": 1.32,
-      "n": 5
-     },
-     {
-      "s": "breakout",
-      "e": -4.88,
-      "n": 6
-     },
-     {
-      "s": "ml",
-      "e": -3.39,
-      "n": 96
-     }
-    ]
-   },
-   {
-    "ts": 1795698118,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -6.87,
-    "samples": 12321,
-    "pools": 230,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 8.05,
-      "n": 8
-     },
-     {
-      "s": "dip",
-      "e": 1.32,
-      "n": 5
-     },
-     {
-      "s": "breakout",
-      "e": -4.88,
-      "n": 6
-     },
-     {
-      "s": "ml",
-      "e": -3.39,
-      "n": 96
-     }
-    ]
-   },
-   {
-    "ts": 1795699925,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -10.49,
-    "samples": 12652,
-    "pools": 230,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 8.05,
-      "n": 8
-     },
-     {
-      "s": "dip",
-      "e": 1.32,
-      "n": 5
-     },
-     {
-      "s": "breakout",
-      "e": -4.88,
-      "n": 6
-     },
-     {
-      "s": "ml",
-      "e": -4.37,
-      "n": 55
-     }
-    ]
-   },
-   {
-    "ts": 1795701732,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -11.18,
-    "samples": 12807,
-    "pools": 234,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 8.05,
-      "n": 8
-     },
-     {
-      "s": "dip",
-      "e": 1.32,
-      "n": 5
-     },
-     {
-      "s": "breakout",
-      "e": -4.88,
-      "n": 6
-     },
-     {
-      "s": "ml",
-      "e": -6.91,
-      "n": 74
-     }
-    ]
-   },
-   {
-    "ts": 1795703539,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -11.3,
-    "samples": 12846,
-    "pools": 238,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 8.05,
-      "n": 8
-     },
-     {
-      "s": "dip",
-      "e": 1.32,
-      "n": 5
-     },
-     {
-      "s": "breakout",
-      "e": -4.88,
-      "n": 6
-     },
-     {
-      "s": "ml",
-      "e": -6.62,
-      "n": 67
-     }
-    ]
-   },
-   {
-    "ts": 1795705346,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -10.26,
-    "samples": 12896,
-    "pools": 241,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 8.05,
-      "n": 8
-     },
-     {
-      "s": "dip",
-      "e": 1.32,
-      "n": 5
-     },
-     {
-      "s": "breakout",
-      "e": -4.88,
-      "n": 6
-     },
-     {
-      "s": "ml",
-      "e": -4.99,
-      "n": 57
-     }
-    ]
-   },
    {
     "ts": 1795707171,
     "decision": "defensivo",
@@ -1668,6 +1471,239 @@
       "n": 27
      }
     ]
+   },
+   {
+    "ts": 1795780408,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795782215,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795784023,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795785831,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795787314,
+    "decision": "defensivo",
+    "version": 1,
+    "best": null,
+    "best_score": null,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "completo",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     }
+    ]
+   },
+   {
+    "ts": 1795789092,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795790900,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
    }
   ]
  },
@@ -1679,8 +1715,8 @@
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
    "capital": 10000.0,
    "cash": -3089.68,
-   "equity": 2643.79,
-   "ret_pct": -73.56,
+   "equity": 2672.34,
+   "ret_pct": -73.28,
    "history": [
     [
      1795615348,
@@ -2157,16 +2193,56 @@
     [
      1795779509,
      2643.62
+    ],
+    [
+     1795780585,
+     2643.71
+    ],
+    [
+     1795781664,
+     2643.57
+    ],
+    [
+     1795782743,
+     2643.34
+    ],
+    [
+     1795783823,
+     2643.51
+    ],
+    [
+     1795784900,
+     2643.49
+    ],
+    [
+     1795785980,
+     2643.49
+    ],
+    [
+     1795787059,
+     2643.71
+    ],
+    [
+     1795788421,
+     2643.76
+    ],
+    [
+     1795789498,
+     2643.58
+    ],
+    [
+     1795790575,
+     2674.55
     ]
    ],
    "open": 29,
    "fees_open": 55.9,
-   "move_open": 29.36,
+   "move_open": 57.91,
    "pending_open": 0,
    "invested_open": 5760.0,
-   "open_pnl": -26.54,
+   "open_pnl": 2.01,
    "realized": -111.5,
-   "total": -138.04,
+   "total": -109.49,
    "closed": 17,
    "win_rate": 0.0,
    "best": -1.69,
@@ -3176,14 +3252,14 @@
  "hunter": {
   "summary": {
    "cazador": {
-    "equity": 870.5,
-    "pnl": -129.5,
-    "open": 21,
-    "closed": 52,
-    "win_rate": 1.9,
-    "best_x": 1.15,
+    "equity": 876.73,
+    "pnl": -123.27,
+    "open": 25,
+    "closed": 64,
+    "win_rate": 3.1,
+    "best_x": 3.01,
     "worst_pct": -100.0,
-    "mean_pct": -23.04
+    "mean_pct": -17.88
    },
    "copia": {
     "equity": 1471.89,
@@ -4341,6 +4417,270 @@
      "exit_ts": 1795776145,
      "reason": "plazo de 24 h",
      "ret": -0.06121913903645049
+    },
+    {
+     "pair": "9Ckwrq6C2FfUz21D6dMEuGdZGTYHdcdZLoQAjDLM9oLZ",
+     "mint": "EGtGw3SPwrMX9pxxFVDRro7V4QSA6Jb5Y3Dq1G7Gpump",
+     "name": "Yuru-kyara / SOL",
+     "source": "cazador",
+     "entry": 2.03734e-06,
+     "qty": 4908360.9019604,
+     "cost_usd": 10.0,
+     "got_usd": 9.692585939267046,
+     "ts": 1795694224,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0357827873717856e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0357827873717856e-06,
+     "exit_ts": 1795780645,
+     "reason": "plazo de 24 h",
+     "ret": -0.030741406073295452
+    },
+    {
+     "pair": "56xiYUGebsn2DiGehLyaENXxmrBZ5ucUX4VbqrTmFfp3",
+     "mint": "59s3HxJrELCQANbcSRodAZjNCcwE612mH85b8Fpppump",
+     "name": "Pinky / SOL",
+     "source": "cazador",
+     "entry": 2.073234977759702e-06,
+     "qty": 4823379.938730248,
+     "cost_usd": 10.0,
+     "got_usd": 9.367913958276164,
+     "ts": 1795696924,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0022563800970603e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0022563800970603e-06,
+     "exit_ts": 1795783345,
+     "reason": "plazo de 24 h",
+     "ret": -0.06320860417238361
+    },
+    {
+     "pair": "4uEhTeoajN8R4kYe3na6qxD4udzdwggRGg2dHo2JBZqv",
+     "mint": "8tCp6agNUuNJidDmSTVyWcxojCigvgepSh7YR3KFpump",
+     "name": "BNC / SOL",
+     "source": "cazador",
+     "entry": 2.049802096006074e-06,
+     "qty": 4878519.745630296,
+     "cost_usd": 10.0,
+     "got_usd": 9.49379277903867,
+     "ts": 1795696924,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0062264265485355e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0062264265485355e-06,
+     "exit_ts": 1795783345,
+     "reason": "plazo de 24 h",
+     "ret": -0.05062072209613311
+    },
+    {
+     "pair": "22g2ssa2EoVTwYo76HC7Z3ZGzzVciJ63V1d8hJJKr5Xv",
+     "mint": "8xu3geiFUcphaGVxZ6hsNHyppmoWRsrFDcN5ixChhsRn",
+     "name": "[invalid] / SOL",
+     "source": "cazador",
+     "entry": 2.0620869814170145e-06,
+     "qty": 4849455.958995605,
+     "cost_usd": 10.0,
+     "got_usd": 9.37690287417601,
+     "ts": 1795697104,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.993400963180426e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.993400963180426e-06,
+     "exit_ts": 1795783525,
+     "reason": "plazo de 24 h",
+     "ret": -0.062309712582399035
+    },
+    {
+     "pair": "4GPGnvaEojK6P3xxr22uaNJbEFb3jkmjuSLguBYgvAmv",
+     "mint": "BNdEjkXn6u9ap7P5fDKwmnqiinvuF3n1aKzRo5Btpump",
+     "name": "SpaceXCoin / SPCX",
+     "source": "cazador",
+     "entry": 3.349375845209907e-06,
+     "qty": 2985630.8942758543,
+     "cost_usd": 10.0,
+     "got_usd": 8.895897414396561,
+     "ts": 1795697404,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.071722053736609e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.071722053736609e-06,
+     "exit_ts": 1795783825,
+     "reason": "plazo de 24 h",
+     "ret": -0.11041025856034392
+    },
+    {
+     "pair": "D9w5rjx3ayGtVe6u63WHbJBP7bW1k6EZUGXTs3y9XSPQ",
+     "mint": "2BsNMM7JchwWpv7P8xWt7YdMY7sqrA4sg8NunePYcxYK",
+     "name": "zBREASTS / SOL",
+     "source": "cazador",
+     "entry": 2.212852134537195e-06,
+     "qty": 4519054.772763406,
+     "cost_usd": 10.0,
+     "got_usd": 8.762793259000803,
+     "ts": 1795698244,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.99904801728743e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.99904801728743e-06,
+     "exit_ts": 1795784665,
+     "reason": "plazo de 24 h",
+     "ret": -0.12372067409991971
+    },
+    {
+     "pair": "AKdCoPeFfpU5o3jMFYxy8Vufk3BYRYNBiXHkKEdoTHX9",
+     "mint": "XcLKzV41ctSfVCwsCLoHcqcAkgvMcMUwe2ph6imDd9A",
+     "name": "HIPPO / SOL",
+     "source": "cazador",
+     "entry": 2.107841947936644e-06,
+     "qty": 4744188.723347569,
+     "cost_usd": 10.0,
+     "got_usd": 9.338493956830055,
+     "ts": 1795699264,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.029285494098891e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.029285494098891e-06,
+     "exit_ts": 1795785685,
+     "reason": "plazo de 24 h",
+     "ret": -0.06615060431699449
+    },
+    {
+     "pair": "DSyS3HTU6xK5yY1HwpbS1eob1muMAghEo8XNqxTirByt",
+     "mint": "5PQQrdyDginW2j17wtHpJMnGwLnHFr694gaQpM1Spump",
+     "name": "DESKS / SOL",
+     "source": "cazador",
+     "entry": 4.047732649927984e-06,
+     "qty": 2470518.8965921244,
+     "cost_usd": 10.0,
+     "got_usd": 5.0762121847141435,
+     "ts": 1795785565,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.1182628657762582e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.1182628657762582e-06,
+     "exit_ts": 1795785685,
+     "reason": "stop −30 %",
+     "ret": -0.4923787815285856
+    },
+    {
+     "pair": "8fjk4XwTxHrjnS6mA6wu7MmqGgUQsezX7kPyW1XekKP5",
+     "mint": "DtsE84CqApZDcocQyT3kdRhMJUiSFZWHtZutkSG2pump",
+     "name": "😩 / SOL",
+     "source": "cazador",
+     "entry": 2.0961110827124143e-06,
+     "qty": 4770739.529252322,
+     "cost_usd": 10.0,
+     "got_usd": 9.24828906513176,
+     "ts": 1795700404,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.998499093355744e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.998499093355744e-06,
+     "exit_ts": 1795786825,
+     "reason": "plazo de 24 h",
+     "ret": -0.07517109348682405
+    },
+    {
+     "pair": "2DwjCeKEuUV7q4dKHDXQzDk1VXcpdrh8zMVANVfhp943",
+     "mint": "7yxNVpfD1JMohv7dsEdNueGia9KKcGSH65NzhHFQpump",
+     "name": "ROLO / SOL",
+     "source": "cazador",
+     "entry": 2.063782632649321e-06,
+     "qty": 4845471.534549542,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795701124,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.003672458882836e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.003672458882836e-06,
+     "exit_ts": 1795788157,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "9LR6gatp87nBvJ6Vu2FVHRd8644NvFwrbVD7eLP7ZFYC",
+     "mint": "F5LxbqJxAMrvfxLbqPckErmqNyiPzDJMUXnX8vrhpump",
+     "name": "KITT / SOL",
+     "source": "cazador",
+     "entry": 4.664252793582371e-06,
+     "qty": 1071983.0637995414,
+     "cost_usd": 10.0,
+     "got_usd": 30.07784229340995,
+     "ts": 1795785565,
+     "half": true,
+     "peak": 6.453338044073239,
+     "last": 1.8599101293948025e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.8599101293948025e-05,
+     "exit_ts": 1795788397,
+     "reason": "stop dinámico (30 % desde el máximo 6.5x)",
+     "ret": 2.007784229340995
+    },
+    {
+     "pair": "EEFs9y82F5YKPjQheF6TnLqmbTs2wWPjVyE871xeALVD",
+     "mint": "4fuxgqzyK5CdQ64Gdv3jewDzQ2HFZUtMHfMxGps3pump",
+     "name": "Rockstar / SOL",
+     "source": "cazador",
+     "entry": 6.933567253025627e-06,
+     "qty": 1442259.0327707953,
+     "cost_usd": 10.0,
+     "got_usd": 6.647011113857711,
+     "ts": 1795788817,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.751288514385692e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.751288514385692e-06,
+     "exit_ts": 1795789117,
+     "reason": "stop −30 %",
+     "ret": -0.33529888861422896
     }
    ],
    "copia": [
@@ -6486,7 +6826,7 @@
    ]
   },
   "study": {
-   "ts": 1795769556,
+   "ts": 1795787286,
    "launches": 165,
    "cost_side_pct": 3.0,
    "distribution": {
@@ -6538,7 +6878,7 @@
    "note": "Ninguna regla demuestra ganar después de costes en datos no vistos: el cazador solo opera en simulado y en silencio, para seguir midiendo."
   },
   "copy": {
-   "ts": 1795769556,
+   "ts": 1795787286,
    "pools": 9,
    "observations": 318,
    "bots_excluded": 0,
@@ -6556,8 +6896,8 @@
   },
   "traders": {
    "tally": {
-    "bot": 49,
-    "pocos datos": 8,
+    "bot": 58,
+    "pocos datos": 7,
     "pierde": 2
    },
    "skilled": {}
