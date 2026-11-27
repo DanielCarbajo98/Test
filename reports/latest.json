@@ -1,5 +1,5 @@
 {
- "generated_at": 1795791215,
+ "generated_at": 1795802022,
  "days": 30,
  "version": "86cb7ce942d4",
  "crypto": {
@@ -7,25 +7,25 @@
    "mode": "paper",
    "strategy": "ml v1 (cerebro)",
    "paused": false,
-   "equity": 9260.129142004998,
+   "equity": 9193.468327980741,
    "start_equity": 10000.0,
-   "daily_pnl": -240.56929571500004,
+   "daily_pnl": -287.41222125999997,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795791102,
+    "ts": 1795801876,
     "discovered": 200,
-    "with_data": 197,
-    "prefilter": 9,
+    "with_data": 200,
+    "prefilter": 11,
     "analyzed": 8,
     "signals": 0,
     "rejected": {
-     "liquidez": 93,
-     "volumen": 158,
-     "pocas": 109,
-     "edad": 67,
-     "dex": 10,
-     "sin": 4,
-     "FDV": 1
+     "liquidez": 94,
+     "volumen": 143,
+     "pocas": 97,
+     "dex": 20,
+     "edad": 76,
+     "sin": 5,
+     "FDV": 3
     },
     "filters": {
      "min_liq": 40000,
@@ -34,11 +34,11 @@
      "max_age_h": 2160.0,
      "relaxed": true
     },
-    "queue": 1
+    "queue": 3
    },
    "interval": 20
   },
-  "open_positions": 0,
+  "open_positions": 1,
   "closed_last_days": [
    {
     "symbol": "BOOBS",
@@ -602,12 +602,45 @@
     "reasons": [
      "stop loss -26.6%"
     ]
+   },
+   {
+    "symbol": "Fireball",
+    "opened": "2026-11-27T16:04:29+00:00",
+    "closed": "2026-11-27T16:30:26+00:00",
+    "ret": 0.12610235923720525,
+    "cost": 265.34,
+    "got": 298.8,
+    "reasons": [
+     "candado de beneficio (+13.7%, máximo +33%)"
+    ]
+   },
+   {
+    "symbol": "Meme",
+    "opened": "2026-11-27T17:04:27+00:00",
+    "closed": "2026-11-27T17:07:50+00:00",
+    "ret": -0.011039125556480567,
+    "cost": 276.29,
+    "got": 273.24,
+    "reasons": [
+     "candado de beneficio (+2.2%, máximo +28%)"
+    ]
+   },
+   {
+    "symbol": "Elfball",
+    "opened": "2026-11-27T17:03:39+00:00",
+    "closed": "2026-11-27T17:11:36+00:00",
+    "ret": -0.2787660111852788,
+    "cost": 277.15,
+    "got": 199.89,
+    "reasons": [
+     "stop loss -25.9%"
+    ]
    }
   ],
   "closed_stats": {
-   "n": 51,
-   "win_rate": 35.3,
-   "avg_ret_pct": -9.06
+   "n": 54,
+   "win_rate": 35.2,
+   "avg_ret_pct": -8.86
   }
  },
  "crypto_brain": {
@@ -684,8 +717,8 @@
    "promoted_at": 1795727038
   },
   "reality": {
-   "n": 6,
-   "expectancy": -13.27,
+   "n": 9,
+   "expectancy": -10.66,
    "win_rate": 33.3,
    "expected": 8.69,
    "by_exit": {
@@ -694,11 +727,11 @@
      "avg": -11.5
     },
     "candado": {
-     "n": 1,
-     "avg": 10.1
+     "n": 3,
+     "avg": 7.2
     },
     "stop": {
-     "n": 2,
+     "n": 3,
      "avg": -27.7
     }
    }
@@ -708,212 +741,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795790900,
+  "updated_at": 1795801749,
   "history": [
-   {
-    "ts": 1795707171,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -14.3,
-    "samples": 13008,
-    "pools": 241,
-    "mode": "completo",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 4.56,
-      "n": 9
-     },
-     {
-      "s": "dip",
-      "e": -2.35,
-      "n": 9
-     },
-     {
-      "s": "breakout",
-      "e": -2.61,
-      "n": 5
-     },
-     {
-      "s": "ml",
-      "e": -7.77,
-      "n": 26
-     }
-    ]
-   },
-   {
-    "ts": 1795708964,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -3.91,
-    "samples": 13283,
-    "pools": 244,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 4.56,
-      "n": 9
-     },
-     {
-      "s": "dip",
-      "e": -2.35,
-      "n": 9
-     },
-     {
-      "s": "breakout",
-      "e": -2.61,
-      "n": 5
-     },
-     {
-      "s": "ml",
-      "e": -0.76,
-      "n": 118
-     }
-    ]
-   },
-   {
-    "ts": 1795710771,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -2.56,
-    "samples": 13415,
-    "pools": 246,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 4.56,
-      "n": 9
-     },
-     {
-      "s": "dip",
-      "e": -2.35,
-      "n": 9
-     },
-     {
-      "s": "breakout",
-      "e": -2.61,
-      "n": 5
-     },
-     {
-      "s": "ml",
-      "e": 0.73,
-      "n": 114
-     }
-    ]
-   },
-   {
-    "ts": 1795712576,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -5.47,
-    "samples": 13614,
-    "pools": 260,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 4.56,
-      "n": 9
-     },
-     {
-      "s": "dip",
-      "e": -2.35,
-      "n": 9
-     },
-     {
-      "s": "breakout",
-      "e": -2.61,
-      "n": 5
-     },
-     {
-      "s": "ml",
-      "e": 1.72,
-      "n": 52
-     }
-    ]
-   },
-   {
-    "ts": 1795714383,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -1.58,
-    "samples": 13831,
-    "pools": 262,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 4.56,
-      "n": 9
-     },
-     {
-      "s": "dip",
-      "e": -2.35,
-      "n": 9
-     },
-     {
-      "s": "breakout",
-      "e": -2.61,
-      "n": 5
-     },
-     {
-      "s": "ml",
-      "e": 4.58,
-      "n": 56
-     }
-    ]
-   },
-   {
-    "ts": 1795716191,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -4.97,
-    "samples": 14072,
-    "pools": 263,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": 4.56,
-      "n": 9
-     },
-     {
-      "s": "dip",
-      "e": -2.35,
-      "n": 9
-     },
-     {
-      "s": "breakout",
-      "e": -2.61,
-      "n": 5
-     },
-     {
-      "s": "ml",
-      "e": -0.63,
-      "n": 70
-     }
-    ]
-   },
    {
     "ts": 1795717999,
     "decision": "defensivo",
@@ -1704,6 +1533,210 @@
       "n": 27
      }
     ]
+   },
+   {
+    "ts": 1795792709,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795794517,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795796324,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795798133,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795799941,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795801749,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
    }
   ]
  },
@@ -1715,8 +1748,8 @@
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
    "capital": 10000.0,
    "cash": -3089.68,
-   "equity": 2672.34,
-   "ret_pct": -73.28,
+   "equity": 2688.17,
+   "ret_pct": -73.12,
    "history": [
     [
      1795615348,
@@ -2233,16 +2266,56 @@
     [
      1795790575,
      2674.55
+    ],
+    [
+     1795791656,
+     2658.65
+    ],
+    [
+     1795792728,
+     2668.5
+    ],
+    [
+     1795793802,
+     2672.68
+    ],
+    [
+     1795794878,
+     2688.65
+    ],
+    [
+     1795795951,
+     2683.41
+    ],
+    [
+     1795797026,
+     2688.95
+    ],
+    [
+     1795798103,
+     2697.05
+    ],
+    [
+     1795799179,
+     2697.14
+    ],
+    [
+     1795800283,
+     2702.2
+    ],
+    [
+     1795801365,
+     2687.75
     ]
    ],
    "open": 29,
    "fees_open": 55.9,
-   "move_open": 57.91,
+   "move_open": 73.75,
    "pending_open": 0,
    "invested_open": 5760.0,
-   "open_pnl": 2.01,
+   "open_pnl": 17.85,
    "realized": -111.5,
-   "total": -109.49,
+   "total": -93.65,
    "closed": 17,
    "win_rate": 0.0,
    "best": -1.69,
@@ -3252,24 +3325,24 @@
  "hunter": {
   "summary": {
    "cazador": {
-    "equity": 876.73,
-    "pnl": -123.27,
-    "open": 25,
-    "closed": 64,
+    "equity": 870.67,
+    "pnl": -129.33,
+    "open": 24,
+    "closed": 65,
     "win_rate": 3.1,
     "best_x": 3.01,
     "worst_pct": -100.0,
-    "mean_pct": -17.88
+    "mean_pct": -18.16
    },
    "copia": {
-    "equity": 1471.89,
-    "pnl": 471.89,
+    "equity": 1442.75,
+    "pnl": 442.75,
     "open": 25,
-    "closed": 93,
-    "win_rate": 32.3,
+    "closed": 106,
+    "win_rate": 32.1,
     "best_x": 19.94,
     "worst_pct": -100.0,
-    "mean_pct": 10.08
+    "mean_pct": 11.6
    }
   },
   "closed": {
@@ -4681,147 +4754,31 @@
      "exit_ts": 1795789117,
      "reason": "stop −30 %",
      "ret": -0.33529888861422896
+    },
+    {
+     "pair": "iUVULEA8LUE14BLtZM28XLo71YTiQ3wfXGDKUXKpqeE",
+     "mint": "Ft8ZLD5phU7esconjCzPsBTjH2SLtU3htpxdZJfXpump",
+     "name": "Kimchi / SOL",
+     "source": "cazador",
+     "entry": 4.4813117131085e-06,
+     "qty": 2231489.492406547,
+     "cost_usd": 10.0,
+     "got_usd": 6.359432644829722,
+     "ts": 1795785505,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.938e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.938e-06,
+     "exit_ts": 1795797335,
+     "reason": "stop −30 %",
+     "ret": -0.3640567355170278
     }
    ],
    "copia": [
-    {
-     "pair": "GLBjv6GdohBu4NnfzZwKv3Vficggp2xr27uz6mMQ3hW6",
-     "mint": "D3k46GsgkqqizkcJXDporNnNUxtBmpE1uznGovFLpump",
-     "name": "BASKET",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 9.85298e-05,
-     "qty": 101492.1374041153,
-     "cost_usd": 10.0,
-     "got_usd": 0.1267017694139235,
-     "ts": 1795620733,
-     "half": false,
-     "peak": 1.0,
-     "last": 1.287e-06,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 1.287e-06,
-     "exit_ts": 1795620973,
-     "reason": "stop −50 %",
-     "ret": -0.9873298230586076
-    },
-    {
-     "pair": "65qjqjWtq75DDeYjQrcyMj7he2cqWh9Pqr3MJsMVVoWf",
-     "mint": "2ThdvMe9nxzSvB1rNazaSa4kGcxAq3j68wDMsNkVz3jE",
-     "name": "Pompom",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 0.000706786,
-     "qty": 14148.554159250465,
-     "cost_usd": 10.0,
-     "got_usd": 5.147908985180804e-05,
-     "ts": 1795620973,
-     "half": false,
-     "peak": 1.0,
-     "last": 3.751e-09,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 3.751e-09,
-     "exit_ts": 1795621033,
-     "reason": "stop −50 %",
-     "ret": -0.9999948520910148
-    },
-    {
-     "pair": "DYMziKVqawzcQc7ZCrf1oeDb1EhvKdpmaUgoTQzesofL",
-     "mint": "fzZ2VqFpzM7HE3PAWMHoVWUfTuMqrmRJYg5SuL173Wo",
-     "name": "FOMO",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 7.15953e-05,
-     "qty": 139673.97301219494,
-     "cost_usd": 10.0,
-     "got_usd": 0.17585791246073415,
-     "ts": 1795621453,
-     "half": false,
-     "peak": 1.0,
-     "last": 1.298e-06,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 1.298e-06,
-     "exit_ts": 1795621873,
-     "reason": "stop −50 %",
-     "ret": -0.9824142087539266
-    },
-    {
-     "pair": "FDRdaGoxvq6aBeSv4G5BSows1CmJFqkXsRR67NdZmscX",
-     "mint": "8LwMPV2ukgE5BMaECFT7VuLRRm3fcU9QY9k5awF1RRf6",
-     "name": "SOL",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 6.574490000000001e-05,
-     "qty": 152103.05286037395,
-     "cost_usd": 10.0,
-     "got_usd": 0.21068706470007556,
-     "ts": 1795621693,
-     "half": false,
-     "peak": 1.0,
-     "last": 1.428e-06,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 1.428e-06,
-     "exit_ts": 1795622233,
-     "reason": "stop −50 %",
-     "ret": -0.9789312935299924
-    },
-    {
-     "pair": "AGyyGWkCAiKtQXLKRABytRP9wsxZn42FXcRFjB8ZTtno",
-     "mint": "DgC7Mkz1TiWMkUnZP5JccZ3wdCe2LY44PzRSH41EW2Ji",
-     "name": "BAP",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 0.00227939,
-     "qty": 4387.138664291762,
-     "cost_usd": 10.0,
-     "got_usd": 3.1061073357345608,
-     "ts": 1795622173,
-     "half": false,
-     "peak": 1.0,
-     "last": 0.0007299,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 0.0007299,
-     "exit_ts": 1795622593,
-     "reason": "stop −50 %",
-     "ret": -0.689389266426544
-    },
-    {
-     "pair": "69SNuhE5LVp1pbmt1foHnHJ4Yf37sT7ifoxTZo87sMf3",
-     "mint": "5iqFGYiYWJYUuBSmNh3agQS9vUiiMEzpCzgYh1pf2s5n",
-     "name": "KATE",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 0.000105575,
-     "qty": 94719.3937958797,
-     "cost_usd": 10.0,
-     "got_usd": 0.000914092351408951,
-     "ts": 1795622533,
-     "half": false,
-     "peak": 1.0,
-     "last": 9.949e-09,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 9.949e-09,
-     "exit_ts": 1795622733,
-     "reason": "stop −50 %",
-     "ret": -0.999908590764859
-    },
     {
      "pair": "yCfapHBvUdgUnxHNASUHZ3qT3torzwoyqdmh2NGUMqp",
      "mint": "B5M4WzhyywHhPpQ5Sxc7zkNSU8vBU7fvxva7UGRpump",
@@ -6822,6 +6779,305 @@
      "exit_ts": 1795769549,
      "reason": "stop −30 %",
      "ret": -0.4293378253616824
+    },
+    {
+     "pair": "HhhP7QHkes9iLHDY4dpNhLNqcZPvMQ4rzTx1fu3bzXxW",
+     "mint": "4SHVqbGtwgqb4nXJpUG1fzBGH3zJ7CiXN6A1dWymPK1H",
+     "name": "SPACEXLIFE",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.5058600000000002e-05,
+     "qty": 664072.357324054,
+     "cost_usd": 10.0,
+     "got_usd": 9.134049646049434,
+     "ts": 1795710803,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.418e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.418e-05,
+     "exit_ts": 1795797215,
+     "reason": "plazo de 24 h",
+     "ret": -0.08659503539505664
+    },
+    {
+     "pair": "4QAtzy5niDmzH6Yabe2ZMi3CN5XbjynTFCcMiZmwpMuc",
+     "mint": "3kAMdrakPuMH5YeMAjaVPVsnZ1bWhXSBgevVupEztjMT",
+     "name": "Anthropic",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.2849363774834482e-05,
+     "qty": 218824.4735946141,
+     "cost_usd": 10.0,
+     "got_usd": 65.64970239177615,
+     "ts": 1795710923,
+     "half": true,
+     "peak": 11.669557802107477,
+     "last": 0.0002607,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0002607,
+     "exit_ts": 1795797335,
+     "reason": "plazo de 24 h",
+     "ret": 5.564970239177614
+    },
+    {
+     "pair": "6YovEftMRDMsvfeVdHdByqxQF2Hz49wqgdxdU2Xyy68F",
+     "mint": "pDRy3SVLpkZBSPG2GwCJN5VPcW9qqJXdoCxUr7HHsix",
+     "name": "67",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 9.74895e-05,
+     "qty": 102575.14911862304,
+     "cost_usd": 10.0,
+     "got_usd": 2.987921776191282,
+     "ts": 1795797455,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.003e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.003e-05,
+     "exit_ts": 1795797515,
+     "reason": "stop −30 %",
+     "ret": -0.7012078223808718
+    },
+    {
+     "pair": "9FQV8FLM336dS2rBruHR2dprZ4HY2pUQ4ge7aUxcqnt1",
+     "mint": "67gUevLit8rLJaFLd9aqPtGoCUZ1amtSxL7scfS4LmJq",
+     "name": "TEXEL",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.414634364776271e-05,
+     "qty": 207070.68833849207,
+     "cost_usd": 10.0,
+     "got_usd": 35.29419330984823,
+     "ts": 1795711163,
+     "half": true,
+     "peak": 6.118900125372814,
+     "last": 0.0001135,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0001135,
+     "exit_ts": 1795797575,
+     "reason": "plazo de 24 h",
+     "ret": 2.5294193309848234
+    },
+    {
+     "pair": "3jk2QzPnwxK8jVWFbZAm5stjTL7eFNdHq29HUKjPG5kD",
+     "mint": "F39a5zLgy7DdiDA2YmWt6RgMnQ9mfukqxc4qLcippump",
+     "name": "MEMESTOCK",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.33948410826252e-06,
+     "qty": 7465560.762024465,
+     "cost_usd": 10.0,
+     "got_usd": 9.45864988888895,
+     "ts": 1795711643,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.3061557950294638e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.3061557950294638e-06,
+     "exit_ts": 1795798055,
+     "reason": "plazo de 24 h",
+     "ret": -0.05413501111110508
+    },
+    {
+     "pair": "CsGLBJNEbZz7G9iUfSyeDpQmdN3oovGZgbWrj7ezVyQb",
+     "mint": "3xgTWkgNaLJiqXHsLQcBif3m7XpkSgM3QwWhZxYCRZrS",
+     "name": "67",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 8.02089054718867e-05,
+     "qty": 124674.43535312935,
+     "cost_usd": 10.0,
+     "got_usd": 3.9150566497574726,
+     "ts": 1795798175,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.237344419974005e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.237344419974005e-05,
+     "exit_ts": 1795798295,
+     "reason": "stop −30 %",
+     "ret": -0.6084943350242528
+    },
+    {
+     "pair": "GCQLgB1eBWjPtqQdAuP296GJBK1phSaGGLDDp742sWB8",
+     "mint": "3GjkNEcusYNwQD8bLjR3BgC6VFmTkpE5sEWd8LoNawSb",
+     "name": "BASKET",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 6.88692643095258e-06,
+     "qty": 726013.2731385102,
+     "cost_usd": 10.0,
+     "got_usd": 19.54880037558035,
+     "ts": 1795798415,
+     "half": true,
+     "peak": 3.0623239860982356,
+     "last": 6.669e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.669e-06,
+     "exit_ts": 1795798475,
+     "reason": "stop dinámico (30 % desde el máximo 3.1x)",
+     "ret": 0.9548800375580349
+    },
+    {
+     "pair": "CsGLBJNEbZz7G9iUfSyeDpQmdN3oovGZgbWrj7ezVyQb",
+     "mint": "3xgTWkgNaLJiqXHsLQcBif3m7XpkSgM3QwWhZxYCRZrS",
+     "name": "67",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.00012878444607801028,
+     "qty": 77649.12848204176,
+     "cost_usd": 10.0,
+     "got_usd": 1.6063968076823696,
+     "ts": 1795798535,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.132772402668639e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.132772402668639e-05,
+     "exit_ts": 1795798595,
+     "reason": "stop −30 %",
+     "ret": -0.839360319231763
+    },
+    {
+     "pair": "9wpBHdmxgJNyA4eU4k3ikQf1aDnuknSvVU8ivYRab5zT",
+     "mint": "8L2uLXaampSTz6e6gHUqYBq5YDsVrtbPqmgs7uuFpump",
+     "name": "AAC",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.9082527190027168e-05,
+     "qty": 171924.53624575565,
+     "cost_usd": 10.0,
+     "got_usd": 10.637121521800069,
+     "ts": 1795798655,
+     "half": true,
+     "peak": 3.08207432831574,
+     "last": 1.557217267925367e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.557217267925367e-06,
+     "exit_ts": 1795799435,
+     "reason": "stop dinámico (30 % desde el máximo 3.1x)",
+     "ret": 0.06371215218000681
+    },
+    {
+     "pair": "irNwGYwkpiNzhur2u8SgstovCfqS7Aud8Va132A8EP3",
+     "mint": "2rQu8Ls61FRfa7ojq2uQTeEnSR13AaQnkRQ6mhDQBAGS",
+     "name": "DEVPARR",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0486057,
+     "qty": 205.737187202324,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795710563,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795796915.821292,
+     "exit": 0.0,
+     "exit_ts": 1795800515,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "Cink6BL2fzAwzudo5GdPEHcdXJBP5GeFK5SMrH9AEiio",
+     "mint": "5GWSraFLq7zvMMaYxnidSuB313mJnPY6x8NufhWowLwi",
+     "name": "USELESS",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.41677e-06,
+     "qty": 1846118.627890791,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795711043,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795797395.822121,
+     "exit": 0.0,
+     "exit_ts": 1795800995,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "AmsWBJ8RAGRu2MTy9rDKqpwkuW7S4et3Wir3cUnKJmYf",
+     "mint": "HY8Ao7LJHcR7ibUfQFDjLC78ooeBw5D3TqViWcR1A9sb",
+     "name": "rice",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 6.33759e-05,
+     "qty": 157788.68623561953,
+     "cost_usd": 10.0,
+     "got_usd": 0.979246054099429,
+     "ts": 1795801055,
+     "half": false,
+     "peak": 1.0,
+     "last": 6.398e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.398e-06,
+     "exit_ts": 1795801055,
+     "reason": "stop −30 %",
+     "ret": -0.9020753945900571
+    },
+    {
+     "pair": "5qC31yFZivkj9A6Ly1fYoE1NRKm4Rt2xki6tutGgtAxq",
+     "mint": "2vMHGASBXSbT6TkJ1XraJZbE2eVjbzoDphc997tKw777",
+     "name": "OPEN AI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.82336e-05,
+     "qty": 261550.05021760965,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795710803,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795797815.8227985,
+     "exit": 0.0,
+     "exit_ts": 1795801415,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
     }
    ]
   },
