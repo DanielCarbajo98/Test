@@ -557,7 +557,7 @@ class Bot:
             conf, size_why = crypto_multiplier(pred, (champ or {}).get("threshold") if pred is not None else None,
                                                eq_sz, c.risk.starting_equity_usd, c.risk.max_drawdown_pct,
                                                daily_pnl=self.pf.daily_pnl(), day_start=self.pf.start_equity_today())
-            if self.cfg.brain.enabled and self.brain.defensive and not self.brain_active():
+            if self.cfg.brain.enabled and self.brain.defensive:      # aunque conserve un campeón antiguo
                 # el cerebro ha comprobado que la estrategia básica no gana: en simulado se sigue operando para
                 # medir la realidad, pero con apuestas de exploración pequeñas
                 conf *= 0.25

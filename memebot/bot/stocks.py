@@ -812,7 +812,13 @@ def live_tick(state_dir: Path, http: httpx.Client, ext_fetcher=fetch_ext) -> int
         notify(f"{head}\n{pos.get('name', sym)} a ~{px:.2f} {pos.get('currency', '')}{tag}\nMotivo: {why} (en directo)\n"
                f"🤖 Venta automática simulada: {ret:+.1f}% · {'+' if pnl >= 0 else '−'}{abs(pnl):.2f} € con {amt:.0f} € "
                f"(con comisiones).\nLiquidez disponible: {fmt_eur(cash_eur(state_dir, st))}.")
+    fixed = rebalance(state_dir, st)               # el saldo conjunto nunca en negativo, también entre análisis
+    if fixed:
+        notify(f"📈 ACCIONES · ⚖️ REEQUILIBRIO DEL SALDO CONJUNTO\nVendidas en simulado las que peor iban: {', '.join(fixed)}.")
     st["paper"] = {**(st.get("paper") or {}), **paper_summary(st)}
+    from . import joint
+    jc = joint.stocks_cash_eur(state_dir, st) if joint.enabled() else None
+    st["paper"].update(joint=jc is not None, cash=round(jc if jc is not None else account(st)["cash"], 2))
     st["live_ts"] = int(time.time())
     tmp = f.with_suffix(".live.tmp")
     tmp.write_text(json.dumps(st, default=float))
