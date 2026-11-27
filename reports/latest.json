@@ -1,5 +1,5 @@
 {
- "generated_at": 1795734075,
+ "generated_at": 1795769550,
  "days": 30,
  "version": "86cb7ce942d4",
  "crypto": {
@@ -7,25 +7,25 @@
    "mode": "paper",
    "strategy": "ml v1 (cerebro)",
    "paused": false,
-   "equity": 9497.894485916517,
+   "equity": 9449.308742332389,
    "start_equity": 10000.0,
    "daily_pnl": -169.75801107999996,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795733938,
+    "ts": 1795736548,
     "discovered": 200,
     "with_data": 200,
-    "prefilter": 10,
+    "prefilter": 8,
     "analyzed": 8,
     "signals": 0,
     "rejected": {
-     "liquidez": 103,
-     "dex": 21,
-     "volumen": 160,
+     "liquidez": 100,
+     "dex": 19,
+     "volumen": 162,
      "pocas": 123,
-     "edad": 70,
-     "sin": 4,
-     "FDV": 1
+     "edad": 73,
+     "sin": 5,
+     "FDV": 5
     },
     "filters": {
      "min_liq": 40000,
@@ -34,11 +34,11 @@
      "max_age_h": 2160.0,
      "relaxed": true
     },
-    "queue": 2
+    "queue": 0
    },
    "interval": 20
   },
-  "open_positions": 3,
+  "open_positions": 4,
   "closed_last_days": [
    {
     "symbol": "BOOBS",
@@ -545,9 +545,9 @@
   }
  },
  "crypto_brain": {
-  "status": "mantener",
-  "status_text": "La estrategia actual sigue siendo la mejor; ningún aspirante la supera con margen suficiente.",
-  "samples": 15187,
+  "status": "defensivo",
+  "status_text": "Ninguna estrategia demuestra ventaja en datos no vistos. Modo defensivo: en real no se abren posiciones.",
+  "samples": 15227,
   "pools": 283,
   "version": 1,
   "champion": {
@@ -625,51 +625,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795732467,
+  "updated_at": 1795736084,
   "history": [
-   {
-    "ts": 1795680766,
-    "decision": "defensivo",
-    "version": 0,
-    "best": null,
-    "best_score": null,
-    "samples": 11100,
-    "pools": 197,
-    "mode": "completo",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -12.6,
-      "n": 10
-     }
-    ]
-   },
-   {
-    "ts": 1795682557,
-    "decision": "defensivo",
-    "version": 0,
-    "best": "ml",
-    "best_score": -10.36,
-    "samples": 11198,
-    "pools": 202,
-    "mode": "rápido",
-    "champion": null,
-    "champion_exp": null,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -12.6,
-      "n": 10
-     },
-     {
-      "s": "ml",
-      "e": -7.51,
-      "n": 87
-     }
-    ]
-   },
    {
     "ts": 1795684363,
     "decision": "defensivo",
@@ -1596,6 +1553,74 @@
       "n": 52
      }
     ]
+   },
+   {
+    "ts": 1795734277,
+    "decision": "mantener",
+    "version": 1,
+    "best": "ml",
+    "best_score": 4.92,
+    "samples": 15187,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -20.97,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": 4.37,
+      "n": 6
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 11.08,
+      "n": 52
+     }
+    ]
+   },
+   {
+    "ts": 1795736085,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -20.97,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": 4.37,
+      "n": 6
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
    }
   ]
  },
@@ -2036,6 +2061,14 @@
     ],
     [
      1795733461,
+     2642.46
+    ],
+    [
+     1795734572,
+     2642.46
+    ],
+    [
+     1795735667,
      2642.46
     ]
    ],
@@ -3050,14 +3083,14 @@
     "mean_pct": -27.38
    },
    "copia": {
-    "equity": 1455.54,
-    "pnl": 455.54,
+    "equity": 1462.42,
+    "pnl": 462.42,
     "open": 25,
-    "closed": 90,
-    "win_rate": 32.2,
+    "closed": 92,
+    "win_rate": 32.6,
     "best_x": 19.94,
     "worst_pct": -100.0,
-    "mean_pct": 10.35
+    "mean_pct": 10.66
    }
   },
   "closed": {
@@ -5969,6 +6002,52 @@
      "exit_ts": 1795733313,
      "reason": "stop −30 %",
      "ret": -0.5290932966827263
+    },
+    {
+     "pair": "6Hr7vyVFGJ3CS28yxBdbeEFAK5xLcFJoNQA5ggrjEgzQ",
+     "mint": "8SCauo2Mn2eCVh7ZVjUn49qwDX5xSLUbRdrKzwbzmoon",
+     "name": "BETTA",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.06669303680731664,
+     "qty": 149.94069064347866,
+     "cost_usd": 10.0,
+     "got_usd": 4.0156665946064525,
+     "ts": 1795713923,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.02761,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.02761,
+     "exit_ts": 1795735233,
+     "reason": "stop −30 %",
+     "ret": -0.5984333405393547
+    },
+    {
+     "pair": "Fpdv3qYHxuu31JiG6ajgPTWJFkSnPzBoAVdc1QcmyuJB",
+     "mint": "5YLDE7jH2geaSzj4eBYhjiq5sjN6sQcTu263STYdpump",
+     "name": "N3ON",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.069250403974843e-05,
+     "qty": 162906.226012864,
+     "cost_usd": 10.0,
+     "got_usd": 20.875568318964824,
+     "ts": 1795735293,
+     "half": true,
+     "peak": 3.1550407793581194,
+     "last": 6.132e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.132e-05,
+     "exit_ts": 1795736133,
+     "reason": "stop dinámico (30 % desde el máximo 3.2x)",
+     "ret": 1.0875568318964826
     }
    ]
   },
