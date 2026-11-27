@@ -1,0 +1,7294 @@
+{
+ "generated_at": 1795809636,
+ "days": 30,
+ "version": "86cb7ce942d4",
+ "crypto": {
+  "status": {
+   "mode": "paper",
+   "strategy": "ml v1 (cerebro)",
+   "paused": false,
+   "equity": 9101.812790919997,
+   "start_equity": 10000.0,
+   "daily_pnl": -398.8856468,
+   "risk_off": "",
+   "last_scan": {
+    "ts": 1795809486,
+    "discovered": 200,
+    "with_data": 200,
+    "prefilter": 9,
+    "analyzed": 8,
+    "signals": 0,
+    "rejected": {
+     "liquidez": 93,
+     "volumen": 154,
+     "dex": 17,
+     "edad": 79,
+     "pocas": 111,
+     "sin": 1,
+     "FDV": 5
+    },
+    "filters": {
+     "min_liq": 40000,
+     "min_vol_h1": 10000,
+     "min_txns_h1": 60,
+     "max_age_h": 2160.0,
+     "relaxed": true
+    },
+    "queue": 1
+   },
+   "interval": 20
+  },
+  "open_positions": 0,
+  "closed_last_days": [
+   {
+    "symbol": "BOOBS",
+    "opened": "2026-11-25T02:34:17+00:00",
+    "closed": "2026-11-25T02:43:52+00:00",
+    "ret": -0.2687357302355923,
+    "cost": 398.57,
+    "got": 291.46,
+    "reasons": [
+     "stop loss -25.5%"
+    ]
+   },
+   {
+    "symbol": "DongCoin",
+    "opened": "2026-11-25T02:48:14+00:00",
+    "closed": "2026-11-25T03:06:06+00:00",
+    "ret": -0.29970914196880794,
+    "cost": 398.82,
+    "got": 279.29,
+    "reasons": [
+     "stop loss -27.9%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T02:23:40+00:00",
+    "closed": "2026-11-25T03:53:42+00:00",
+    "ret": -0.004052836985890096,
+    "cost": 399.72,
+    "got": 398.1,
+    "reasons": [
+     "time stop (90 min, -1.4%)"
+    ]
+   },
+   {
+    "symbol": "GROKIA",
+    "opened": "2026-11-25T02:48:03+00:00",
+    "closed": "2026-11-25T03:54:44+00:00",
+    "ret": 0.17601925680758224,
+    "cost": 398.82,
+    "got": 469.02,
+    "reasons": [
+     "trailing stop (pico 0.00443)"
+    ]
+   },
+   {
+    "symbol": "4CHAN",
+    "opened": "2026-11-25T02:02:31+00:00",
+    "closed": "2026-11-25T04:51:11+00:00",
+    "ret": 1.1584249999999998,
+    "cost": 400.0,
+    "got": 863.3699999999999,
+    "reasons": [
+     "take profit +110%",
+     "trailing stop (pico 0.00179)"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-25T06:39:38+00:00",
+    "closed": "2026-11-25T06:41:55+00:00",
+    "ret": -0.3375706557337279,
+    "cost": 412.21,
+    "got": 273.06,
+    "reasons": [
+     "stop loss -29.1%"
+    ]
+   },
+   {
+    "symbol": "PERRO",
+    "opened": "2026-11-25T07:01:52+00:00",
+    "closed": "2026-11-25T07:35:24+00:00",
+    "ret": -0.2613961519486926,
+    "cost": 405.4,
+    "got": 299.43,
+    "reasons": [
+     "stop loss -25.4%"
+    ]
+   },
+   {
+    "symbol": "4CHAN",
+    "opened": "2026-11-25T08:40:33+00:00",
+    "closed": "2026-11-25T09:37:16+00:00",
+    "ret": -0.2924877612385379,
+    "cost": 402.41,
+    "got": 284.71,
+    "reasons": [
+     "stop loss -27.4%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T08:54:44+00:00",
+    "closed": "2026-11-25T10:24:56+00:00",
+    "ret": -0.16638789724642378,
+    "cost": 400.57,
+    "got": 333.92,
+    "reasons": [
+     "time stop (90 min, -15.9%)"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-25T10:40:18+00:00",
+    "closed": "2026-11-25T11:36:20+00:00",
+    "ret": -0.2963572386907324,
+    "cost": 395.03,
+    "got": 277.96,
+    "reasons": [
+     "stop loss -26.8%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T12:55:06+00:00",
+    "closed": "2026-11-25T15:11:53+00:00",
+    "ret": 0.010119123863199686,
+    "cost": 390.35,
+    "got": 394.3,
+    "reasons": [
+     "time stop (137 min, +9.8%)"
+    ]
+   },
+   {
+    "symbol": "4CHAN",
+    "opened": "2026-11-25T13:44:59+00:00",
+    "closed": "2026-11-25T15:19:19+00:00",
+    "ret": -0.002652452243107395,
+    "cost": 392.09,
+    "got": 391.05,
+    "reasons": [
+     "time stop (94 min, +9.4%)"
+    ]
+   },
+   {
+    "symbol": "PERRO",
+    "opened": "2026-11-25T15:03:07+00:00",
+    "closed": "2026-11-25T16:01:09+00:00",
+    "ret": -0.2880904856952762,
+    "cost": 75.15,
+    "got": 53.5,
+    "reasons": [
+     "stop loss -29.6%"
+    ]
+   },
+   {
+    "symbol": "Pompom",
+    "opened": "2026-11-25T15:17:25+00:00",
+    "closed": "2026-11-25T16:01:37+00:00",
+    "ret": 0.07463873790269115,
+    "cost": 75.43,
+    "got": 81.06,
+    "reasons": [
+     "candado de beneficio (+20.1%, máximo +55%)"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-25T16:41:28+00:00",
+    "closed": "2026-11-25T17:57:30+00:00",
+    "ret": -0.25927970194563266,
+    "cost": 72.47,
+    "got": 53.68,
+    "reasons": [
+     "stop loss -25.5%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T17:40:03+00:00",
+    "closed": "2026-11-25T19:10:16+00:00",
+    "ret": -0.13790311698826063,
+    "cost": 74.11,
+    "got": 63.89,
+    "reasons": [
+     "time stop (90 min, -13.3%)"
+    ]
+   },
+   {
+    "symbol": "LENDR",
+    "opened": "2026-11-25T19:40:19+00:00",
+    "closed": "2026-11-25T20:22:29+00:00",
+    "ret": 0.09622277364212839,
+    "cost": 72.54,
+    "got": 79.52,
+    "reasons": [
+     "candado de beneficio (+7.6%, máximo +21%)"
+    ]
+   },
+   {
+    "symbol": "Pompom",
+    "opened": "2026-11-25T20:06:16+00:00",
+    "closed": "2026-11-25T20:40:05+00:00",
+    "ret": -0.2668408028594995,
+    "cost": 72.74,
+    "got": 53.33,
+    "reasons": [
+     "stop loss -26.3%"
+    ]
+   },
+   {
+    "symbol": "4CHAN",
+    "opened": "2026-11-25T18:02:26+00:00",
+    "closed": "2026-11-25T20:43:59+00:00",
+    "ret": -0.26956879978028014,
+    "cost": 72.82,
+    "got": 53.19,
+    "reasons": [
+     "stop loss -25.2%"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-25T20:46:42+00:00",
+    "closed": "2026-11-25T21:06:10+00:00",
+    "ret": -0.30908563976235337,
+    "cost": 69.01,
+    "got": 47.68,
+    "reasons": [
+     "stop loss -30.3%"
+    ]
+   },
+   {
+    "symbol": "NORFEATH",
+    "opened": "2026-11-25T22:13:03+00:00",
+    "closed": "2026-11-25T22:25:53+00:00",
+    "ret": 0.10758641328744578,
+    "cost": 66.83,
+    "got": 74.02,
+    "reasons": [
+     "candado de beneficio (+12.0%, máximo +33%)"
+    ]
+   },
+   {
+    "symbol": "PVE",
+    "opened": "2026-11-26T00:33:51+00:00",
+    "closed": "2026-11-26T00:36:47+00:00",
+    "ret": -0.32602862254025045,
+    "cost": 89.44,
+    "got": 60.28,
+    "reasons": [
+     "stop loss -27.9%"
+    ]
+   },
+   {
+    "symbol": "Grodia",
+    "opened": "2026-11-26T00:50:51+00:00",
+    "closed": "2026-11-26T00:58:11+00:00",
+    "ret": -0.2747607517583305,
+    "cost": 86.73,
+    "got": 62.9,
+    "reasons": [
+     "stop loss -26.1%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-25T23:42:54+00:00",
+    "closed": "2026-11-26T01:13:02+00:00",
+    "ret": -0.045872921615201956,
+    "cost": 67.36,
+    "got": 64.27,
+    "reasons": [
+     "time stop: en 90 min nunca llegó a +10% (ahora -2.3%); se cierra para no esperar al stop de −25%"
+    ]
+   },
+   {
+    "symbol": "Zero",
+    "opened": "2026-11-26T02:11:28+00:00",
+    "closed": "2026-11-26T02:16:03+00:00",
+    "ret": -0.3317846080533714,
+    "cost": 83.94,
+    "got": 56.09,
+    "reasons": [
+     "stop loss -31.9%"
+    ]
+   },
+   {
+    "symbol": "MemeStonks",
+    "opened": "2026-11-26T02:48:15+00:00",
+    "closed": "2026-11-26T02:51:17+00:00",
+    "ret": -0.8910201588271228,
+    "cost": 81.85,
+    "got": 8.92,
+    "reasons": [
+     "liquidez -40% (posible rug)"
+    ]
+   },
+   {
+    "symbol": "Pumpcat",
+    "opened": "2026-11-26T01:38:37+00:00",
+    "closed": "2026-11-26T03:08:46+00:00",
+    "ret": -0.14478672985781993,
+    "cost": 84.4,
+    "got": 72.18,
+    "reasons": [
+     "time stop: en 90 min nunca llegó a +10% (ahora -13.8%); se cierra para no esperar al stop de −25%"
+    ]
+   },
+   {
+    "symbol": "NORFEATH",
+    "opened": "2026-11-26T02:36:08+00:00",
+    "closed": "2026-11-26T03:09:51+00:00",
+    "ret": 0.27266081871345027,
+    "cost": 82.08,
+    "got": 104.46,
+    "reasons": [
+     "candado de beneficio (+26.8%, máximo +61%)"
+    ]
+   },
+   {
+    "symbol": "UHI",
+    "opened": "2026-11-26T01:32:04+00:00",
+    "closed": "2026-11-26T03:33:12+00:00",
+    "ret": 0.08565335860680023,
+    "cost": 84.41,
+    "got": 91.64,
+    "reasons": [
+     "candado de beneficio (+10.0%, máximo +22%)"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-26T02:34:53+00:00",
+    "closed": "2026-11-26T04:05:09+00:00",
+    "ret": -0.13697294662442128,
+    "cost": 82.06,
+    "got": 70.82,
+    "reasons": [
+     "time stop: en 90 min nunca llegó a +10% (ahora -13.0%); se cierra para no esperar al stop de −25%"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-26T06:47:39+00:00",
+    "closed": "2026-11-26T06:59:05+00:00",
+    "ret": 0.12175282078194694,
+    "cost": 76.22,
+    "got": 85.5,
+    "reasons": [
+     "candado de beneficio (+13.4%, máximo +31%)"
+    ]
+   },
+   {
+    "symbol": "Grodia",
+    "opened": "2026-11-26T07:15:04+00:00",
+    "closed": "2026-11-26T08:03:47+00:00",
+    "ret": 0.0010382868267357903,
+    "cost": 77.05,
+    "got": 77.13,
+    "reasons": [
+     "candado de beneficio (+2.0%, máximo +22%)"
+    ]
+   },
+   {
+    "symbol": "NORFEATH",
+    "opened": "2026-11-26T07:17:28+00:00",
+    "closed": "2026-11-26T08:25:59+00:00",
+    "ret": 0.6727626459143969,
+    "cost": 77.1,
+    "got": 128.97,
+    "reasons": [
+     "take profit +107%",
+     "candado de beneficio (+31.7%, máximo +112%)"
+    ]
+   },
+   {
+    "symbol": "PUMPCHAN",
+    "opened": "2026-11-26T08:33:54+00:00",
+    "closed": "2026-11-26T08:37:57+00:00",
+    "ret": 0.07094718784462706,
+    "cost": 81.61,
+    "got": 87.4,
+    "reasons": [
+     "candado de beneficio (+8.4%, máximo +21%)"
+    ]
+   },
+   {
+    "symbol": "Grodia",
+    "opened": "2026-11-26T11:21:49+00:00",
+    "closed": "2026-11-26T11:43:45+00:00",
+    "ret": -0.2670214052485186,
+    "cost": 82.69,
+    "got": 60.61,
+    "reasons": [
+     "stop loss -26.8%"
+    ]
+   },
+   {
+    "symbol": "NORFEATH",
+    "opened": "2026-11-26T11:43:47+00:00",
+    "closed": "2026-11-26T11:57:42+00:00",
+    "ret": -0.3124302887594498,
+    "cost": 80.69,
+    "got": 55.48,
+    "reasons": [
+     "stop loss -29.6%"
+    ]
+   },
+   {
+    "symbol": "Elonmas",
+    "opened": "2026-11-26T11:22:40+00:00",
+    "closed": "2026-11-26T12:00:45+00:00",
+    "ret": -0.2598815423667352,
+    "cost": 82.73,
+    "got": 61.23,
+    "reasons": [
+     "stop loss -26.3%"
+    ]
+   },
+   {
+    "symbol": "UHI",
+    "opened": "2026-11-26T05:33:03+00:00",
+    "closed": "2026-11-26T13:09:29+00:00",
+    "ret": 0.28196377001837747,
+    "cost": 76.18,
+    "got": 97.66,
+    "reasons": [
+     "candado de beneficio (+28.4%, máximo +58%)"
+    ]
+   },
+   {
+    "symbol": "PUMPCHAN",
+    "opened": "2026-11-26T12:48:24+00:00",
+    "closed": "2026-11-26T14:18:28+00:00",
+    "ret": -0.1824465310380804,
+    "cost": 76.68,
+    "got": 62.69,
+    "reasons": [
+     "time stop: en 90 min nunca llegó a +10% (ahora -17.2%); se cierra para no esperar al stop de −25%"
+    ]
+   },
+   {
+    "symbol": "JIMMY",
+    "opened": "2026-11-26T14:17:55+00:00",
+    "closed": "2026-11-26T14:31:30+00:00",
+    "ret": 0.09774919614147892,
+    "cost": 77.75,
+    "got": 85.35,
+    "reasons": [
+     "candado de beneficio (+10.5%, máximo +22%)"
+    ]
+   },
+   {
+    "symbol": "UHI",
+    "opened": "2026-11-26T13:57:45+00:00",
+    "closed": "2026-11-26T16:35:56+00:00",
+    "ret": 0.03384813384813379,
+    "cost": 77.7,
+    "got": 80.33,
+    "reasons": [
+     "candado de beneficio (+4.3%, máximo +23%)"
+    ]
+   },
+   {
+    "symbol": "NORFEATH",
+    "opened": "2026-11-26T16:01:53+00:00",
+    "closed": "2026-11-26T16:43:12+00:00",
+    "ret": -0.2758754361028557,
+    "cost": 77.39,
+    "got": 56.04,
+    "reasons": [
+     "stop loss -27.7%"
+    ]
+   },
+   {
+    "symbol": "PAIR",
+    "opened": "2026-11-26T16:00:28+00:00",
+    "closed": "2026-11-26T16:50:32+00:00",
+    "ret": 0.3878998968008258,
+    "cost": 77.52,
+    "got": 107.59,
+    "reasons": [
+     "candado de beneficio (+37.2%, máximo +75%)"
+    ]
+   },
+   {
+    "symbol": "duk",
+    "opened": "2026-11-26T16:56:18+00:00",
+    "closed": "2026-11-26T17:07:50+00:00",
+    "ret": -0.28569605716473145,
+    "cost": 78.37,
+    "got": 55.98,
+    "reasons": [
+     "stop loss -27.2%"
+    ]
+   },
+   {
+    "symbol": "UHI",
+    "opened": "2026-11-26T18:06:17+00:00",
+    "closed": "2026-11-26T18:32:34+00:00",
+    "ret": -0.2792674950948333,
+    "cost": 76.45,
+    "got": 55.1,
+    "reasons": [
+     "stop loss -27.2%"
+    ]
+   },
+   {
+    "symbol": "BASKET",
+    "opened": "2026-11-26T22:37:51+00:00",
+    "closed": "2026-11-27T08:52:32+00:00",
+    "ret": -0.21615193943860123,
+    "cost": 298.54,
+    "got": 234.01,
+    "reasons": [
+     "time stop: en 615 min nunca llegó a +10% (ahora -20.8%); se cierra para no esperar al stop de −25%"
+    ]
+   },
+   {
+    "symbol": "DIGS",
+    "opened": "2026-11-26T22:55:41+00:00",
+    "closed": "2026-11-27T08:52:32+00:00",
+    "ret": 0.053252059749480996,
+    "cost": 298.58,
+    "got": 314.48,
+    "reasons": [
+     "time stop: en 597 min nunca llegó a +10% (ahora +7.1%); se cierra para no esperar al stop de −25%"
+    ]
+   },
+   {
+    "symbol": "HOGE",
+    "opened": "2026-11-26T23:04:15+00:00",
+    "closed": "2026-11-27T08:52:32+00:00",
+    "ret": -0.18090620297609106,
+    "cost": 299.05,
+    "got": 244.95,
+    "reasons": [
+     "time stop: en 588 min nunca llegó a +10% (ahora -16.8%); se cierra para no esperar al stop de −25%"
+    ]
+   },
+   {
+    "symbol": "Huss",
+    "opened": "2026-11-26T22:48:34+00:00",
+    "closed": "2026-11-27T12:05:38+00:00",
+    "ret": 0.10130070917218448,
+    "cost": 297.53,
+    "got": 327.67,
+    "reasons": [
+     "candado de beneficio (+10.4%, máximo +21%)"
+    ]
+   },
+   {
+    "symbol": "Kibo",
+    "opened": "2026-11-27T12:41:04+00:00",
+    "closed": "2026-11-27T13:04:41+00:00",
+    "ret": -0.2643068031911553,
+    "cost": 318.38,
+    "got": 234.23,
+    "reasons": [
+     "stop loss -25.0%"
+    ]
+   },
+   {
+    "symbol": "TWORBIT",
+    "opened": "2026-11-27T14:30:04+00:00",
+    "closed": "2026-11-27T14:35:37+00:00",
+    "ret": -0.2893183779119931,
+    "cost": 289.75,
+    "got": 205.92,
+    "reasons": [
+     "stop loss -26.6%"
+    ]
+   },
+   {
+    "symbol": "Fireball",
+    "opened": "2026-11-27T16:04:29+00:00",
+    "closed": "2026-11-27T16:30:26+00:00",
+    "ret": 0.12610235923720525,
+    "cost": 265.34,
+    "got": 298.8,
+    "reasons": [
+     "candado de beneficio (+13.7%, máximo +33%)"
+    ]
+   },
+   {
+    "symbol": "Meme",
+    "opened": "2026-11-27T17:04:27+00:00",
+    "closed": "2026-11-27T17:07:50+00:00",
+    "ret": -0.011039125556480567,
+    "cost": 276.29,
+    "got": 273.24,
+    "reasons": [
+     "candado de beneficio (+2.2%, máximo +28%)"
+    ]
+   },
+   {
+    "symbol": "Elfball",
+    "opened": "2026-11-27T17:03:39+00:00",
+    "closed": "2026-11-27T17:11:36+00:00",
+    "ret": -0.2787660111852788,
+    "cost": 277.15,
+    "got": 199.89,
+    "reasons": [
+     "stop loss -25.9%"
+    ]
+   },
+   {
+    "symbol": "NBA",
+    "opened": "2026-11-27T17:34:04+00:00",
+    "closed": "2026-11-27T18:14:49+00:00",
+    "ret": -0.2992141688938529,
+    "cost": 250.69,
+    "got": 175.68,
+    "reasons": [
+     "stop loss -28.2%"
+    ]
+   },
+   {
+    "symbol": "Split",
+    "opened": "2026-11-27T19:26:27+00:00",
+    "closed": "2026-11-27T19:37:02+00:00",
+    "ret": 0.10410777385159009,
+    "cost": 226.4,
+    "got": 249.97,
+    "reasons": [
+     "candado de beneficio (+13.4%, máximo +29%)"
+    ]
+   },
+   {
+    "symbol": "DEXDATA",
+    "opened": "2026-11-27T19:16:40+00:00",
+    "closed": "2026-11-27T19:50:41+00:00",
+    "ret": -0.2641675466385075,
+    "cost": 227.28,
+    "got": 167.24,
+    "reasons": [
+     "stop loss -25.2%"
+    ]
+   }
+  ],
+  "closed_stats": {
+   "n": 57,
+   "win_rate": 35.1,
+   "avg_ret_pct": -9.2
+  }
+ },
+ "crypto_brain": {
+  "status": "defensivo",
+  "status_text": "Ninguna estrategia demuestra ventaja en datos no vistos. Modo defensivo: en real no se abren posiciones.",
+  "samples": 15227,
+  "pools": 283,
+  "version": 1,
+  "champion": {
+   "kind": "ml",
+   "strategy": "ml",
+   "params": {},
+   "exits_bt": {
+    "sl": 25,
+    "tp": [
+     [
+      100,
+      50
+     ],
+     [
+      300,
+      25
+     ]
+    ],
+    "trail": 30,
+    "trail_act": 50,
+    "time": 90,
+    "time_gain": 10,
+    "lock_act": 20,
+    "lock_keep": 50
+   },
+   "exit_style": "por defecto",
+   "model_exit": {
+    "enabled": false,
+    "threshold": 0.0,
+    "val_gain_pct": -4.87,
+    "test_gain_pct": -9.89,
+    "n_test": 51,
+    "why": "vender antes por el modelo no mejora el resultado en datos no vistos: se usan solo las salidas normales"
+   },
+   "threshold": -0.009543502903003284,
+   "test": {
+    "n": 52,
+    "expectancy": 11.08,
+    "win_rate": 48.1,
+    "lcb": 4.92,
+    "median": -0.7,
+    "worst": -97.6
+   },
+   "score": 0.86,
+   "model_path": "model_v1.joblib",
+   "expected_expectancy": 8.69,
+   "features": [
+    "age_h",
+    "log_vol_5m",
+    "log_vol_60m",
+    "ret_5m",
+    "ret_60m",
+    "ret_6h",
+    "drawdown_6h",
+    "vs_high_3h",
+    "active_60m",
+    "accel",
+    "log_fdv",
+    "ext_vwap15",
+    "wick_1m",
+    "range_15m",
+    "fng",
+    "sol_h1",
+    "sol_h24",
+    "news_score"
+   ],
+   "version": 1,
+   "promoted_at": 1795727038
+  },
+  "reality": {
+   "n": 11,
+   "expectancy": -10.5,
+   "win_rate": 36.4,
+   "expected": 8.69,
+   "by_exit": {
+    "time": {
+     "n": 3,
+     "avg": -11.5
+    },
+    "candado": {
+     "n": 4,
+     "avg": 8.0
+    },
+    "stop": {
+     "n": 4,
+     "avg": -28.3
+    }
+   }
+  },
+  "cost_penalty": 0.0,
+  "needs": {
+   "samples": 3000,
+   "pools": 60
+  },
+  "updated_at": 1795808982,
+  "history": [
+   {
+    "ts": 1795725230,
+    "decision": "defensivo",
+    "version": 0,
+    "best": "ml",
+    "best_score": -0.09,
+    "samples": 14872,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": null,
+    "champion_exp": null,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 4.56,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": -2.35,
+      "n": 9
+     },
+     {
+      "s": "breakout",
+      "e": -2.61,
+      "n": 5
+     },
+     {
+      "s": "ml",
+      "e": 6.43,
+      "n": 43
+     }
+    ]
+   },
+   {
+    "ts": 1795727038,
+    "decision": "nueva",
+    "version": 1,
+    "best": "ml",
+    "best_score": 0.86,
+    "samples": 14923,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 8.69,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": 4.56,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": -2.35,
+      "n": 9
+     },
+     {
+      "s": "breakout",
+      "e": -2.61,
+      "n": 5
+     },
+     {
+      "s": "ml",
+      "e": 8.69,
+      "n": 36
+     }
+    ]
+   },
+   {
+    "ts": 1795728867,
+    "decision": "defensivo",
+    "version": 1,
+    "best": null,
+    "best_score": null,
+    "samples": 14958,
+    "pools": 283,
+    "mode": "completo",
+    "champion": "ml",
+    "champion_exp": 8.69,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -20.97,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": 4.37,
+      "n": 6
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     }
+    ]
+   },
+   {
+    "ts": 1795730660,
+    "decision": "defensivo",
+    "version": 1,
+    "best": null,
+    "best_score": null,
+    "samples": 15076,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 8.69,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -20.97,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": 4.37,
+      "n": 6
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     }
+    ]
+   },
+   {
+    "ts": 1795732468,
+    "decision": "mantener",
+    "version": 1,
+    "best": "ml",
+    "best_score": 4.92,
+    "samples": 15187,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -20.97,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": 4.37,
+      "n": 6
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 11.08,
+      "n": 52
+     }
+    ]
+   },
+   {
+    "ts": 1795734277,
+    "decision": "mantener",
+    "version": 1,
+    "best": "ml",
+    "best_score": 4.92,
+    "samples": 15187,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -20.97,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": 4.37,
+      "n": 6
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 11.08,
+      "n": 52
+     }
+    ]
+   },
+   {
+    "ts": 1795736085,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -20.97,
+      "n": 9
+     },
+     {
+      "s": "dip",
+      "e": 4.37,
+      "n": 6
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795769585,
+    "decision": "defensivo",
+    "version": 1,
+    "best": null,
+    "best_score": null,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "completo",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     }
+    ]
+   },
+   {
+    "ts": 1795771363,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795773171,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795774979,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795776787,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795778595,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795780408,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795782215,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795784023,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795785831,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795787314,
+    "decision": "defensivo",
+    "version": 1,
+    "best": null,
+    "best_score": null,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "completo",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     }
+    ]
+   },
+   {
+    "ts": 1795789092,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795790900,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795792709,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795794517,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795796324,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795798133,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795799941,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795801749,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795803558,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795805366,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795807174,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795809004,
+    "decision": "defensivo",
+    "version": 1,
+    "best": null,
+    "best_score": null,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "completo",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     }
+    ]
+   }
+  ]
+ },
+ "stocks": {
+  "paper": {
+   "per_alert": 500.0,
+   "fee": 1.0,
+   "broker": "XTB",
+   "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
+   "capital": 10000.0,
+   "cash": -3089.68,
+   "equity": 2698.87,
+   "ret_pct": -73.01,
+   "history": [
+    [
+     1795615348,
+     9923.57
+    ],
+    [
+     1795616419,
+     9920.45
+    ],
+    [
+     1795618147,
+     7761.29
+    ],
+    [
+     1795619061,
+     7780.74
+    ],
+    [
+     1795620114,
+     7788.53
+    ],
+    [
+     1795621914,
+     7816.75
+    ],
+    [
+     1795623803,
+     7786.02
+    ],
+    [
+     1795624893,
+     7765.18
+    ],
+    [
+     1795625965,
+     7794.0
+    ],
+    [
+     1795627011,
+     7846.17
+    ],
+    [
+     1795628060,
+     7845.99
+    ],
+    [
+     1795629132,
+     7871.98
+    ],
+    [
+     1795630185,
+     7889.85
+    ],
+    [
+     1795631228,
+     7909.12
+    ],
+    [
+     1795632268,
+     7914.84
+    ],
+    [
+     1795633345,
+     7911.92
+    ],
+    [
+     1795634396,
+     7916.7
+    ],
+    [
+     1795635436,
+     7912.0
+    ],
+    [
+     1795636711,
+     7925.94
+    ],
+    [
+     1795638629,
+     2666.56
+    ],
+    [
+     1795639703,
+     2645.75
+    ],
+    [
+     1795640782,
+     2644.33
+    ],
+    [
+     1795641858,
+     2641.87
+    ],
+    [
+     1795642934,
+     2642.81
+    ],
+    [
+     1795644011,
+     2650.21
+    ],
+    [
+     1795645087,
+     2639.59
+    ],
+    [
+     1795646164,
+     2639.95
+    ],
+    [
+     1795647236,
+     2636.17
+    ],
+    [
+     1795648309,
+     2640.63
+    ],
+    [
+     1795649379,
+     2639.1
+    ],
+    [
+     1795650450,
+     2640.95
+    ],
+    [
+     1795651528,
+     2639.85
+    ],
+    [
+     1795652605,
+     2640.05
+    ],
+    [
+     1795653680,
+     2640.35
+    ],
+    [
+     1795654757,
+     2639.62
+    ],
+    [
+     1795655833,
+     2638.62
+    ],
+    [
+     1795656911,
+     2638.62
+    ],
+    [
+     1795657985,
+     2638.62
+    ],
+    [
+     1795659061,
+     2638.62
+    ],
+    [
+     1795660137,
+     2638.62
+    ],
+    [
+     1795661213,
+     2638.62
+    ],
+    [
+     1795662289,
+     2638.62
+    ],
+    [
+     1795663365,
+     2638.62
+    ],
+    [
+     1795664439,
+     2638.62
+    ],
+    [
+     1795665513,
+     2638.62
+    ],
+    [
+     1795666587,
+     2638.62
+    ],
+    [
+     1795667663,
+     2638.62
+    ],
+    [
+     1795668740,
+     2638.62
+    ],
+    [
+     1795669812,
+     2638.62
+    ],
+    [
+     1795670887,
+     2638.62
+    ],
+    [
+     1795671962,
+     2638.62
+    ],
+    [
+     1795673043,
+     2638.62
+    ],
+    [
+     1795674121,
+     2638.62
+    ],
+    [
+     1795675194,
+     2638.62
+    ],
+    [
+     1795676271,
+     2638.62
+    ],
+    [
+     1795677347,
+     2638.62
+    ],
+    [
+     1795678425,
+     2638.62
+    ],
+    [
+     1795679501,
+     2638.62
+    ],
+    [
+     1795680661,
+     2638.62
+    ],
+    [
+     1795681739,
+     2640.91
+    ],
+    [
+     1795682818,
+     2640.62
+    ],
+    [
+     1795683897,
+     2640.79
+    ],
+    [
+     1795684976,
+     2641.17
+    ],
+    [
+     1795686705,
+     2640.93
+    ],
+    [
+     1795687783,
+     2641.66
+    ],
+    [
+     1795688859,
+     2641.94
+    ],
+    [
+     1795689938,
+     2642.33
+    ],
+    [
+     1795691016,
+     2641.92
+    ],
+    [
+     1795692091,
+     2641.53
+    ],
+    [
+     1795693169,
+     2641.56
+    ],
+    [
+     1795694245,
+     2641.61
+    ],
+    [
+     1795695325,
+     2641.06
+    ],
+    [
+     1795696403,
+     2640.88
+    ],
+    [
+     1795697481,
+     2640.76
+    ],
+    [
+     1795698561,
+     2640.71
+    ],
+    [
+     1795699640,
+     2640.67
+    ],
+    [
+     1795700718,
+     2640.82
+    ],
+    [
+     1795701798,
+     2640.69
+    ],
+    [
+     1795702871,
+     2641.11
+    ],
+    [
+     1795703946,
+     2641.02
+    ],
+    [
+     1795705024,
+     2641.44
+    ],
+    [
+     1795706099,
+     2641.52
+    ],
+    [
+     1795707179,
+     2641.52
+    ],
+    [
+     1795708257,
+     2641.54
+    ],
+    [
+     1795709332,
+     2641.84
+    ],
+    [
+     1795710407,
+     2642.2
+    ],
+    [
+     1795711484,
+     2642.27
+    ],
+    [
+     1795712562,
+     2642.46
+    ],
+    [
+     1795713642,
+     2642.46
+    ],
+    [
+     1795714718,
+     2642.46
+    ],
+    [
+     1795715816,
+     2642.46
+    ],
+    [
+     1795716908,
+     2642.46
+    ],
+    [
+     1795718020,
+     2642.46
+    ],
+    [
+     1795719130,
+     2642.46
+    ],
+    [
+     1795720251,
+     2642.46
+    ],
+    [
+     1795721353,
+     2642.46
+    ],
+    [
+     1795722449,
+     2642.46
+    ],
+    [
+     1795723555,
+     2642.46
+    ],
+    [
+     1795724643,
+     2642.46
+    ],
+    [
+     1795725750,
+     2642.46
+    ],
+    [
+     1795726874,
+     2642.46
+    ],
+    [
+     1795727970,
+     2642.46
+    ],
+    [
+     1795729076,
+     2642.46
+    ],
+    [
+     1795730180,
+     2642.46
+    ],
+    [
+     1795731292,
+     2642.46
+    ],
+    [
+     1795732378,
+     2642.46
+    ],
+    [
+     1795733461,
+     2642.46
+    ],
+    [
+     1795734572,
+     2642.46
+    ],
+    [
+     1795735667,
+     2642.46
+    ],
+    [
+     1795769725,
+     2643.37
+    ],
+    [
+     1795770889,
+     2643.22
+    ],
+    [
+     1795771970,
+     2643.36
+    ],
+    [
+     1795773049,
+     2643.53
+    ],
+    [
+     1795774124,
+     2643.49
+    ],
+    [
+     1795775199,
+     2643.16
+    ],
+    [
+     1795776273,
+     2643.4
+    ],
+    [
+     1795777354,
+     2643.68
+    ],
+    [
+     1795778429,
+     2643.42
+    ],
+    [
+     1795779509,
+     2643.62
+    ],
+    [
+     1795780585,
+     2643.71
+    ],
+    [
+     1795781664,
+     2643.57
+    ],
+    [
+     1795782743,
+     2643.34
+    ],
+    [
+     1795783823,
+     2643.51
+    ],
+    [
+     1795784900,
+     2643.49
+    ],
+    [
+     1795785980,
+     2643.49
+    ],
+    [
+     1795787059,
+     2643.71
+    ],
+    [
+     1795788421,
+     2643.76
+    ],
+    [
+     1795789498,
+     2643.58
+    ],
+    [
+     1795790575,
+     2674.55
+    ],
+    [
+     1795791656,
+     2658.65
+    ],
+    [
+     1795792728,
+     2668.5
+    ],
+    [
+     1795793802,
+     2672.68
+    ],
+    [
+     1795794878,
+     2688.65
+    ],
+    [
+     1795795951,
+     2683.41
+    ],
+    [
+     1795797026,
+     2688.95
+    ],
+    [
+     1795798103,
+     2697.05
+    ],
+    [
+     1795799179,
+     2697.14
+    ],
+    [
+     1795800283,
+     2702.2
+    ],
+    [
+     1795801365,
+     2687.75
+    ],
+    [
+     1795802471,
+     2693.3
+    ],
+    [
+     1795803572,
+     2695.23
+    ],
+    [
+     1795804675,
+     2696.03
+    ],
+    [
+     1795805782,
+     2700.15
+    ],
+    [
+     1795806867,
+     2698.83
+    ],
+    [
+     1795807959,
+     2699.58
+    ],
+    [
+     1795809057,
+     2699.21
+    ]
+   ],
+   "open": 29,
+   "fees_open": 55.9,
+   "move_open": 84.45,
+   "pending_open": 0,
+   "invested_open": 5760.0,
+   "open_pnl": 28.55,
+   "realized": -111.5,
+   "total": -82.95,
+   "closed": 17,
+   "win_rate": 0.0,
+   "best": -1.69,
+   "worst": -17.67,
+   "joint": true
+  },
+  "universe": 522,
+  "market_up": false,
+  "closed": [
+   {
+    "symbol": "SAN.PA",
+    "name": "Sanofi",
+    "currency": "EUR",
+    "entry": 93.58,
+    "entry_ts": 1795570768,
+    "stop": 88.94571175711495,
+    "peak": 93.58,
+    "atr": 2.317144121442522,
+    "setup": "Ruptura",
+    "price": 93.58,
+    "exit": 93.58,
+    "exit_ts": 1795572105,
+    "reason": "sobrecompra (RSI 77)",
+    "ret": 0.0,
+    "amount": 100.0
+   },
+   {
+    "symbol": "INSM",
+    "name": "Insmed Incorporated",
+    "currency": "USD",
+    "entry": 170.15,
+    "entry_ts": 1795570786,
+    "stop": 153.64571555001396,
+    "peak": 170.15,
+    "atr": 8.252142224993024,
+    "setup": "Ruptura",
+    "price": 170.15,
+    "exit": 170.15,
+    "exit_ts": 1795572107,
+    "reason": "sobrecompra (RSI 83)",
+    "ret": 0.0,
+    "amount": 100.0
+   },
+   {
+    "symbol": "NTNX",
+    "name": "Nutanix, Inc.",
+    "currency": "USD",
+    "entry": 54.59,
+    "entry_ts": 1795572416,
+    "stop": 48.80588625226702,
+    "peak": 54.59,
+    "atr": 2.89205687386649,
+    "setup": "Retroceso en tendencia",
+    "price": 47.6577,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 47.6577,
+    "exit_ts": 1795609058,
+    "reason": "STOP LOSS en 48.81",
+    "ret": -12.698845942480318,
+    "pnl_eur": -13.7,
+    "amount": 100.0
+   },
+   {
+    "symbol": "P",
+    "name": "Everpure, Inc.",
+    "currency": "USD",
+    "entry": 92.2,
+    "entry_ts": 1795594909,
+    "stop": 58.63428584507534,
+    "tp": 148.14285692487445,
+    "max_days": 20,
+    "peak": 92.2,
+    "atr": 11.188571384974889,
+    "setup": "Retroceso en tendencia",
+    "price": 87.2869,
+    "expected": {
+     "n": 1556,
+     "win_rate": 42.2,
+     "expectancy": 0.78,
+     "lcb": 0.45
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 87.2869,
+    "exit_ts": 1795609070,
+    "reason": "pierde la media de 200 días (tendencia rota)",
+    "ret": -5.328741865509756,
+    "pnl_eur": -6.33
+   },
+   {
+    "symbol": "CRWD",
+    "name": "CrowdStrike Holdings, Inc.",
+    "currency": "USD",
+    "entry": 210.86,
+    "entry_ts": 1795597055,
+    "stop": 162.46056849888396,
+    "tp": 291.5257191685268,
+    "max_days": 20,
+    "peak": 210.86,
+    "atr": 16.133143833705358,
+    "setup": "Retroceso en tendencia",
+    "price": 198.68,
+    "expected": {
+     "n": 1556,
+     "win_rate": 42.2,
+     "expectancy": 0.78,
+     "lcb": 0.45
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 198.68,
+    "exit_ts": 1795617006,
+    "ret": -5.776344493977048,
+    "pnl_eur": -6.78,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+   },
+   {
+    "symbol": "DFTX",
+    "name": "Definium Therapeutics, Inc.",
+    "currency": "USD",
+    "entry": 32.23,
+    "entry_ts": 1795594076,
+    "stop": 24.015427093505856,
+    "tp": 52.76643226623535,
+    "max_days": 60,
+    "peak": 32.23,
+    "atr": 2.053643226623535,
+    "setup": "Momentum",
+    "price": 31.0993,
+    "expected": {
+     "n": 934,
+     "win_rate": 45.7,
+     "expectancy": 6.73,
+     "lcb": 5.7
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 31.0993,
+    "exit_ts": 1795617006,
+    "ret": -3.5082221532733437,
+    "pnl_eur": -4.51,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+   },
+   {
+    "symbol": "IOVA",
+    "name": "Iovance Biotherapeutics, Inc.",
+    "currency": "USD",
+    "entry": 7.33,
+    "entry_ts": 1795572225,
+    "stop": 6.197857251848493,
+    "peak": 7.33,
+    "atr": 0.5660713740757534,
+    "setup": "Retroceso en tendencia",
+    "price": 7.111,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 7.111,
+    "exit_ts": 1795617006,
+    "ret": -2.987721691678036,
+    "pnl_eur": -15.94,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo",
+    "amount": 100.0
+   },
+   {
+    "symbol": "MRNA",
+    "name": "Moderna, Inc.",
+    "currency": "USD",
+    "entry": 227.38,
+    "entry_ts": 1795594076,
+    "stop": 154.67686192103793,
+    "tp": 409.1378451974051,
+    "max_days": 60,
+    "peak": 227.38,
+    "atr": 18.175784519740514,
+    "setup": "Momentum",
+    "price": 221.58,
+    "expected": {
+     "n": 934,
+     "win_rate": 45.7,
+     "expectancy": 6.73,
+     "lcb": 5.7
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 221.58,
+    "exit_ts": 1795617006,
+    "ret": -2.550796024276536,
+    "pnl_eur": -3.55,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+   },
+   {
+    "symbol": "AMC",
+    "name": "AMC Entertainment Holdings, Inc.",
+    "currency": "USD",
+    "entry": 2.95,
+    "entry_ts": 1795597055,
+    "stop": 1.8899999891008652,
+    "tp": 5.600000027247837,
+    "max_days": 60,
+    "peak": 2.95,
+    "atr": 0.26500000272478375,
+    "setup": "Momentum",
+    "price": 2.8915,
+    "expected": {
+     "n": 934,
+     "win_rate": 45.7,
+     "expectancy": 6.73,
+     "lcb": 5.7
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 2.8915,
+    "exit_ts": 1795617006,
+    "ret": -1.9830508474576236,
+    "pnl_eur": -2.98,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+   },
+   {
+    "symbol": "KSS",
+    "name": "Kohl's Corporation",
+    "currency": "USD",
+    "entry": 25.33,
+    "entry_ts": 1795598125,
+    "stop": 19.07285725184849,
+    "tp": 40.97285687037876,
+    "max_days": 60,
+    "peak": 25.33,
+    "atr": 1.5642856870378767,
+    "setup": "Momentum",
+    "price": 24.85,
+    "expected": {
+     "n": 934,
+     "win_rate": 45.7,
+     "expectancy": 6.73,
+     "lcb": 5.7
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 24.85,
+    "exit_ts": 1795617006,
+    "ret": -1.8949861823924108,
+    "pnl_eur": -2.89,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+   },
+   {
+    "symbol": "MPC",
+    "name": "Marathon Petroleum Corporation",
+    "currency": "USD",
+    "entry": 355.16,
+    "entry_ts": 1795572428,
+    "stop": 321.6928499930246,
+    "peak": 355.16,
+    "atr": 16.733575003487722,
+    "setup": "Retroceso en tendencia",
+    "price": 348.7,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 348.7,
+    "exit_ts": 1795617006,
+    "ret": -1.8188985246086364,
+    "pnl_eur": -10.09,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo",
+    "amount": 100.0
+   },
+   {
+    "symbol": "ANF",
+    "name": "Abercrombie & Fitch Co.",
+    "currency": "USD",
+    "entry": 168.1,
+    "entry_ts": 1795598125,
+    "stop": 127.74857264927455,
+    "tp": 268.9785683768136,
+    "max_days": 60,
+    "peak": 168.1,
+    "atr": 10.087856837681361,
+    "setup": "Momentum",
+    "price": 165.5,
+    "expected": {
+     "n": 934,
+     "win_rate": 45.7,
+     "expectancy": 6.73,
+     "lcb": 5.7
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 165.5,
+    "exit_ts": 1795617006,
+    "ret": -1.5466983938132062,
+    "pnl_eur": -2.55,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo"
+   },
+   {
+    "symbol": "VLO",
+    "name": "Valero Energy Corporation",
+    "currency": "USD",
+    "entry": 324.67,
+    "entry_ts": 1795572422,
+    "stop": 295.7599876185826,
+    "peak": 324.67,
+    "atr": 14.455006190708705,
+    "setup": "Retroceso en tendencia",
+    "price": 319.8,
+    "fees_eur": 1.0,
+    "price_session": "pre",
+    "exit": 319.8,
+    "exit_ts": 1795617006,
+    "ret": -1.4999845997474393,
+    "pnl_eur": -8.5,
+    "reason": "reequilibrio: el saldo conjunto estaba en negativo",
+    "amount": 100.0
+   },
+   {
+    "symbol": "PR",
+    "name": "Permian Resources Corporation",
+    "currency": "USD",
+    "entry": 21.0,
+    "entry_ts": 1795594909,
+    "stop": 18.502928597586497,
+    "tp": 25.161785670689174,
+    "max_days": 20,
+    "peak": 21.0,
+    "atr": 0.8323571341378349,
+    "setup": "Retroceso en tendencia",
+    "price": 20.855,
+    "expected": {
+     "n": 1556,
+     "win_rate": 42.2,
+     "expectancy": 0.78,
+     "lcb": 0.45
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "regular",
+    "exit": 20.855,
+    "exit_ts": 1795617031,
+    "reason": "pierde la media de 200 días (tendencia rota)",
+    "ret": -0.6904761904761858,
+    "pnl_eur": -1.69
+   },
+   {
+    "symbol": "NTAP",
+    "name": "NetApp, Inc.",
+    "currency": "USD",
+    "entry": 163.0,
+    "entry_ts": 1795595980,
+    "stop": 129.4707238333566,
+    "tp": 218.88212694440568,
+    "max_days": 20,
+    "peak": 163.0,
+    "atr": 11.176425388881139,
+    "setup": "Retroceso en tendencia",
+    "price": 156.76,
+    "expected": {
+     "n": 1556,
+     "win_rate": 42.2,
+     "expectancy": 0.78,
+     "lcb": 0.45
+    },
+    "amount": 100.0,
+    "fees_eur": 1.0,
+    "price_session": "regular",
+    "exit": 156.76,
+    "exit_ts": 1795617034,
+    "reason": "pierde la media de 200 días (tendencia rota)",
+    "ret": -3.8282208588957145,
+    "pnl_eur": -4.83
+   },
+   {
+    "symbol": "CENT",
+    "name": "Central Garden & Pet Company",
+    "currency": "USD",
+    "entry": 41.25,
+    "entry_ts": 1795572369,
+    "stop": 38.245713915143696,
+    "peak": 41.25,
+    "atr": 1.502143042428153,
+    "setup": "Retroceso en tendencia",
+    "price": 39.875,
+    "fees_eur": 1.0,
+    "price_session": "regular",
+    "exit": 39.875,
+    "exit_ts": 1795618016,
+    "reason": "pierde la media de 200 días (tendencia rota)",
+    "ret": -3.3333333333333326,
+    "pnl_eur": -17.67,
+    "amount": 100.0
+   },
+   {
+    "symbol": "NEOG",
+    "name": "Neogen Corporation",
+    "currency": "USD",
+    "entry": 10.55,
+    "entry_ts": 1795637575,
+    "stop": 9.165714481898718,
+    "tp": 12.857142530168806,
+    "max_days": 20,
+    "peak": 10.569999694824219,
+    "atr": 0.4614285060337612,
+    "setup": "Retroceso en tendencia",
+    "price": 10.49,
+    "expected": {
+     "n": 1556,
+     "win_rate": 42.2,
+     "expectancy": 0.78,
+     "lcb": 0.45
+    },
+    "amount": 350.0,
+    "fees_eur": 3.5,
+    "size_why": [
+     "riesgo 1 % del saldo con el stop a −13.1 % → 665 €",
+     "ventaja de la estrategia +0.78 % por operación → ×0.89",
+     "mercado general bajista → ×0.6"
+    ],
+    "pending_open": false,
+    "entry_session": "regular",
+    "price_session": "regular",
+    "live_ts": 1795638441,
+    "exit": 10.49,
+    "exit_ts": 1795638501,
+    "reason": "pierde la media de 200 días (tendencia rota)",
+    "ret": -0.5687203791469253,
+    "pnl_eur": -5.49
+   }
+  ],
+  "brain_meta": {
+   "model": 4,
+   "stocks": 680,
+   "split_ts": 1750167000,
+   "ts": 1795769814,
+   "position_eur": 100.0,
+   "broker": "xtb",
+   "broker_name": "XTB",
+   "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar"
+  },
+  "setups": {
+   "Retroceso en tendencia": {
+    "params": {
+     "rsi_max": 35,
+     "stop_atr": 3.0,
+     "tp_atr": 5.0,
+     "max_days": 10,
+     "regime": 0
+    },
+    "active": false,
+    "edge": true,
+    "regions": [
+     "EU",
+     "US"
+    ],
+    "in_sample": {
+     "n": 1955,
+     "win_rate": 44.6,
+     "expectancy": 0.17,
+     "lcb": -0.03
+    },
+    "out_of_sample": {
+     "n": 1103,
+     "win_rate": 42.2,
+     "expectancy": 0.39,
+     "lcb": 0.1
+    },
+    "out_of_sample_all": {
+     "n": 1103,
+     "win_rate": 42.2,
+     "expectancy": 0.39,
+     "lcb": 0.1
+    },
+    "by_region": {
+     "EU": {
+      "in_sample": {
+       "n": 276,
+       "win_rate": 52.2,
+       "expectancy": 1.09,
+       "lcb": 0.65
+      },
+      "out_of_sample": {
+       "n": 142,
+       "win_rate": 50.0,
+       "expectancy": 0.28,
+       "lcb": -0.16
+      },
+      "edge": true
+     },
+     "US": {
+      "in_sample": {
+       "n": 1679,
+       "win_rate": 43.4,
+       "expectancy": 0.02,
+       "lcb": -0.2
+      },
+      "out_of_sample": {
+       "n": 961,
+       "win_rate": 41.0,
+       "expectancy": 0.41,
+       "lcb": 0.08
+      },
+      "edge": true
+     }
+    },
+    "by_broker": {
+     "trade_republic": {
+      "all": {
+       "n": 1108,
+       "win_rate": 37.8,
+       "expectancy": -0.72,
+       "lcb": -1.0
+      },
+      "EU": {
+       "n": 144,
+       "win_rate": 34.7,
+       "expectancy": -1.77,
+       "lcb": -2.19
+      },
+      "US": {
+       "n": 964,
+       "win_rate": 38.3,
+       "expectancy": -0.56,
+       "lcb": -0.88
+      }
+     },
+     "xtb": {
+      "all": {
+       "n": 1103,
+       "win_rate": 42.2,
+       "expectancy": 0.39,
+       "lcb": 0.1
+      },
+      "EU": {
+       "n": 142,
+       "win_rate": 50.0,
+       "expectancy": 0.28,
+       "lcb": -0.16
+      },
+      "US": {
+       "n": 961,
+       "win_rate": 41.0,
+       "expectancy": 0.41,
+       "lcb": 0.08
+      }
+     },
+     "degiro": {
+      "all": {
+       "n": 1135,
+       "win_rate": 27.7,
+       "expectancy": -3.11,
+       "lcb": -3.39
+      },
+      "EU": {
+       "n": 154,
+       "win_rate": 16.9,
+       "expectancy": -3.78,
+       "lcb": -4.16
+      },
+      "US": {
+       "n": 981,
+       "win_rate": 29.4,
+       "expectancy": -3.01,
+       "lcb": -3.32
+      }
+     },
+     "ibkr": {
+      "all": {
+       "n": 1110,
+       "win_rate": 39.2,
+       "expectancy": 0.14,
+       "lcb": -0.15
+      },
+      "EU": {
+       "n": 150,
+       "win_rate": 20.7,
+       "expectancy": -3.26,
+       "lcb": -3.66
+      },
+      "US": {
+       "n": 960,
+       "win_rate": 42.1,
+       "expectancy": 0.67,
+       "lcb": 0.34
+      }
+     }
+    },
+    "live": {
+     "n": 10,
+     "win_rate": 0.0,
+     "expectancy": -3.85,
+     "lcb": -4.99
+    },
+    "suspended": true,
+    "suspended_why": "en real rinde -3.85% por alerta frente a +0.39% esperado (10 alertas)",
+    "exit_reasons_oos": {
+     "plazo": 658,
+     "tendencia rota": 334,
+     "stop": 73,
+     "objetivo": 38
+    }
+   },
+   "Ruptura": {
+    "params": {
+     "rsi_cap": 80,
+     "stop_atr": 3.0,
+     "tp_atr": 6.0,
+     "max_days": 15,
+     "regime": 0
+    },
+    "active": true,
+    "edge": true,
+    "regions": [
+     "EU"
+    ],
+    "in_sample": {
+     "n": 2918,
+     "win_rate": 45.9,
+     "expectancy": -0.28,
+     "lcb": -0.48
+    },
+    "out_of_sample": {
+     "n": 199,
+     "win_rate": 46.7,
+     "expectancy": 0.41,
+     "lcb": -0.08
+    },
+    "out_of_sample_all": {
+     "n": 1759,
+     "win_rate": 46.7,
+     "expectancy": 0.69,
+     "lcb": 0.24
+    },
+    "by_region": {
+     "EU": {
+      "in_sample": {
+       "n": 394,
+       "win_rate": 51.8,
+       "expectancy": 0.33,
+       "lcb": 0.03
+      },
+      "out_of_sample": {
+       "n": 199,
+       "win_rate": 46.7,
+       "expectancy": 0.41,
+       "lcb": -0.08
+      },
+      "edge": true
+     },
+     "US": {
+      "in_sample": {
+       "n": 2524,
+       "win_rate": 45.0,
+       "expectancy": -0.38,
+       "lcb": -0.61
+      },
+      "out_of_sample": {
+       "n": 1560,
+       "win_rate": 46.7,
+       "expectancy": 0.73,
+       "lcb": 0.22
+      },
+      "edge": false
+     }
+    },
+    "by_broker": {
+     "trade_republic": {
+      "all": {
+       "n": 198,
+       "win_rate": 35.4,
+       "expectancy": -1.64,
+       "lcb": -2.11
+      },
+      "EU": {
+       "n": 198,
+       "win_rate": 35.4,
+       "expectancy": -1.64,
+       "lcb": -2.11
+      },
+      "US": {
+       "n": 0,
+       "win_rate": null,
+       "expectancy": null,
+       "lcb": null
+      }
+     },
+     "xtb": {
+      "all": {
+       "n": 199,
+       "win_rate": 46.7,
+       "expectancy": 0.41,
+       "lcb": -0.08
+      },
+      "EU": {
+       "n": 199,
+       "win_rate": 46.7,
+       "expectancy": 0.41,
+       "lcb": -0.08
+      },
+      "US": {
+       "n": 0,
+       "win_rate": null,
+       "expectancy": null,
+       "lcb": null
+      }
+     },
+     "degiro": {
+      "all": {
+       "n": 201,
+       "win_rate": 23.9,
+       "expectancy": -3.6,
+       "lcb": -4.06
+      },
+      "EU": {
+       "n": 201,
+       "win_rate": 23.9,
+       "expectancy": -3.6,
+       "lcb": -4.06
+      },
+      "US": {
+       "n": 0,
+       "win_rate": null,
+       "expectancy": null,
+       "lcb": null
+      }
+     },
+     "ibkr": {
+      "all": {
+       "n": 198,
+       "win_rate": 26.8,
+       "expectancy": -3.12,
+       "lcb": -3.58
+      },
+      "EU": {
+       "n": 198,
+       "win_rate": 26.8,
+       "expectancy": -3.12,
+       "lcb": -3.58
+      },
+      "US": {
+       "n": 0,
+       "win_rate": null,
+       "expectancy": null,
+       "lcb": null
+      }
+     }
+    },
+    "live": {
+     "n": 2,
+     "win_rate": 0.0,
+     "expectancy": 0.0,
+     "lcb": 0.0
+    },
+    "suspended": false,
+    "suspended_why": "",
+    "exit_reasons_oos": {
+     "stop": 55,
+     "plazo": 112,
+     "objetivo": 18,
+     "tendencia rota": 14
+    }
+   },
+   "Momentum": {
+    "params": {
+     "mom_min": 50,
+     "ret21_max": 20,
+     "stop_atr": 4.0,
+     "tp_atr": 10.0,
+     "max_days": 60,
+     "regime": 0
+    },
+    "active": true,
+    "edge": true,
+    "regions": [
+     "EU",
+     "US"
+    ],
+    "in_sample": {
+     "n": 1351,
+     "win_rate": 40.3,
+     "expectancy": 1.92,
+     "lcb": 1.19
+    },
+    "out_of_sample": {
+     "n": 1259,
+     "win_rate": 45.8,
+     "expectancy": 6.72,
+     "lcb": 5.85
+    },
+    "out_of_sample_all": {
+     "n": 1259,
+     "win_rate": 45.8,
+     "expectancy": 6.72,
+     "lcb": 5.85
+    },
+    "by_region": {
+     "EU": {
+      "in_sample": {
+       "n": 39,
+       "win_rate": 43.6,
+       "expectancy": 0.75,
+       "lcb": -1.56
+      },
+      "out_of_sample": {
+       "n": 45,
+       "win_rate": 51.1,
+       "expectancy": 3.41,
+       "lcb": 0.68
+      },
+      "edge": true
+     },
+     "US": {
+      "in_sample": {
+       "n": 1312,
+       "win_rate": 40.2,
+       "expectancy": 1.95,
+       "lcb": 1.21
+      },
+      "out_of_sample": {
+       "n": 1214,
+       "win_rate": 45.6,
+       "expectancy": 6.85,
+       "lcb": 5.94
+      },
+      "edge": true
+     }
+    },
+    "by_broker": {
+     "trade_republic": {
+      "all": {
+       "n": 1272,
+       "win_rate": 44.7,
+       "expectancy": 5.67,
+       "lcb": 4.8
+      },
+      "EU": {
+       "n": 45,
+       "win_rate": 44.4,
+       "expectancy": 1.14,
+       "lcb": -1.56
+      },
+      "US": {
+       "n": 1227,
+       "win_rate": 44.7,
+       "expectancy": 5.84,
+       "lcb": 4.94
+      }
+     },
+     "xtb": {
+      "all": {
+       "n": 1259,
+       "win_rate": 45.8,
+       "expectancy": 6.72,
+       "lcb": 5.85
+      },
+      "EU": {
+       "n": 45,
+       "win_rate": 51.1,
+       "expectancy": 3.41,
+       "lcb": 0.68
+      },
+      "US": {
+       "n": 1214,
+       "win_rate": 45.6,
+       "expectancy": 6.85,
+       "lcb": 5.94
+      }
+     },
+     "degiro": {
+      "all": {
+       "n": 1292,
+       "win_rate": 41.5,
+       "expectancy": 2.91,
+       "lcb": 2.07
+      },
+      "EU": {
+       "n": 45,
+       "win_rate": 40.0,
+       "expectancy": -0.93,
+       "lcb": -3.6
+      },
+      "US": {
+       "n": 1247,
+       "win_rate": 41.5,
+       "expectancy": 3.04,
+       "lcb": 2.19
+      }
+     },
+     "ibkr": {
+      "all": {
+       "n": 1255,
+       "win_rate": 45.7,
+       "expectancy": 6.83,
+       "lcb": 5.95
+      },
+      "EU": {
+       "n": 45,
+       "win_rate": 40.0,
+       "expectancy": -0.53,
+       "lcb": -3.22
+      },
+      "US": {
+       "n": 1210,
+       "win_rate": 45.9,
+       "expectancy": 7.11,
+       "lcb": 6.2
+      }
+     }
+    },
+    "live": {
+     "n": 5,
+     "win_rate": 0.0,
+     "expectancy": -2.3,
+     "lcb": -2.64
+    },
+    "suspended": false,
+    "suspended_why": "",
+    "exit_reasons_oos": {
+     "plazo": 472,
+     "stop": 345,
+     "tendencia rota": 207,
+     "objetivo": 235
+    }
+   }
+  },
+  "lessons": [
+   "«Retroceso en tendencia»: con stop a 3.0 ATR, objetivo a 5.0 ATR y plazo de 10 días, en datos recientes no vistos acierta el 42.2% con +0.39% de media por operación (1103 operaciones).",
+   "«Retroceso en tendencia»: la salida más frecuente es «plazo» (658 de 1103).",
+   "«Retroceso en tendencia»: solo se activa en Europa (euros), EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +0.39%).",
+   "«Retroceso en tendencia» por broker (media por operación con 100 €): XTB +0.39% · Interactive Brokers +0.14% · Trade Republic -0.72% · DEGIRO -3.11%.",
+   "«Retroceso en tendencia»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia).",
+   "«Retroceso en tendencia» en real: 10 alertas cerradas, acierto 0.0%, media -3.85%. SUSPENDIDA: en real rinde -3.85% por alerta frente a +0.39% esperado (10 alertas).",
+   "«Ruptura»: con stop a 3.0 ATR, objetivo a 6.0 ATR y plazo de 15 días, en datos recientes no vistos acierta el 46.7% con +0.41% de media por operación (199 operaciones).",
+   "«Ruptura»: la salida más frecuente es «plazo» (112 de 199).",
+   "«Ruptura»: solo se activa en Europa (euros): en el resto no gana después de costes (contando todas las bolsas saldría +0.69%).",
+   "«Ruptura» por broker (media por operación con 100 €): XTB +0.41% · Trade Republic -1.64% · Interactive Brokers -3.12% · DEGIRO -3.60%.",
+   "«Ruptura»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia).",
+   "«Ruptura» en real: 2 alertas cerradas, acierto 0.0%, media +0.00%.",
+   "«Momentum»: con stop a 4.0 ATR, objetivo a 10.0 ATR y plazo de 60 días, en datos recientes no vistos acierta el 45.8% con +6.72% de media por operación (1259 operaciones).",
+   "«Momentum»: la salida más frecuente es «plazo» (472 de 1259).",
+   "«Momentum»: solo se activa en Europa (euros), EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +6.72%).",
+   "«Momentum» por broker (media por operación con 100 €): Interactive Brokers +6.83% · XTB +6.72% · Trade Republic +5.67% · DEGIRO +2.91%.",
+   "«Momentum»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia).",
+   "«Momentum» en real: 5 alertas cerradas, acierto 0.0%, media -2.30%."
+  ],
+  "history": [
+   {
+    "ts": 1795586789,
+    "Retroceso en tendencia": {
+     "active": true,
+     "oos_exp": 1.04
+    },
+    "Ruptura": {
+     "active": true,
+     "oos_exp": 0.58
+    }
+   },
+   {
+    "ts": 1795593016,
+    "Retroceso en tendencia": {
+     "active": true,
+     "oos_exp": 0.78
+    },
+    "Ruptura": {
+     "active": true,
+     "oos_exp": 0.95
+    },
+    "Momentum": {
+     "active": true,
+     "oos_exp": 6.73
+    }
+   },
+   {
+    "ts": 1795679585,
+    "Retroceso en tendencia": {
+     "active": false,
+     "oos_exp": 0.24
+    },
+    "Ruptura": {
+     "active": true,
+     "oos_exp": 0.38
+    },
+    "Momentum": {
+     "active": true,
+     "oos_exp": 6.75
+    }
+   },
+   {
+    "ts": 1795769814,
+    "Retroceso en tendencia": {
+     "active": false,
+     "oos_exp": 0.39
+    },
+    "Ruptura": {
+     "active": true,
+     "oos_exp": 0.41
+    },
+    "Momentum": {
+     "active": true,
+     "oos_exp": 6.72
+    }
+   }
+  ]
+ },
+ "hunter": {
+  "summary": {
+   "cazador": {
+    "equity": 869.57,
+    "pnl": -130.43,
+    "open": 21,
+    "closed": 68,
+    "win_rate": 2.9,
+    "best_x": 3.01,
+    "worst_pct": -100.0,
+    "mean_pct": -17.62
+   },
+   "copia": {
+    "equity": 1426.72,
+    "pnl": 426.72,
+    "open": 25,
+    "closed": 118,
+    "win_rate": 33.9,
+    "best_x": 19.94,
+    "worst_pct": -100.0,
+    "mean_pct": 17.64
+   }
+  },
+  "closed": {
+   "cazador": [
+    {
+     "pair": "BLNhMTG8SR8eRQ2v3eicSfEwFen2Scve8fUr2jpFfNtm",
+     "mint": "9coSqc3mskpSQyi4bYNGKfz9PvLYbRrgAgepHirFpump",
+     "name": "thesisdog / SOL",
+     "source": "cazador",
+     "entry": 5.13352e-06,
+     "qty": 1947981.1123751346,
+     "cost_usd": 10.0,
+     "got_usd": 4.661499322102573,
+     "ts": 1795592127,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.467e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.467e-06,
+     "exit_ts": 1795594724,
+     "reason": "stop −50 %",
+     "ret": -0.5338500677897426
+    },
+    {
+     "pair": "HyjECZY2g6qSauWMFPomSB8KyBVGLhk9WAGH2EVhtGrS",
+     "mint": "6G7ehCjCTTvbs54Fz6LJVqeBatki86WRbxEv7FF7pump",
+     "name": "Solchan / SOL",
+     "source": "cazador",
+     "entry": 1.04545e-05,
+     "qty": 956525.8979386868,
+     "cost_usd": 10.0,
+     "got_usd": 4.210493089100387,
+     "ts": 1795601979,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.538e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.538e-06,
+     "exit_ts": 1795602459,
+     "reason": "stop −50 %",
+     "ret": -0.5789506910899613
+    },
+    {
+     "pair": "GR7rrZn91gSxqxLBGT7Dy1LrH5hzfWY4mUU9Srvpa3bX",
+     "mint": "QmHu6ZedPYW2g5emx7LQH2yvEc5kgD5QisRVHigQwqr",
+     "name": "BEAST / SOL",
+     "source": "cazador",
+     "entry": 0.000416944,
+     "qty": 23984.036225488315,
+     "cost_usd": 10.0,
+     "got_usd": 3.022060516520204e-05,
+     "ts": 1795602879,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.299e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.299e-09,
+     "exit_ts": 1795602999,
+     "reason": "stop −50 %",
+     "ret": -0.9999969779394835
+    },
+    {
+     "pair": "6nPXuavczX5AULariRGwobX5NCYWM7r4jRTG9BZ9BcVR",
+     "mint": "CFJ2xJujNgpqYuyuCyZQMrMFjUeu5zfVHKpeqetjpump",
+     "name": "SpaceX / SOL",
+     "source": "cazador",
+     "entry": 4.43621e-05,
+     "qty": 225417.6425372108,
+     "cost_usd": 10.0,
+     "got_usd": 0.2914672659770389,
+     "ts": 1795601979,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.333e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.333e-06,
+     "exit_ts": 1795603419,
+     "reason": "stop −50 %",
+     "ret": -0.9708532734022961
+    },
+    {
+     "pair": "4taCHgZPGAzYYjjQbmchMPCXeb51naUGeCkS2JAWKAH3",
+     "mint": "ERuCea3td9k7Vdn1VjMcpJa7eugDkYdVFbggx8PDpump",
+     "name": "ZELENSKY / SOL",
+     "source": "cazador",
+     "entry": 6.79697e-06,
+     "qty": 1471243.8042245295,
+     "cost_usd": 10.0,
+     "got_usd": 4.571022087783232,
+     "ts": 1795603659,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.203e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.203e-06,
+     "exit_ts": 1795607202,
+     "reason": "stop −50 %",
+     "ret": -0.5428977912216768
+    },
+    {
+     "pair": "8uW6RdR38ArwZM8PwHNAECvBTBSeC1Htrk97HF31W9qg",
+     "mint": "3Tg6YnNrfPdFfsY14MaNsDMWLseAyrUDS3myJtbaJN6f",
+     "name": "BASKET / SOL",
+     "source": "cazador",
+     "entry": 0.00250599,
+     "qty": 3990.4389083755323,
+     "cost_usd": 10.0,
+     "got_usd": 0.003645449502990834,
+     "ts": 1795603239,
+     "half": false,
+     "peak": 1.0,
+     "last": 9.418e-07,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 9.418e-07,
+     "exit_ts": 1795607502,
+     "reason": "stop −50 %",
+     "ret": -0.999635455049701
+    },
+    {
+     "pair": "6VUsq4qfdd873DtUBrrnLQkvqQMSaJ2Kajh7zAbZPYwe",
+     "mint": "bP1DFPhYnNe5FAREKTRLdpcRZZ8DiCrhqbBPw95pump",
+     "name": "CatTok / SOL",
+     "source": "cazador",
+     "entry": 0.000114227,
+     "qty": 87544.97623153895,
+     "cost_usd": 10.0,
+     "got_usd": 4.619573305785848,
+     "ts": 1795615002,
+     "half": false,
+     "peak": 1.0,
+     "last": 5.44e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 5.44e-05,
+     "exit_ts": 1795615236,
+     "reason": "stop −50 %",
+     "ret": -0.5380426694214152
+    },
+    {
+     "pair": "HrvafYcQYQEA3PkZ5T7eDhgbxo4zBsNmZNJuBSkzQ8ws",
+     "mint": "91SRgG84XsmTKj5mHZiLGgx88DCvgqw46owfv36xpump",
+     "name": "Lore / SOL",
+     "source": "cazador",
+     "entry": 1.1371199999999999e-05,
+     "qty": 879414.6616012383,
+     "cost_usd": 10.0,
+     "got_usd": 3.330237793724497,
+     "ts": 1795616256,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.904e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.904e-06,
+     "exit_ts": 1795617609,
+     "reason": "stop −50 %",
+     "ret": -0.6669762206275502
+    },
+    {
+     "pair": "BJ33HdVs5QXK2zTQZCrXffLUgjbt6gTWWBUDFJ25XdUx",
+     "mint": "6vsQnQ9JhcxAaPf7yXD1SBkZDumbdSxdYgZvPaYZpump",
+     "name": "SLID / SOL",
+     "source": "cazador",
+     "entry": 7.01945e-06,
+     "qty": 1424613.0394831502,
+     "cost_usd": 10.0,
+     "got_usd": 3.5182528545683773,
+     "ts": 1795625133,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.546e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.546e-06,
+     "exit_ts": 1795625673,
+     "reason": "stop −50 %",
+     "ret": -0.6481747145431622
+    },
+    {
+     "pair": "BrS4bJhGck8qTHPb5efM2zHPGSbnss72VWuTt8J2euuC",
+     "mint": "ymZJTsB2cTgUAR4awaHkASjfCk65wBBSDBEYtpRpump",
+     "name": "iNu / AAPLx",
+     "source": "cazador",
+     "entry": 8.570630000000001e-06,
+     "qty": 1166775.3712387537,
+     "cost_usd": 10.0,
+     "got_usd": 4.693458940591299,
+     "ts": 1795627713,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.147e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.147e-06,
+     "exit_ts": 1795628733,
+     "reason": "stop −50 %",
+     "ret": -0.5306541059408701
+    },
+    {
+     "pair": "KJqM6kiReU6C3EjCjRDp92sqDXdFx7nx4aAFs6o8NMd",
+     "mint": "pmtZ8gwvqKkHccBcyDMJ614Rws25vnwgybtMcjqpump",
+     "name": "Anthropic / SOL",
+     "source": "cazador",
+     "entry": 1.9755400000000002e-06,
+     "qty": 5061907.124128086,
+     "cost_usd": 10.0,
+     "got_usd": 9.309454630126444,
+     "ts": 1795592858,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.896e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.896e-06,
+     "exit_ts": 1795679295,
+     "reason": "plazo de 24 h",
+     "ret": -0.06905453698735564
+    },
+    {
+     "pair": "CjAgQeMVAEf4F8sKMy12kJE1ubRmFMYP4tctAeSJUyc",
+     "mint": "XTMHqnw6Q7sky9eq98BoZpTZSyTqz6rKbPSJpQtpump",
+     "name": "BAILOUT / SOL",
+     "source": "cazador",
+     "entry": 1.96215e-06,
+     "qty": 5096450.322350483,
+     "cost_usd": 10.0,
+     "got_usd": 9.358153046403181,
+     "ts": 1795593247,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.893e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.893e-06,
+     "exit_ts": 1795679655,
+     "reason": "plazo de 24 h",
+     "ret": -0.06418469535968185
+    },
+    {
+     "pair": "HKLrD26dV4k3ndRUTPpgHDE7mBirHBSZhvQ1atLnHFAL",
+     "mint": "Gzz8CzEWhyciye8DpSPTpFwXat53TNhBkunRPCtvpump",
+     "name": "wizardcat / SOL",
+     "source": "cazador",
+     "entry": 2.3473700000000002e-05,
+     "qty": 426008.6820569403,
+     "cost_usd": 10.0,
+     "got_usd": 11.524940678291022,
+     "ts": 1795594027,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.789e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.789e-05,
+     "exit_ts": 1795680435,
+     "reason": "plazo de 24 h",
+     "ret": 0.15249406782910224
+    },
+    {
+     "pair": "2LP5juf2sdNL6gu3aLdmKxBXreSEtJ1M8oBjqH26prDS",
+     "mint": "8LTaksKmkog4Et1nB92c6y853W9f6ZVB9GU9T2h5VptM",
+     "name": "Treasury / SOL",
+     "source": "cazador",
+     "entry": 2.35561e-06,
+     "qty": 4245184.899028278,
+     "cost_usd": 10.0,
+     "got_usd": 8.44155017171773,
+     "ts": 1795594724,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.05e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.05e-06,
+     "exit_ts": 1795681160,
+     "reason": "plazo de 24 h",
+     "ret": -0.15584498282822712
+    },
+    {
+     "pair": "6YfTgxdhX63WJJVrtS42dNyhqGq1Y6M29fQ8NEkXB5y9",
+     "mint": "56Bfq3FS5i1Zr5xp3v5oy3nUmhXE9iGRz9MvUgqXpump",
+     "name": "MINT / SOL",
+     "source": "cazador",
+     "entry": 2.03219e-06,
+     "qty": 4920799.728371855,
+     "cost_usd": 10.0,
+     "got_usd": 9.469980661257067,
+     "ts": 1795597179,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.984e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.984e-06,
+     "exit_ts": 1795683620,
+     "reason": "plazo de 24 h",
+     "ret": -0.053001933874293305
+    },
+    {
+     "pair": "7TX8u1PAnFn2Su2GPzEfFxxFt6UkcEF4KApAPpeJzcjH",
+     "mint": "2T3NnE7MchHudXKWriMG88VhHJvGzcEkEDSUSmUvpump",
+     "name": "Gondola / SOL",
+     "source": "cazador",
+     "entry": 2.21347e-06,
+     "qty": 4517793.32902637,
+     "cost_usd": 10.0,
+     "got_usd": 8.299999548220667,
+     "ts": 1795597779,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.894e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.894e-06,
+     "exit_ts": 1795684220,
+     "reason": "plazo de 24 h",
+     "ret": -0.17000004517793332
+    },
+    {
+     "pair": "BnQCxKsgKFLaX5nmrMbgHvGxkhSrJSw17fkweETWaQjs",
+     "mint": "EFUVyGNadimUirDmRKc4kXJK9WyCSBi8jYMX7bfZpump",
+     "name": "JAPAN / SOL",
+     "source": "cazador",
+     "entry": 1.9982e-06,
+     "qty": 5004504.053648283,
+     "cost_usd": 10.0,
+     "got_usd": 9.15533980582524,
+     "ts": 1795598679,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.886e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.886e-06,
+     "exit_ts": 1795685120,
+     "reason": "plazo de 24 h",
+     "ret": -0.08446601941747589
+    },
+    {
+     "pair": "BeFh9aL1uPJDX3t3U9CSCAFvR2TspYWRBJbRzTSHDpwj",
+     "mint": "3eavQGNp1zHi8gES3yh4tDVtA8VUfYLdHWquzANKpump",
+     "name": "KIING / SOL",
+     "source": "cazador",
+     "entry": 1.9683300000000003e-06,
+     "qty": 5080448.908465551,
+     "cost_usd": 10.0,
+     "got_usd": 9.782150350804995,
+     "ts": 1795598679,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.985e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.985e-06,
+     "exit_ts": 1795685120,
+     "reason": "plazo de 24 h",
+     "ret": -0.021784964919500438
+    },
+    {
+     "pair": "767EyPWbpfyAtMh2wDnWfAbCSoADszZEmcFgH5ZjFUC6",
+     "mint": "p5c2XgckZuZU8oTZiv24qfXCKRYiJrkJyxrpn9Spump",
+     "name": "MCNUG / SOL",
+     "source": "cazador",
+     "entry": 1.957e-06,
+     "qty": 5109862.033725089,
+     "cost_usd": 10.0,
+     "got_usd": 9.515473709004693,
+     "ts": 1795597119,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9197713452084725e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9197713452084725e-06,
+     "exit_ts": 1795685704,
+     "reason": "plazo de 24 h",
+     "ret": -0.04845262909953063
+    },
+    {
+     "pair": "BMnncJYNWoSqhHt5U8x5G9WNu3q5XvgzHb6XG8tfG2HZ",
+     "mint": "EgmDMhf57Lfv7K4t5HcNKPS4fBrqR65gMrdqpxKDpump",
+     "name": "KEK / SOL",
+     "source": "cazador",
+     "entry": 1.94773e-06,
+     "qty": 5134181.842452496,
+     "cost_usd": 10.0,
+     "got_usd": 9.412461006583893,
+     "ts": 1795598679,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.8899930594179015e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.8899930594179015e-06,
+     "exit_ts": 1795685704,
+     "reason": "plazo de 24 h",
+     "ret": -0.05875389934161068
+    },
+    {
+     "pair": "D4tXFLhcEcXNJzRnpsTJ5EpDMf6ivBdwkCJU6cmS3K4W",
+     "mint": "4a5sXHwetvKNDefZaNjwYqLXdGoyxsu8X1MuW6hGkb2y",
+     "name": "犬 / SOL",
+     "source": "cazador",
+     "entry": 3.15592e-06,
+     "qty": 3168648.127962686,
+     "cost_usd": 10.0,
+     "got_usd": 6.186292903510469,
+     "ts": 1795600059,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.012726340211006e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.012726340211006e-06,
+     "exit_ts": 1795686484,
+     "reason": "plazo de 24 h",
+     "ret": -0.38137070964895314
+    },
+    {
+     "pair": "D4S6muurmePC5oMYDqLbPQhdMiiefKoCMMbWBghUhr3y",
+     "mint": "8wgtH4Do1zyceX3jxfKpWxJ4XBeQcZTYTw9FZkLtpump",
+     "name": "Slotbound / SOL",
+     "source": "cazador",
+     "entry": 2.13519e-06,
+     "qty": 4683423.957586912,
+     "cost_usd": 10.0,
+     "got_usd": 9.068814399687135,
+     "ts": 1795602039,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9962517338214407e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9962517338214407e-06,
+     "exit_ts": 1795688464,
+     "reason": "plazo de 24 h",
+     "ret": -0.09311856003128649
+    },
+    {
+     "pair": "EeuCRtBcDMf2LRQALqdghLaXhL6ndLnzwepn8JRYvMag",
+     "mint": "ApQrG96nKGS6qEnyy6m6cZu5gfbrhB7bTpnx2MQxpump",
+     "name": "TOLY / SOL",
+     "source": "cazador",
+     "entry": 2.00541e-06,
+     "qty": 4986511.486429209,
+     "cost_usd": 10.0,
+     "got_usd": 9.581930876977776,
+     "ts": 1795603179,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.981e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.981e-06,
+     "exit_ts": 1795689604,
+     "reason": "plazo de 24 h",
+     "ret": -0.04180691230222244
+    },
+    {
+     "pair": "6AAvT3K8EAnCfE8dVu745RnNSHRSBtuZmvZSYkEHAu45",
+     "mint": "2dNDzaBiq26kFiiqJ3frBwnKRgJHBwdZCHfNXP5xpump",
+     "name": "NAFO / SOL",
+     "source": "cazador",
+     "entry": 1.94876e-06,
+     "qty": 5131468.215685872,
+     "cost_usd": 10.0,
+     "got_usd": 9.412498203986123,
+     "ts": 1795603179,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.891e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.891e-06,
+     "exit_ts": 1795689604,
+     "reason": "plazo de 24 h",
+     "ret": -0.05875017960138762
+    },
+    {
+     "pair": "Grxhipe8qwqKUctFn3R8sQ5C7uD7c3tMy6HX2cT1BFam",
+     "mint": "BoTbRJ3SpyNVfLXq7CZxPUQsbk362Zdkdo3Ck4c3FDPi",
+     "name": "BoT / SOL",
+     "source": "cazador",
+     "entry": 2.0157100000000003e-06,
+     "qty": 4961031.10070397,
+     "cost_usd": 10.0,
+     "got_usd": 9.532968532179728,
+     "ts": 1795607742,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.981e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.981e-06,
+     "exit_ts": 1795694164,
+     "reason": "plazo de 24 h",
+     "ret": -0.04670314678202714
+    },
+    {
+     "pair": "EaWZ5hJUM4yenraTLay4RKxfcuaJW9a3b4aiBJB64miU",
+     "mint": "AizjwqKyKNLbDK6wJTeG6mUvywYqABcFjfPeLuZepump",
+     "name": "DISGUISE / SOL",
+     "source": "cazador",
+     "entry": 1.96112e-06,
+     "qty": 5099127.029452558,
+     "cost_usd": 10.0,
+     "got_usd": 9.323762679749667,
+     "ts": 1795610442,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.8850533470629553e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.8850533470629553e-06,
+     "exit_ts": 1795696864,
+     "reason": "plazo de 24 h",
+     "ret": -0.06762373202503336
+    },
+    {
+     "pair": "5j1QkjLxks5ze45w7RKF3hNSoamcKsWQTG1cbebYuKiq",
+     "mint": "6PYawrTydeNEtio2YYmw5jwE4LXGJGr3mPdLc4txmzLs",
+     "name": "Froovik / SOL",
+     "source": "cazador",
+     "entry": 1.97451e-06,
+     "qty": 5064547.659925753,
+     "cost_usd": 10.0,
+     "got_usd": 9.75922081170587,
+     "ts": 1795610442,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.986564854115604e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.986564854115604e-06,
+     "exit_ts": 1795696864,
+     "reason": "plazo de 24 h",
+     "ret": -0.024077918829413014
+    },
+    {
+     "pair": "2wW9bbcuuCE7dps9Y7esULqnMPJatYRBTFEk5RYGhqfx",
+     "mint": "9oTRxqmSRAu2CkixoMX3bkAiCbTcZ8enqwWBLhxwpump",
+     "name": "dolly / USDC",
+     "source": "cazador",
+     "entry": 4.1199999999999995e-06,
+     "qty": 2427184.4660194176,
+     "cost_usd": 10.0,
+     "got_usd": 9.413924306353016,
+     "ts": 1795610442,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.9984915610489095e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.9984915610489095e-06,
+     "exit_ts": 1795696864,
+     "reason": "plazo de 24 h",
+     "ret": -0.058607569364698464
+    },
+    {
+     "pair": "GGjQZsyvjzQhixRwJFnoVgqFdMWu2TEzsjhJPZj7guGP",
+     "mint": "8YBPTbxrgtA9465jaF7ow53uGbnq6Dz9ZEmBaTRikaaa",
+     "name": "BI / SOL",
+     "source": "cazador",
+     "entry": 4.1663349684281366e-05,
+     "qty": 240019.10733962836,
+     "cost_usd": 10.0,
+     "got_usd": 6.782003898899273,
+     "ts": 1795696924,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.913e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.913e-05,
+     "exit_ts": 1795697044,
+     "reason": "stop −30 %",
+     "ret": -0.32179961011007274
+    },
+    {
+     "pair": "5KAnwXxM23wung8VkYfR9eWkoHM2ohgALwkJnZAUHcFx",
+     "mint": "EhQuhywnDz4mUxyx1eTuS2LktbGsAKTUdThnJ6uHpump",
+     "name": "NVIDIA / SOL",
+     "source": "cazador",
+     "entry": 5.934751205190197e-06,
+     "qty": 1684990.6009968147,
+     "cost_usd": 10.0,
+     "got_usd": 3.299018918541043,
+     "ts": 1795688584,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.018438814717187e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.018438814717187e-06,
+     "exit_ts": 1795697344,
+     "reason": "stop −30 %",
+     "ret": -0.6700981081458957
+    },
+    {
+     "pair": "AfEoc5ytUgzUxrpcbXvuB1h5Vhz6ENVVPn1THhmbfpvq",
+     "mint": "npc7uJJeG71WhnXPTpeAFbAZcD11nyVsahpp54PVGdN",
+     "name": "N0TNPC / SOL",
+     "source": "cazador",
+     "entry": 1.94876e-06,
+     "qty": 5131468.215685872,
+     "cost_usd": 10.0,
+     "got_usd": 9.459511558636402,
+     "ts": 1795611762,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9004451283513684e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9004451283513684e-06,
+     "exit_ts": 1795698184,
+     "reason": "plazo de 24 h",
+     "ret": -0.0540488441363598
+    },
+    {
+     "pair": "3tgqkWLhoAnvxF3EutuPmepCj9LumdCu5bkWRd5h96oW",
+     "mint": "TEKKuFbgcnd2BYnspacUd3gvcQsGVjppfcNis9Uqikw",
+     "name": "420tekk / SOL",
+     "source": "cazador",
+     "entry": 2.05073e-06,
+     "qty": 4876312.337557845,
+     "cost_usd": 10.0,
+     "got_usd": 9.76276740477781,
+     "ts": 1795612782,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.064e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.064e-06,
+     "exit_ts": 1795699204,
+     "reason": "plazo de 24 h",
+     "ret": -0.023723259522218987
+    },
+    {
+     "pair": "83ZzibQXfrFUnMQPnxT4cnDpvXPWLsppLe24JdW5aUMf",
+     "mint": "DmEuQrDPVyM22EXYnUj5UXUwuYph12FxdbhdsKZzpump",
+     "name": "JENSEN / SOL",
+     "source": "cazador",
+     "entry": 1.95391e-06,
+     "qty": 5117942.996350907,
+     "cost_usd": 10.0,
+     "got_usd": 9.28343680108091,
+     "ts": 1795613922,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.87e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.87e-06,
+     "exit_ts": 1795700344,
+     "reason": "plazo de 24 h",
+     "ret": -0.07165631989190901
+    },
+    {
+     "pair": "DA7aSKj8Qcq81YjNJ5QFNn2dfXu2mm8wf9pKptFG3Tvj",
+     "mint": "wiki8fnxzzYRLN7qy8sGJYoDpdmhUZi87w7KDwXTQFh",
+     "name": "MEMEOPEDIA / SOL",
+     "source": "cazador",
+     "entry": 1.9364000000000002e-06,
+     "qty": 5164222.26812642,
+     "cost_usd": 10.0,
+     "got_usd": 9.541429235063726,
+     "ts": 1795614642,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9047446980182886e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9047446980182886e-06,
+     "exit_ts": 1795701064,
+     "reason": "plazo de 24 h",
+     "ret": -0.04585707649362747
+    },
+    {
+     "pair": "DrdqQF6PFTGmJiNDUYSsXmm15c9PbAYXqtojw4QmuTnf",
+     "mint": "2MEvsjQdeeQqnwxksKGYAyLKXHjH8yWSUkvW5oG6pump",
+     "name": "Egg / SOL",
+     "source": "cazador",
+     "entry": 2.02807e-06,
+     "qty": 4930796.274290334,
+     "cost_usd": 10.0,
+     "got_usd": 9.456227761273848,
+     "ts": 1795630233,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.977102251114088e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.977102251114088e-06,
+     "exit_ts": 1795716683,
+     "reason": "plazo de 24 h",
+     "ret": -0.05437722387261523
+    },
+    {
+     "pair": "5fYTdNJ4a3nvJVHgXjyYcuAG7zmTPfTji3q2xjNQZCEC",
+     "mint": "7aSQNpFXXTwzMuZctgeiGnhnghy3hq1R3hUSQoRBpump",
+     "name": "SI / SOL",
+     "source": "cazador",
+     "entry": 2.0218900000000002e-06,
+     "qty": 4945867.480426729,
+     "cost_usd": 10.0,
+     "got_usd": 9.513425557275617,
+     "ts": 1795630713,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.983e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.983e-06,
+     "exit_ts": 1795717163,
+     "reason": "plazo de 24 h",
+     "ret": -0.04865744427243823
+    },
+    {
+     "pair": "6rzMHtnxAYhFMBHHrhEkyD5XDncbk2r9GWJQohD6idqx",
+     "mint": "5WawLKvNxAyh6XfTLQQHeQam4ePYkrQZnvYrM63U1dPN",
+     "name": "George / SOL",
+     "source": "cazador",
+     "entry": 5.126806563007673e-05,
+     "qty": 195053.19494897107,
+     "cost_usd": 10.0,
+     "got_usd": 2.9881245582674723,
+     "ts": 1795717403,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.5793336697329983e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.5793336697329983e-05,
+     "exit_ts": 1795717463,
+     "reason": "stop −30 %",
+     "ret": -0.7011875441732528
+    },
+    {
+     "pair": "AX7ufD6TNfm8Vhvea5zgrQraS368DNAc8Uh466TvtmUL",
+     "mint": "5bU6pyA6Ry4UGHfMhyEKqhcibnedCVcWnaGuUQG1pump",
+     "name": "FI / SOL",
+     "source": "cazador",
+     "entry": 2.01159e-06,
+     "qty": 4971191.942692099,
+     "cost_usd": 10.0,
+     "got_usd": 9.43372616633119,
+     "ts": 1795632453,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.95637002257012e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.95637002257012e-06,
+     "exit_ts": 1795718903,
+     "reason": "plazo de 24 h",
+     "ret": -0.05662738336688089
+    },
+    {
+     "pair": "5QHWZwrtxQhZTdZMSBLP6XSpjQZeMvmWZPWuEg6WuKMV",
+     "mint": "85KsckasWCL9kyMiLivSg3YoWpCT12sbj1Najf43pump",
+     "name": "GOMA / SOL",
+     "source": "cazador",
+     "entry": 2.0599999999999998e-06,
+     "qty": 4854368.932038835,
+     "cost_usd": 10.0,
+     "got_usd": 9.355017772026956,
+     "ts": 1795680615,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.986735733028405e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.986735733028405e-06,
+     "exit_ts": 1795769549,
+     "reason": "plazo de 24 h",
+     "ret": -0.06449822279730433
+    },
+    {
+     "pair": "8hiqSaiNzZGKc4TdGtszmp65XLXbwx7KHBg5fD5YuQpT",
+     "mint": "8nts2yy5dDYUHfKSUnF9K1uxKctDVyyjyi2dH4pJpump",
+     "name": "BLACKBULL / SOL",
+     "source": "cazador",
+     "entry": 2.04146e-06,
+     "qty": 4898455.027284394,
+     "cost_usd": 10.0,
+     "got_usd": 9.42521885492564,
+     "ts": 1795680615,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9836296168635567e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9836296168635567e-06,
+     "exit_ts": 1795769549,
+     "reason": "plazo de 24 h",
+     "ret": -0.057478114507435896
+    },
+    {
+     "pair": "6LzALdDTMq9pcENdKVZrJhsE7uTnFSj2fk25vdiydHDj",
+     "mint": "EpC9RKzBJuiMhVDTvWPZBWkCACdfrDRRGgw8nEt5pump",
+     "name": "TI / SOL",
+     "source": "cazador",
+     "entry": 2.0394000000000003e-06,
+     "qty": 4903402.961655388,
+     "cost_usd": 10.0,
+     "got_usd": 9.424653247728742,
+     "ts": 1795680615,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9815090549915465e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9815090549915465e-06,
+     "exit_ts": 1795769549,
+     "reason": "plazo de 24 h",
+     "ret": -0.05753467522712585
+    },
+    {
+     "pair": "ASqBQh3yKKrasHm7SBFZG291VbLXC138RGG2JDDvk7tu",
+     "mint": "CTPK5dmQdHvfHGVH7BJBBd29UH9vXViurAYmvQ13pump",
+     "name": "NLTP / SOL",
+     "source": "cazador",
+     "entry": 2.04352e-06,
+     "qty": 4893517.068587535,
+     "cost_usd": 10.0,
+     "got_usd": 9.414036134821481,
+     "ts": 1795681820,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9832753734258137e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9832753734258137e-06,
+     "exit_ts": 1795769549,
+     "reason": "plazo de 24 h",
+     "ret": -0.05859638651785182
+    },
+    {
+     "pair": "9kaGhDizKRiGMX4aiB35G4nvZNvJh4K4tbobDvhsDsXi",
+     "mint": "B9DUYgrprvF54aQwq8kJwcpnHQiCVbPshutpLcZe6Hhi",
+     "name": "ty / SOL",
+     "source": "cazador",
+     "entry": 2.04455e-06,
+     "qty": 4891051.82069404,
+     "cost_usd": 10.0,
+     "got_usd": 9.426678270148425,
+     "ts": 1795683740,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.986939696621852e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.986939696621852e-06,
+     "exit_ts": 1795770435,
+     "reason": "plazo de 24 h",
+     "ret": -0.05733217298515747
+    },
+    {
+     "pair": "4zkGsmbT3ACAAXSiNVQVhxUu6D3fCD69HDGJdwmhywzt",
+     "mint": "9WiGwq39uvPqAsLjwKBbyz3FLNCw7acaQqpU658HdfDg",
+     "name": "NN / SOL",
+     "source": "cazador",
+     "entry": 2.07442e-06,
+     "qty": 4820624.560118008,
+     "cost_usd": 10.0,
+     "got_usd": 9.28187155927922,
+     "ts": 1795684460,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.985e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.985e-06,
+     "exit_ts": 1795770990,
+     "reason": "plazo de 24 h",
+     "ret": -0.07181284407207811
+    },
+    {
+     "pair": "4DEk1som9iVcAXDKNYkSj5BrBxnWevF7wkXU3WaKV3tj",
+     "mint": "GR89Gpc1WY7yR2TGY6Rc1DW9Ft859F4jMZKaSwPfPi7t",
+     "name": "Trencher / NVDAx",
+     "source": "cazador",
+     "entry": 3.1563102716382544e-06,
+     "qty": 3168256.3307724465,
+     "cost_usd": 10.0,
+     "got_usd": 9.450116570611515,
+     "ts": 1795685644,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.075e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.075e-06,
+     "exit_ts": 1795772125,
+     "reason": "plazo de 24 h",
+     "ret": -0.05498834293884847
+    },
+    {
+     "pair": "ApEnoV5XPBx6WNy9gDVLCM9mfBy2TwcHHSCDV8mYRBS1",
+     "mint": "CLshmcHAVkA9kYUkNRWptmmxWogudcTonZyXZK5Zpump",
+     "name": "Grok AI / SOL",
+     "source": "cazador",
+     "entry": 2.044952882014092e-06,
+     "qty": 4890088.220590644,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795685644,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.985391147586497e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.985391147586497e-06,
+     "exit_ts": 1795772185,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "HS7jeYjTod8Li69bquuSSdcC15zd9WagBDXU25iS3ZbP",
+     "mint": "C51y13wz1arKaT6DfVaRVjwAGDuqLRGTWkvuPMNr1z1F",
+     "name": "GRAVYFROG / SOL",
+     "source": "cazador",
+     "entry": 2.041846472628191e-06,
+     "qty": 4897527.867082171,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795685764,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9823752161438746e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9823752161438746e-06,
+     "exit_ts": 1795772185,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "CdjaSWiUYQf1f3T8vzmdnruGC2bK9hdcJQFaMzL1S1XB",
+     "mint": "7oUmEawS3ETZMSwkSd4goVbJzzzywC9XoBLNRyxmpump",
+     "name": "Yee / SOL",
+     "source": "cazador",
+     "entry": 2.044571085860533e-06,
+     "qty": 4891001.378800743,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795685764,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9850204717092553e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9850204717092553e-06,
+     "exit_ts": 1795772185,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "GowSaphPvE2iaXe2RuTYGG4tyoCoAR7afv9TbgXujGYi",
+     "mint": "C8H71bQTm3bFjR1KXKpw5tu9Echu3WkrwAheJUSxpump",
+     "name": "DuckTrump / SOL",
+     "source": "cazador",
+     "entry": 2.0527592521442443e-06,
+     "qty": 4871491.866157384,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795686544,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9929701477128583e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9929701477128583e-06,
+     "exit_ts": 1795772965,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "TJdwnqZBCuyYQaNdiJdZe62aLxjgeqXodNYZ1YRxZHn",
+     "mint": "8G88UysvMSjQk75HGgLRzHoRiYwWUBEo6gb5QJ5hpump",
+     "name": "Pompom / SOL",
+     "source": "cazador",
+     "entry": 0.0001347627368870438,
+     "qty": 74204.48880005944,
+     "cost_usd": 10.0,
+     "got_usd": 2.1730265113675804,
+     "ts": 1795773325,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.019e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.019e-05,
+     "exit_ts": 1795773325,
+     "reason": "stop −30 %",
+     "ret": -0.7826973488632419
+    },
+    {
+     "pair": "5oo3yH5ivAZdm2ttV9B8uwWZFu71GUm2ayraQ6tkqG2b",
+     "mint": "E4xcN9yf4hWGTUwGxNUY2gTxsnYCVnhbQhG1qmWFiFma",
+     "name": "JALEEL / SOL",
+     "source": "cazador",
+     "entry": 2.079342241418571e-06,
+     "qty": 4809213.125578496,
+     "cost_usd": 10.0,
+     "got_usd": 9.22512410048673,
+     "ts": 1795689724,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9775453839660365e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9775453839660365e-06,
+     "exit_ts": 1795776145,
+     "reason": "plazo de 24 h",
+     "ret": -0.0774875899513271
+    },
+    {
+     "pair": "97w2VmLBxrzU7fb5WmFWwScdSgJbczHNtiDPWPncs1U9",
+     "mint": "Bcme87VrD8py8ZPcu8EHBa3GKxMZ6gUnU1gkM9pipump",
+     "name": "RSA / SOL",
+     "source": "cazador",
+     "entry": 2.0911810260604934e-06,
+     "qty": 4781986.769858307,
+     "cost_usd": 10.0,
+     "got_usd": 9.387808609635496,
+     "ts": 1795689724,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.023877035129597e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.023877035129597e-06,
+     "exit_ts": 1795776145,
+     "reason": "plazo de 24 h",
+     "ret": -0.06121913903645049
+    },
+    {
+     "pair": "9Ckwrq6C2FfUz21D6dMEuGdZGTYHdcdZLoQAjDLM9oLZ",
+     "mint": "EGtGw3SPwrMX9pxxFVDRro7V4QSA6Jb5Y3Dq1G7Gpump",
+     "name": "Yuru-kyara / SOL",
+     "source": "cazador",
+     "entry": 2.03734e-06,
+     "qty": 4908360.9019604,
+     "cost_usd": 10.0,
+     "got_usd": 9.692585939267046,
+     "ts": 1795694224,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0357827873717856e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0357827873717856e-06,
+     "exit_ts": 1795780645,
+     "reason": "plazo de 24 h",
+     "ret": -0.030741406073295452
+    },
+    {
+     "pair": "56xiYUGebsn2DiGehLyaENXxmrBZ5ucUX4VbqrTmFfp3",
+     "mint": "59s3HxJrELCQANbcSRodAZjNCcwE612mH85b8Fpppump",
+     "name": "Pinky / SOL",
+     "source": "cazador",
+     "entry": 2.073234977759702e-06,
+     "qty": 4823379.938730248,
+     "cost_usd": 10.0,
+     "got_usd": 9.367913958276164,
+     "ts": 1795696924,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0022563800970603e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0022563800970603e-06,
+     "exit_ts": 1795783345,
+     "reason": "plazo de 24 h",
+     "ret": -0.06320860417238361
+    },
+    {
+     "pair": "4uEhTeoajN8R4kYe3na6qxD4udzdwggRGg2dHo2JBZqv",
+     "mint": "8tCp6agNUuNJidDmSTVyWcxojCigvgepSh7YR3KFpump",
+     "name": "BNC / SOL",
+     "source": "cazador",
+     "entry": 2.049802096006074e-06,
+     "qty": 4878519.745630296,
+     "cost_usd": 10.0,
+     "got_usd": 9.49379277903867,
+     "ts": 1795696924,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0062264265485355e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0062264265485355e-06,
+     "exit_ts": 1795783345,
+     "reason": "plazo de 24 h",
+     "ret": -0.05062072209613311
+    },
+    {
+     "pair": "22g2ssa2EoVTwYo76HC7Z3ZGzzVciJ63V1d8hJJKr5Xv",
+     "mint": "8xu3geiFUcphaGVxZ6hsNHyppmoWRsrFDcN5ixChhsRn",
+     "name": "[invalid] / SOL",
+     "source": "cazador",
+     "entry": 2.0620869814170145e-06,
+     "qty": 4849455.958995605,
+     "cost_usd": 10.0,
+     "got_usd": 9.37690287417601,
+     "ts": 1795697104,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.993400963180426e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.993400963180426e-06,
+     "exit_ts": 1795783525,
+     "reason": "plazo de 24 h",
+     "ret": -0.062309712582399035
+    },
+    {
+     "pair": "4GPGnvaEojK6P3xxr22uaNJbEFb3jkmjuSLguBYgvAmv",
+     "mint": "BNdEjkXn6u9ap7P5fDKwmnqiinvuF3n1aKzRo5Btpump",
+     "name": "SpaceXCoin / SPCX",
+     "source": "cazador",
+     "entry": 3.349375845209907e-06,
+     "qty": 2985630.8942758543,
+     "cost_usd": 10.0,
+     "got_usd": 8.895897414396561,
+     "ts": 1795697404,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.071722053736609e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.071722053736609e-06,
+     "exit_ts": 1795783825,
+     "reason": "plazo de 24 h",
+     "ret": -0.11041025856034392
+    },
+    {
+     "pair": "D9w5rjx3ayGtVe6u63WHbJBP7bW1k6EZUGXTs3y9XSPQ",
+     "mint": "2BsNMM7JchwWpv7P8xWt7YdMY7sqrA4sg8NunePYcxYK",
+     "name": "zBREASTS / SOL",
+     "source": "cazador",
+     "entry": 2.212852134537195e-06,
+     "qty": 4519054.772763406,
+     "cost_usd": 10.0,
+     "got_usd": 8.762793259000803,
+     "ts": 1795698244,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.99904801728743e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.99904801728743e-06,
+     "exit_ts": 1795784665,
+     "reason": "plazo de 24 h",
+     "ret": -0.12372067409991971
+    },
+    {
+     "pair": "AKdCoPeFfpU5o3jMFYxy8Vufk3BYRYNBiXHkKEdoTHX9",
+     "mint": "XcLKzV41ctSfVCwsCLoHcqcAkgvMcMUwe2ph6imDd9A",
+     "name": "HIPPO / SOL",
+     "source": "cazador",
+     "entry": 2.107841947936644e-06,
+     "qty": 4744188.723347569,
+     "cost_usd": 10.0,
+     "got_usd": 9.338493956830055,
+     "ts": 1795699264,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.029285494098891e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.029285494098891e-06,
+     "exit_ts": 1795785685,
+     "reason": "plazo de 24 h",
+     "ret": -0.06615060431699449
+    },
+    {
+     "pair": "DSyS3HTU6xK5yY1HwpbS1eob1muMAghEo8XNqxTirByt",
+     "mint": "5PQQrdyDginW2j17wtHpJMnGwLnHFr694gaQpM1Spump",
+     "name": "DESKS / SOL",
+     "source": "cazador",
+     "entry": 4.047732649927984e-06,
+     "qty": 2470518.8965921244,
+     "cost_usd": 10.0,
+     "got_usd": 5.0762121847141435,
+     "ts": 1795785565,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.1182628657762582e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.1182628657762582e-06,
+     "exit_ts": 1795785685,
+     "reason": "stop −30 %",
+     "ret": -0.4923787815285856
+    },
+    {
+     "pair": "8fjk4XwTxHrjnS6mA6wu7MmqGgUQsezX7kPyW1XekKP5",
+     "mint": "DtsE84CqApZDcocQyT3kdRhMJUiSFZWHtZutkSG2pump",
+     "name": "😩 / SOL",
+     "source": "cazador",
+     "entry": 2.0961110827124143e-06,
+     "qty": 4770739.529252322,
+     "cost_usd": 10.0,
+     "got_usd": 9.24828906513176,
+     "ts": 1795700404,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.998499093355744e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.998499093355744e-06,
+     "exit_ts": 1795786825,
+     "reason": "plazo de 24 h",
+     "ret": -0.07517109348682405
+    },
+    {
+     "pair": "2DwjCeKEuUV7q4dKHDXQzDk1VXcpdrh8zMVANVfhp943",
+     "mint": "7yxNVpfD1JMohv7dsEdNueGia9KKcGSH65NzhHFQpump",
+     "name": "ROLO / SOL",
+     "source": "cazador",
+     "entry": 2.063782632649321e-06,
+     "qty": 4845471.534549542,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795701124,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.003672458882836e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.003672458882836e-06,
+     "exit_ts": 1795788157,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "9LR6gatp87nBvJ6Vu2FVHRd8644NvFwrbVD7eLP7ZFYC",
+     "mint": "F5LxbqJxAMrvfxLbqPckErmqNyiPzDJMUXnX8vrhpump",
+     "name": "KITT / SOL",
+     "source": "cazador",
+     "entry": 4.664252793582371e-06,
+     "qty": 1071983.0637995414,
+     "cost_usd": 10.0,
+     "got_usd": 30.07784229340995,
+     "ts": 1795785565,
+     "half": true,
+     "peak": 6.453338044073239,
+     "last": 1.8599101293948025e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.8599101293948025e-05,
+     "exit_ts": 1795788397,
+     "reason": "stop dinámico (30 % desde el máximo 6.5x)",
+     "ret": 2.007784229340995
+    },
+    {
+     "pair": "EEFs9y82F5YKPjQheF6TnLqmbTs2wWPjVyE871xeALVD",
+     "mint": "4fuxgqzyK5CdQ64Gdv3jewDzQ2HFZUtMHfMxGps3pump",
+     "name": "Rockstar / SOL",
+     "source": "cazador",
+     "entry": 6.933567253025627e-06,
+     "qty": 1442259.0327707953,
+     "cost_usd": 10.0,
+     "got_usd": 6.647011113857711,
+     "ts": 1795788817,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.751288514385692e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.751288514385692e-06,
+     "exit_ts": 1795789117,
+     "reason": "stop −30 %",
+     "ret": -0.33529888861422896
+    },
+    {
+     "pair": "iUVULEA8LUE14BLtZM28XLo71YTiQ3wfXGDKUXKpqeE",
+     "mint": "Ft8ZLD5phU7esconjCzPsBTjH2SLtU3htpxdZJfXpump",
+     "name": "Kimchi / SOL",
+     "source": "cazador",
+     "entry": 4.4813117131085e-06,
+     "qty": 2231489.492406547,
+     "cost_usd": 10.0,
+     "got_usd": 6.359432644829722,
+     "ts": 1795785505,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.938e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.938e-06,
+     "exit_ts": 1795797335,
+     "reason": "stop −30 %",
+     "ret": -0.3640567355170278
+    },
+    {
+     "pair": "B2XvcaksqBUmVvmD6Ug4ejaZ9RfKiqRXjJwKNUcmMEdw",
+     "mint": "v1XoapJX4CCvUNEp6VUC2yrN8BkHEyNhs28yhVS2xko",
+     "name": "LeanSVM / SOL",
+     "source": "cazador",
+     "entry": 2.0466535859071425e-06,
+     "qty": 4886024.71315031,
+     "cost_usd": 10.0,
+     "got_usd": 9.443546592466692,
+     "ts": 1795716743,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.9925431440364053e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.9925431440364053e-06,
+     "exit_ts": 1795803155,
+     "reason": "plazo de 24 h",
+     "ret": -0.05564534075333083
+    },
+    {
+     "pair": "DR5StiurVJKE14bHmC5hw8TmrHs1tVq1uuc3E6tdSeTK",
+     "mint": "3roUMWESvEoN5VTc9oFLBG7wczroGmjUYBvoD1chpump",
+     "name": "George / SOL",
+     "source": "cazador",
+     "entry": 2.056284236115339e-06,
+     "qty": 4863140.914259817,
+     "cost_usd": 10.0,
+     "got_usd": 9.396341002225325,
+     "ts": 1795718003,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.991912152581458e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.991912152581458e-06,
+     "exit_ts": 1795804415,
+     "reason": "plazo de 24 h",
+     "ret": -0.060365899777467424
+    },
+    {
+     "pair": "AMvB6tv8ZgzZC7RGqDKarYRB7EKP6Kzqpt46ojQosyZV",
+     "mint": "GxMi9LEmos6rvpEnCZ6DJwSmJNQZgzPXkyFQ7B3PUTER",
+     "name": "MOREMEMOS / SOL",
+     "source": "cazador",
+     "entry": 2.1442767597927725e-06,
+     "qty": 4663577.103249686,
+     "cost_usd": 10.0,
+     "got_usd": 9.41747572815534,
+     "ts": 1795719023,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.081822096886187e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.081822096886187e-06,
+     "exit_ts": 1795805435,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184465994
+    }
+   ],
+   "copia": [
+    {
+     "pair": "Doqs5gx2ykxKs5J6kGzqDzU1fRiUW8uC5LLZK6Vxjo9G",
+     "mint": "Dr2aWKnyyrsmoXQtAZ8AhAVdKGJfnR7Xg4uMrHgrNRSt",
+     "name": "MDOG",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.68225e-05,
+     "qty": 135786.54355353385,
+     "cost_usd": 10.0,
+     "got_usd": 11.705425838142439,
+     "ts": 1795623453,
+     "half": true,
+     "peak": 2.4134700251205103,
+     "last": 7.305e-10,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 7.305e-10,
+     "exit_ts": 1795624233,
+     "reason": "stop dinámico (40 % desde el máximo 2.4x)",
+     "ret": 0.1705425838142438
+    },
+    {
+     "pair": "H2NbniRPxdVy8qqMVgEgPsgsy9Uif8QeLJ5dqn9moETf",
+     "mint": "DE7giM5L26LvLfoEpwTqyZ1tajSb8aW4ze7BLXynpump",
+     "name": "BRAINSTACKING",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.13004e-05,
+     "qty": 469474.7516478564,
+     "cost_usd": 10.0,
+     "got_usd": 4.786154250624401,
+     "ts": 1795623333,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.051e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.051e-05,
+     "exit_ts": 1795624473,
+     "reason": "stop −50 %",
+     "ret": -0.5213845749375599
+    },
+    {
+     "pair": "3rcu3FqjMRftTGKLzjg5kYALNngco79mktpmFJXBPVks",
+     "mint": "9etVZJEc9edvpKQ9jCE8iBnF9pWBFjS6RWTcEPtaSHsB",
+     "name": "IMONEY",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 6.88658e-05,
+     "qty": 145209.95907983353,
+     "cost_usd": 10.0,
+     "got_usd": 0.00012631756256371087,
+     "ts": 1795624533,
+     "half": false,
+     "peak": 1.0,
+     "last": 8.968e-10,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 8.968e-10,
+     "exit_ts": 1795624593,
+     "reason": "stop −50 %",
+     "ret": -0.9999873682437437
+    },
+    {
+     "pair": "FuVMR7aCnsdis5FiG3GuPAcXxqoCqvxpKKh6gVecuhog",
+     "mint": "8qsrXAckaVy5zuCTfhDhRBPEJJYDYPoYoQK8k65ivWoC",
+     "name": "BossJensen",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 5.63719e-05,
+     "qty": 177393.34668513923,
+     "cost_usd": 10.0,
+     "got_usd": 3.511980259668381,
+     "ts": 1795623333,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.041e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.041e-05,
+     "exit_ts": 1795624713,
+     "reason": "stop −50 %",
+     "ret": -0.6488019740331619
+    },
+    {
+     "pair": "EJH9hxTcTpFaWqQfMSi7K5trWC2R6HgPjWa53pkJhD2r",
+     "mint": "HEvYykUvycxowNwSAd2j5bApq6fun5tkUnPbvnQgWMLL",
+     "name": "WASTED",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.000280469,
+     "qty": 35654.56431905131,
+     "cost_usd": 10.0,
+     "got_usd": 3.7732155781922425,
+     "ts": 1795623693,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0001091,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0001091,
+     "exit_ts": 1795624833,
+     "reason": "stop −50 %",
+     "ret": -0.6226784421807757
+    },
+    {
+     "pair": "7hxBex2pcocUpnU2oJJhDy5EGqv5E88Rkh8JwoGUYpcS",
+     "mint": "7844ziWxQHUgb1aLpMUjPhFbFy5DxCmkmArp2fNgi7Ns",
+     "name": "MONEY",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 9.95907e-05,
+     "qty": 100410.98214993971,
+     "cost_usd": 10.0,
+     "got_usd": 0.0060406644395510824,
+     "ts": 1795624773,
+     "half": false,
+     "peak": 1.0,
+     "last": 6.202e-08,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.202e-08,
+     "exit_ts": 1795624833,
+     "reason": "stop −50 %",
+     "ret": -0.999395933556045
+    },
+    {
+     "pair": "2fV7P2hPZoxLRZVCJq6zYgCMZCRN9j3h4Fu3B7TzjzUq",
+     "mint": "EB58VT4MyTKFQcnrLe7FheZANC4dQciVXVPEUFuLHZHF",
+     "name": "4CHAN",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.05009e-06,
+     "qty": 1980162.7297731326,
+     "cost_usd": 10.0,
+     "got_usd": 0.05105374359664877,
+     "ts": 1795624893,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.658e-08,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.658e-08,
+     "exit_ts": 1795624953,
+     "reason": "stop −50 %",
+     "ret": -0.9948946256403352
+    },
+    {
+     "pair": "4m7xkmxWFqyEQyiJi44S5PUTvxc5vyyk2mLrLp1wtxzd",
+     "mint": "EYiXPL3LTuXEMb7KjhP6eTETPehJGhhU5H7ZYmWsSipo",
+     "name": "IPO",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.70993e-05,
+     "qty": 369013.2217437351,
+     "cost_usd": 10.0,
+     "got_usd": 4.810751569228725,
+     "ts": 1795624053,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.344e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.344e-05,
+     "exit_ts": 1795625013,
+     "reason": "stop −50 %",
+     "ret": -0.5189248430771275
+    },
+    {
+     "pair": "DagCL3uJVQvwAvrjSvLjH2DUhHyahCE9qbwjy3THrvyx",
+     "mint": "3mBXtVYz3qC4Y459W8Fh9BX1CDsMMTgAcosDgtELEnAw",
+     "name": "LONG",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 4.22609e-05,
+     "qty": 118312.67199704691,
+     "cost_usd": 10.0,
+     "got_usd": 15.551422304068296,
+     "ts": 1795624173,
+     "half": true,
+     "peak": 3.206273411119971,
+     "last": 8.681e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 8.681e-09,
+     "exit_ts": 1795625313,
+     "reason": "stop dinámico (40 % desde el máximo 3.2x)",
+     "ret": 0.5551422304068296
+    },
+    {
+     "pair": "Die3v1rfWk6GX4T9W84LcFZTWU28gPxkT1mp78Ec7a8t",
+     "mint": "5N1WuXR8cVYoXHP2vNyBsFrtXVu9omVu3Zst5v614X5Y",
+     "name": "ANSEM",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.97606e-06,
+     "qty": 836671.65322972,
+     "cost_usd": 10.0,
+     "got_usd": 10.072729632901947,
+     "ts": 1795624173,
+     "half": true,
+     "peak": 2.076619043316165,
+     "last": 1.389e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.389e-09,
+     "exit_ts": 1795625493,
+     "reason": "stop dinámico (40 % desde el máximo 2.1x)",
+     "ret": 0.007272963290194667
+    },
+    {
+     "pair": "FwaCXXc5n1AFFE26Ait1J6bdwez3hPHYeVQ2VvytarBR",
+     "mint": "dwFaiV9aNRjcdYAEFAnUqQitKZAxKBB9mu922iut1CH",
+     "name": "英伟达",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 1.50689e-05,
+     "qty": 663618.4459383233,
+     "cost_usd": 10.0,
+     "got_usd": 0.15185116365494494,
+     "ts": 1795624533,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.359e-07,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.359e-07,
+     "exit_ts": 1795625493,
+     "reason": "stop −50 %",
+     "ret": -0.9848148836345055
+    },
+    {
+     "pair": "EqTfFosQ7WeQhVGYJXASREXf1tjYrC6mxqWdTmq14sES",
+     "mint": "GfnLJBQm57f9xoC8x3z5SZiphtbCtYGzhABFPDBDPRQW",
+     "name": "英伟达",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 1.32561e-05,
+     "qty": 754369.6864085214,
+     "cost_usd": 10.0,
+     "got_usd": 0.0005392913451165879,
+     "ts": 1795624173,
+     "half": false,
+     "peak": 1.0,
+     "last": 7.37e-10,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 7.37e-10,
+     "exit_ts": 1795625553,
+     "reason": "stop −50 %",
+     "ret": -0.9999460708654884
+    },
+    {
+     "pair": "AB5bjb89JU9e3Nr3TPTKqhyh8MKAg6KMF99NAEM3A5mi",
+     "mint": "AjnSKkuiuJyoU2HLAP5oj1agugb3YviXaGSgTamk39Dn",
+     "name": "STARMIND",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 6.63011e-05,
+     "qty": 150827.06018452183,
+     "cost_usd": 10.0,
+     "got_usd": 1.1341350294339008,
+     "ts": 1795625493,
+     "half": false,
+     "peak": 1.0,
+     "last": 7.752e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 7.752e-06,
+     "exit_ts": 1795625553,
+     "reason": "stop −50 %",
+     "ret": -0.88658649705661
+    },
+    {
+     "pair": "7MN4v84jZKoynBM5CzP4UiscWgjyfCUssjKu54QH4dMf",
+     "mint": "5NB797ob12RFM8ACtkmUtPTeJER82g3eX3PwCCeeFxgE",
+     "name": "4CHAN",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.2257e-05,
+     "qty": 815860.3247124093,
+     "cost_usd": 10.0,
+     "got_usd": 7.681178102308885e-05,
+     "ts": 1795625733,
+     "half": false,
+     "peak": 1.0,
+     "last": 9.706e-11,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 9.706e-11,
+     "exit_ts": 1795625793,
+     "reason": "stop −50 %",
+     "ret": -0.9999923188218977
+    },
+    {
+     "pair": "FnQDf6tDRHnqh6YAQEbzfSWqbCz4y8vrvuoS13GrPEBA",
+     "mint": "3xn6JUwUBQLopybMVwEdaWeLskQuTTq7vEmTBNajpump",
+     "name": "SPACECENTER",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.0374700000000002e-05,
+     "qty": 329221.3585648582,
+     "cost_usd": 10.0,
+     "got_usd": 0.5502309487830331,
+     "ts": 1795625013,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.723e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.723e-06,
+     "exit_ts": 1795625913,
+     "reason": "stop −50 %",
+     "ret": -0.9449769051216967
+    },
+    {
+     "pair": "HQhnwzN2fQjXw7SrduPxHVJdBr71GXjAJuZRXZvwTmW5",
+     "mint": "BgEFUnTvQ5Q6uWKPoT5e1hUxKYmc8KjRbixZVA2Xu956",
+     "name": "QUINLAN",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.64414e-05,
+     "qty": 137206.58372071324,
+     "cost_usd": 10.0,
+     "got_usd": 14.727782137898103,
+     "ts": 1795625733,
+     "half": true,
+     "peak": 2.199970363377916,
+     "last": 3.049e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.049e-05,
+     "exit_ts": 1795625913,
+     "reason": "stop dinámico (40 % desde el máximo 2.2x)",
+     "ret": 0.4727782137898102
+    },
+    {
+     "pair": "4nZQWc8fp46MEpsSAfnLYFm3qFULhsChrPtZqVC7BeZ3",
+     "mint": "EER2rAJ3AEe4SkCWh7AuDuGQBAhCYpgRBcHPvdBdpump",
+     "name": "BARRON",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.86456e-05,
+     "qty": 258761.6701513238,
+     "cost_usd": 10.0,
+     "got_usd": 0.3270514625209597,
+     "ts": 1795625733,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.303e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.303e-06,
+     "exit_ts": 1795626153,
+     "reason": "stop −50 %",
+     "ret": -0.967294853747904
+    },
+    {
+     "pair": "J4FfYHJWBmodsbMT6FD8eQHkbeCXvgHonhsFCtFeDvys",
+     "mint": "9riZsGiEhmg5cGGh8fyfcf4tq1xxsxax2EPzPy49bk65",
+     "name": "蚁巢",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 1.4368500000000001e-05,
+     "qty": 347983.43598844693,
+     "cost_usd": 10.0,
+     "got_usd": 9.904079061836656,
+     "ts": 1795623933,
+     "half": true,
+     "peak": 2.025959564324738,
+     "last": 2.316e-07,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.316e-07,
+     "exit_ts": 1795626873,
+     "reason": "stop dinámico (40 % desde el máximo 2.0x)",
+     "ret": -0.009592093816334413
+    },
+    {
+     "pair": "FpE2ZZfK3SECB4pLFi9xmxh6HbUfKu8KKACv8yjF7S8D",
+     "mint": "6R91CFCxVUSnZJ1zRRDVCDxhhf1jS45A8QSm4wtcvnF4",
+     "name": "Dog",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 7.83315e-06,
+     "qty": 1276625.6231528823,
+     "cost_usd": 10.0,
+     "got_usd": 1.3039581777445854e-05,
+     "ts": 1795626213,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.053e-11,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.053e-11,
+     "exit_ts": 1795626933,
+     "reason": "stop −50 %",
+     "ret": -0.9999986960418222
+    },
+    {
+     "pair": "A3HpC6QBJd1qUtsteHnjd4imcNLrHQzJUiofdsKUcznY",
+     "mint": "7JgFyVuq6Pp7n68D3AYwuf5AmXqHxVfCoXAY37yXpump",
+     "name": "PMKS",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.33514e-05,
+     "qty": 299837.48808145983,
+     "cost_usd": 10.0,
+     "got_usd": 0.454586614055182,
+     "ts": 1795626933,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.563e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.563e-06,
+     "exit_ts": 1795627233,
+     "reason": "stop −50 %",
+     "ret": -0.9545413385944818
+    },
+    {
+     "pair": "5AUDaFe7QDgmhyDz6YQfGgYt5MGez3Zb7Mj5tJ8VBrQp",
+     "mint": "4MR7m63dd5US8oq4JXzM59r9sJ9nwJmifkDFonGWy4Wx",
+     "name": "CI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.06348e-05,
+     "qty": 197492.63352476954,
+     "cost_usd": 10.0,
+     "got_usd": 0.012810142431687299,
+     "ts": 1795627293,
+     "half": false,
+     "peak": 1.0,
+     "last": 6.687e-08,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.687e-08,
+     "exit_ts": 1795627293,
+     "reason": "stop −50 %",
+     "ret": -0.9987189857568313
+    },
+    {
+     "pair": "8xJPvnERCAkJvFuxrssuq41ZuJD67XXcWsLm2Ate2TjQ",
+     "mint": "ExfuB4PNN2wuSvq5ySxLnKux279PaVnKtfwsnEzkRgU",
+     "name": "GORP",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.54706e-05,
+     "qty": 323193.67057515547,
+     "cost_usd": 10.0,
+     "got_usd": 10.329597753157602,
+     "ts": 1795624053,
+     "half": true,
+     "peak": 3.3508719765232113,
+     "last": 1.295e-07,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.295e-07,
+     "exit_ts": 1795628013,
+     "reason": "stop dinámico (40 % desde el máximo 3.4x)",
+     "ret": 0.03295977531576022
+    },
+    {
+     "pair": "2a5ZFaw9ZkzS8jfzYkBoSzkTSfrsArUAyWqAHk23T8XB",
+     "mint": "BvocVg1sxM3Udg6cDeXgDiBzUDJWCFibBqJeiQuypump",
+     "name": "OI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.62238e-05,
+     "qty": 190666.49379571227,
+     "cost_usd": 10.0,
+     "got_usd": 16.430646969546743,
+     "ts": 1795627533,
+     "half": true,
+     "peak": 3.3153089941198455,
+     "last": 2.264e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.264e-05,
+     "exit_ts": 1795628553,
+     "reason": "stop dinámico (40 % desde el máximo 3.3x)",
+     "ret": 0.6430646969546743
+    },
+    {
+     "pair": "GrN5z9qMuyAc5WowmggmgG8tmt3MDRqmbRgS7gNnHUsw",
+     "mint": "4X9E66y5oXquJKq3Km6LtdW4C7CdUcfbqaXxm96VCdTg",
+     "name": "FOMOCAT",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.68199e-05,
+     "qty": 594533.8557304145,
+     "cost_usd": 10.0,
+     "got_usd": 0.002464806568410038,
+     "ts": 1795628133,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.274e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.274e-09,
+     "exit_ts": 1795628613,
+     "reason": "stop −50 %",
+     "ret": -0.999753519343159
+    },
+    {
+     "pair": "2CxvxJp5AetPyyoRRNUnWk4bZQgGoBYaJTbC8U7qrKdc",
+     "mint": "A7y71o77GxTVCU4Cwo9rfU7zsUcR12Moddq6oMkspump",
+     "name": "USA6900",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.26381e-05,
+     "qty": 791258.1796314319,
+     "cost_usd": 10.0,
+     "got_usd": 1.0591781992546347,
+     "ts": 1795628613,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.38e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.38e-06,
+     "exit_ts": 1795628613,
+     "reason": "stop −50 %",
+     "ret": -0.8940821800745365
+    },
+    {
+     "pair": "J3jvcjxKYLAu3uzAGqe5vEGs2vA8iG2zWkHGWHgBPcPR",
+     "mint": "4snSwJ1MVXkUenFxjBazf5AcQ7G7d4uvqpzbNrqznz3S",
+     "name": "RECORDEGG",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.0249530000000001e-05,
+     "qty": 975654.493425552,
+     "cost_usd": 10.0,
+     "got_usd": 0.12596382468269274,
+     "ts": 1795628733,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.331e-07,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.331e-07,
+     "exit_ts": 1795628733,
+     "reason": "stop −50 %",
+     "ret": -0.9874036175317307
+    },
+    {
+     "pair": "9kDp67z9CK3re4bqmw1ZQ3Wfqi7v9Fefm1WnA6tYf3TC",
+     "mint": "EKAYUgoDp283tNs3QNKY42NydabpLLXUSSqFv8mCS4nL",
+     "name": "MEDIC",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.21862e-05,
+     "qty": 225365.3171791474,
+     "cost_usd": 10.0,
+     "got_usd": 69.07241889102234,
+     "ts": 1795622173,
+     "half": true,
+     "peak": 20.72008726145081,
+     "last": 0.0002624,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0002624,
+     "exit_ts": 1795628913,
+     "reason": "stop dinámico (40 % desde el máximo 20.7x)",
+     "ret": 5.907241889102234
+    },
+    {
+     "pair": "BHhriX4DvAgyUHf8PasRLs9rgCs5mumLXJrswYUjq25X",
+     "mint": "rM1LajNWfk2YnwdE8j3ADokL7htZ8CzikeJTHo4pump",
+     "name": "MemesAI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.8653300000000003e-05,
+     "qty": 536098.1702969447,
+     "cost_usd": 10.0,
+     "got_usd": 0.8424246648046189,
+     "ts": 1795628973,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.62e-06,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.62e-06,
+     "exit_ts": 1795628973,
+     "reason": "stop −50 %",
+     "ret": -0.9157575335195381
+    },
+    {
+     "pair": "6LgeXcJf7EgQeDmUpkH4qMKrLXzJfDXriMt4mwNuvGqU",
+     "mint": "8vYfYCx18EjQj5Fto9QJRFe1ebSBSfwW4hE11qGatCXU",
+     "name": "BASKET",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 4.80804e-06,
+     "qty": 1039924.7926389964,
+     "cost_usd": 10.0,
+     "got_usd": 9.839533177760584,
+     "ts": 1795623813,
+     "half": true,
+     "peak": 6.222909959151755,
+     "last": 2.406e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.406e-09,
+     "exit_ts": 1795629513,
+     "reason": "stop dinámico (40 % desde el máximo 6.2x)",
+     "ret": -0.016046682223941566
+    },
+    {
+     "pair": "A8VG38kNb5neShZbYotHEMjpZQvBUFsn67tju2AeGh4v",
+     "mint": "GGvk2ZoU7TfvJkUFxAZgHuAAFgfoDEejzPiXBBjSr1iQ",
+     "name": "NEX Ai",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.42758e-05,
+     "qty": 350243.06868967065,
+     "cost_usd": 10.0,
+     "got_usd": 14.737737990165176,
+     "ts": 1795625973,
+     "half": true,
+     "peak": 2.7571134367250876,
+     "last": 1.361e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.361e-05,
+     "exit_ts": 1795630053,
+     "reason": "stop dinámico (40 % desde el máximo 2.8x)",
+     "ret": 0.4737737990165176
+    },
+    {
+     "pair": "F99AdMksAhPxvRX5556UdKsihKu7qZZ91EZfYVApkbwi",
+     "mint": "E6k59N3sarjWEmTpfUpMz3MbuoVJFRCmbGq6PM8YcgrL",
+     "name": "穗穗与羊",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.5110100000000001e-05,
+     "qty": 661808.9886896843,
+     "cost_usd": 10.0,
+     "got_usd": 0.003964070390004037,
+     "ts": 1795630173,
+     "half": false,
+     "peak": 1.0,
+     "last": 6.175e-09,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.175e-09,
+     "exit_ts": 1795630713,
+     "reason": "stop −50 %",
+     "ret": -0.9996035929609995
+    },
+    {
+     "pair": "VFNkqPcG3fzsFpKY7s9GzzMgM8EDYL1YT6wLLMpfgCK",
+     "mint": "AthyqxiUfwJ4BZLCTd3Sc6yL9w99ZveNuAEvU91pZqQA",
+     "name": "英伟达",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.47599e-05,
+     "qty": 677511.3652531521,
+     "cost_usd": 10.0,
+     "got_usd": 3.0467144086342048e-05,
+     "ts": 1795630773,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.636e-11,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.636e-11,
+     "exit_ts": 1795631133,
+     "reason": "stop −50 %",
+     "ret": -0.9999969532855914
+    },
+    {
+     "pair": "591YTNkrjpQFpQ3X9G1CRrk5JQw6NBRfP7rrVYp9VQMM",
+     "mint": "g7Stw2wWMTTDa4aGpuwBTDkbyL77Uc8a2iUK7q7pump",
+     "name": "FOMO",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.37119e-05,
+     "qty": 148315.57995841233,
+     "cost_usd": 10.0,
+     "got_usd": 14.688730092341281,
+     "ts": 1795631253,
+     "half": true,
+     "peak": 2.1645175739130695,
+     "last": 3.449e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.449e-05,
+     "exit_ts": 1795633053,
+     "reason": "stop dinámico (40 % desde el máximo 2.2x)",
+     "ret": 0.468873009234128
+    },
+    {
+     "pair": "FFvLkptVeSr4BabqVYQywSxBeeqCECgy1oazWCa64Vuz",
+     "mint": "3aGDeS1VmffiS4wR62AZfpbb1eVcq7cAizAQC441HvNm",
+     "name": "FLOP",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0007701310000000001,
+     "qty": 6492.401942007268,
+     "cost_usd": 10.0,
+     "got_usd": 10.143529477452535,
+     "ts": 1795623573,
+     "half": true,
+     "peak": 5.065371995154071,
+     "last": 5.769e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 5.769e-05,
+     "exit_ts": 1795633173,
+     "reason": "stop dinámico (40 % desde el máximo 5.1x)",
+     "ret": 0.01435294774525353
+    },
+    {
+     "pair": "2sLDeGQsVyHTUquFtYhxpKga35NTRPzcaLZEni9HZDyC",
+     "mint": "27VkzPoktULfkX9ZehLW7K5bLdxUTvowyD5a5h7EDi5d",
+     "name": "USOI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 4.3043699999999996e-05,
+     "qty": 116161.01775637318,
+     "cost_usd": 10.0,
+     "got_usd": 33.870461879438814,
+     "ts": 1795621693,
+     "half": true,
+     "peak": 6.44925970583384,
+     "last": 2.3e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.3e-05,
+     "exit_ts": 1795638674,
+     "reason": "stop dinámico (40 % desde el máximo 6.4x)",
+     "ret": 2.3870461879438816
+    },
+    {
+     "pair": "33mzjiGs1S3W7jHAd7Fmk32p8wN5FGQsTEJBbPHQWYUU",
+     "mint": "D9k3n3xgwU9HPYUVUWDmGBNXj6o74XLTXXp72LVoChxu",
+     "name": "Jensen",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.6469700000000003e-05,
+     "qty": 303587.8006278195,
+     "cost_usd": 10.0,
+     "got_usd": 32.516499996964114,
+     "ts": 1795622973,
+     "half": true,
+     "peak": 4.692253046503579,
+     "last": 7.728e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 7.728e-05,
+     "exit_ts": 1795709423,
+     "reason": "plazo de 24 h",
+     "ret": 2.2516499996964114
+    },
+    {
+     "pair": "2NivZsddMj2BNqYwS83cauDUZkGDZyhoFJEA72v4vRCU",
+     "mint": "3fKQGAPKYphxgZ9SvsPqxSh7ML5Knpj6QGHApPc6nGSd",
+     "name": "蚁巢",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.5274900000000002e-05,
+     "qty": 654668.7703356486,
+     "cost_usd": 10.0,
+     "got_usd": 10.2557136216931,
+     "ts": 1795623693,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.615e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.615e-05,
+     "exit_ts": 1795710143,
+     "reason": "plazo de 24 h",
+     "ret": 0.025571362169310108
+    },
+    {
+     "pair": "7CT2vCXp7eEd8iaQtYCkUcKNkTmMzADk3TQyFqMF4PrQ",
+     "mint": "BDzn33ZBJ62BCt9RsNKpXRe1zG5zLrBtcJDPrpzd7fJE",
+     "name": "MOONEY",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 4.33527e-05,
+     "qty": 230666.14074786575,
+     "cost_usd": 10.0,
+     "got_usd": 12.641657843686781,
+     "ts": 1795623693,
+     "half": false,
+     "peak": 1.0,
+     "last": 5.65e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 5.65e-05,
+     "exit_ts": 1795710143,
+     "reason": "plazo de 24 h",
+     "ret": 0.2641657843686782
+    },
+    {
+     "pair": "8tkTw84TrYG3Mh71riPWdZuEHbiTmZgqsqMEC2aNVBMC",
+     "mint": "BWK5pP3SjviTnAVqfU2GbLpDfcZ6NLooiGJgqyEKbonk",
+     "name": "Musecart",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 0.048101,
+     "qty": 207.8958857404212,
+     "cost_usd": 10.0,
+     "got_usd": 11.581276896530218,
+     "ts": 1795624053,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.05743,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.05743,
+     "exit_ts": 1795710503,
+     "reason": "plazo de 24 h",
+     "ret": 0.1581276896530217
+    },
+    {
+     "pair": "HwwKRaMKaxWRoSW6zZzzNxAy5CYHAsHwn95AsL64KwBL",
+     "mint": "F7XVrC1i2zhS8i2V7VP9g3q4dPDELGwN7vWpK2vpvKco",
+     "name": "PLUSH",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.99563e-05,
+     "qty": 166788.14403156965,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795620973,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795707064.0721905,
+     "exit": 0.0,
+     "exit_ts": 1795710683,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "5rtos3bu7kLT7MCe8BhBHcmca9ygM7iXoB3bMXBLQvPe",
+     "mint": "6sP1pjoVdS9xRz8DzjJ1Zon7u7DbuCWLYWn6jUjbBAGS",
+     "name": "Robro",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.4682700000000004e-05,
+     "qty": 182873.19389861875,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795621213,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795707064.0721905,
+     "exit": 0.0,
+     "exit_ts": 1795710683,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "8aLLQQEK3tbY5eFZNCs9VbpQ5wXSAANHwWQsGyEQcBRN",
+     "mint": "Hm9rrJP4htwDFiTHjb5sb6kJAFJu4tbJyJuwsdyHDaaG",
+     "name": "Anthropic",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.5491200000000002e-05,
+     "qty": 322763.89175790123,
+     "cost_usd": 10.0,
+     "got_usd": 55.54056496591612,
+     "ts": 1795624413,
+     "half": true,
+     "peak": 9.611908696550298,
+     "last": 0.0001445,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0001445,
+     "exit_ts": 1795710863,
+     "reason": "plazo de 24 h",
+     "ret": 4.5540564965916115
+    },
+    {
+     "pair": "8wH4xDPDoep5T2LGfWv4kPUK2KprKqMyQVu4S8yVf2pv",
+     "mint": "AidnbKw8F1R3dg1TVVoM9kJPc8MUyD61X98YVHhLbonk",
+     "name": "ETHSQD",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0446711,
+     "qty": 223.85837823559305,
+     "cost_usd": 10.0,
+     "got_usd": 12.648558016256597,
+     "ts": 1795624533,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.05825,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.05825,
+     "exit_ts": 1795710983,
+     "reason": "plazo de 24 h",
+     "ret": 0.2648558016256597
+    },
+    {
+     "pair": "A3bpuT3DyzddauUzxfYxhiG3oAfJUqdvt7ccEvQCWjNp",
+     "mint": "455Xyv2tevS5zZFqKuKJ6HpAXE6Lj2nCpPdxqpxWVpK5",
+     "name": "LONG",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.87203e-05,
+     "qty": 170298.85746496526,
+     "cost_usd": 10.0,
+     "got_usd": 11.310551887507387,
+     "ts": 1795624653,
+     "half": false,
+     "peak": 1.0,
+     "last": 6.847e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.847e-05,
+     "exit_ts": 1795711103,
+     "reason": "plazo de 24 h",
+     "ret": 0.13105518875073874
+    },
+    {
+     "pair": "BQjSwDHrnmjoHDgfS2m5tz6x4a33mCUT6aAY1QfPeeTa",
+     "mint": "3NgWvPksQrLHH7gK2i48JZ8gRnsZwgdWYYwm7NGJmGTd",
+     "name": "BossJensen",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.6608800000000006e-05,
+     "qty": 88325.49002981867,
+     "cost_usd": 10.0,
+     "got_usd": 199.40168313053798,
+     "ts": 1795624893,
+     "half": true,
+     "peak": 45.41696697333276,
+     "last": 0.001953,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.001953,
+     "exit_ts": 1795711343,
+     "reason": "plazo de 24 h",
+     "ret": 18.940168313053796
+    },
+    {
+     "pair": "4AnnBv33wongAykjf1JeLU6LzfmU1tTHsznNhtwwRabk",
+     "mint": "57sCZ82FwS5Dfs7FN9nshtU5Mkb3w1dqhmPUuCPvpump",
+     "name": "MSTR",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.00020342287111490287,
+     "qty": 49158.68085625203,
+     "cost_usd": 10.0,
+     "got_usd": 4.773160435099503,
+     "ts": 1795711403,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0001001,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0001001,
+     "exit_ts": 1795711523,
+     "reason": "stop −30 %",
+     "ret": -0.5226839564900497
+    },
+    {
+     "pair": "7Jre6EvYzn5DnNxnGNfRBoH9wZESdQepVFgiysjfRaWV",
+     "mint": "D2vUZqvPC1KiNjukXQk8NYxJJgwRfXVAKUr2qZWgCgMG",
+     "name": "Huang",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.45745e-05,
+     "qty": 343064.9421935572,
+     "cost_usd": 10.0,
+     "got_usd": 26.868091529726577,
+     "ts": 1795625133,
+     "half": true,
+     "peak": 3.4745617345363478,
+     "last": 5.064e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 5.064e-05,
+     "exit_ts": 1795711583,
+     "reason": "plazo de 24 h",
+     "ret": 1.6868091529726579
+    },
+    {
+     "pair": "4cYh3ttCQPZSkrfDXZv1PS5VJM3KyACSqC2VbQnrKppy",
+     "mint": "ADTqQCvSDcCYaYAnhm9g6LhTuZRLuTvwQ42tf3QycXK",
+     "name": "MONEY",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 6.953530000000001e-06,
+     "qty": 1438118.4808291614,
+     "cost_usd": 10.0,
+     "got_usd": 16.05616140291334,
+     "ts": 1795625853,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.151e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.151e-05,
+     "exit_ts": 1795712303,
+     "reason": "plazo de 24 h",
+     "ret": 0.605616140291334
+    },
+    {
+     "pair": "rdEjEJMhmsbNZUrGuq8GUDWhwLuanZSyURVCx2kk2on",
+     "mint": "5EpgFnpxNNcRTs9CEnSZozETKQpsV3Ho2aPCn9wmmoon",
+     "name": "BTVAULT",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0498932,
+     "qty": 200.42811445247048,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795623333,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795709723.871862,
+     "exit": 0.0,
+     "exit_ts": 1795713323,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "7xkDvFn1NyL5uQqjccJ5Mru2n11owWsy3SSUVmQxX163",
+     "mint": "Ct4SvyWHAuSP6DvC2JapX1WkubwakdV93LM1zF2DHVd1",
+     "name": "老鼠",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.5862896718686584e-05,
+     "qty": 315200.94271999964,
+     "cost_usd": 10.0,
+     "got_usd": 25.113957379493996,
+     "ts": 1795710443,
+     "half": true,
+     "peak": 5.7007537427523705,
+     "last": 4.763799437625804e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.763799437625804e-05,
+     "exit_ts": 1795713323,
+     "reason": "stop dinámico (30 % desde el máximo 5.7x)",
+     "ret": 1.5113957379493996
+    },
+    {
+     "pair": "H23LQgh5G8Jegvt437Z22HpBg3q3FtWeZuW8Nz8cLiuN",
+     "mint": "DV2H3iWqM8ru8S2XLbm5KMLVKuJ7rwKTbePzD58RtfDT",
+     "name": "MONEY",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 6.27991e-05,
+     "qty": 159237.95086235311,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795623573,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795709963.8722465,
+     "exit": 0.0,
+     "exit_ts": 1795713563,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "2wLbs75bcfYoYg8uExG6gvP2eCW2aDsr3sEUXxcSQzgi",
+     "mint": "BGYCsqB7fpTKFvq4r6Bx5eHZv4msbzgn6KkTTrkKoXu5",
+     "name": "MONEY",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 9.124770000000001e-05,
+     "qty": 109591.80340983935,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795623813,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795710203.8726547,
+     "exit": 0.0,
+     "exit_ts": 1795713803,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "FX6fzK2tZbih2c6nzKBNCLCv8YXM5MHD16P4LX4NnKeG",
+     "mint": "9wbLuLEQeHVLMPifEz82xMDNZNSR98oAsetgRQ7VS43W",
+     "name": "DCTY",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.87821e-06,
+     "qty": 850599.0769298817,
+     "cost_usd": 10.0,
+     "got_usd": 116.72422387087224,
+     "ts": 1795628733,
+     "half": true,
+     "peak": 21.92844420325235,
+     "last": 0.0001289,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0001289,
+     "exit_ts": 1795715183,
+     "reason": "plazo de 24 h",
+     "ret": 10.672422387087224
+    },
+    {
+     "pair": "7RJ6YqeXjNteufuZrFtGPQCwGVR8rzHReAikunoiCKVZ",
+     "mint": "GSaEGvzun7NGWe2TPFih2hqJfUAtttQSKjcUe31JwxBu",
+     "name": "Anthropic",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.60062e-05,
+     "qty": 312378.9531556522,
+     "cost_usd": 10.0,
+     "got_usd": 34.445902212892506,
+     "ts": 1795628853,
+     "half": true,
+     "peak": 5.224225612575127,
+     "last": 8.163e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 8.163e-05,
+     "exit_ts": 1795715303,
+     "reason": "plazo de 24 h",
+     "ret": 2.4445902212892507
+    },
+    {
+     "pair": "9PQrcVxuePB5yDLMdSs3CUfHV3Kt9bMX5TXt3Uim34yh",
+     "mint": "5mcarCb8iF42YiRYwMivTuRXQvSMEgbpXCP2qzbfpump",
+     "name": "BTC",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.00011722620595947943,
+     "qty": 85305.15781988724,
+     "cost_usd": 10.0,
+     "got_usd": 6.040897546385582,
+     "ts": 1795715243,
+     "half": false,
+     "peak": 1.0,
+     "last": 7.300530927347529e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 7.300530927347529e-05,
+     "exit_ts": 1795715483,
+     "reason": "stop −30 %",
+     "ret": -0.3959102453614418
+    },
+    {
+     "pair": "HkCs1PsRUaGgCUdDEwAQVcBARHFzhZ2siNMVVQLJAqKd",
+     "mint": "7zFhiLEeDSWGKDtgQqccJa4w6Ph59fywkDKu36jipump",
+     "name": "UBR",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.915533282595118e-06,
+     "qty": 1690464.66688343,
+     "cost_usd": 10.0,
+     "got_usd": 2.074753846997462,
+     "ts": 1795715723,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.2652861273304893e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.2652861273304893e-06,
+     "exit_ts": 1795715783,
+     "reason": "stop −30 %",
+     "ret": -0.7925246153002539
+    },
+    {
+     "pair": "8Cq7Ja1z2ntK6uX4JcnTBkacCWMuGUg5DZowao35Seb8",
+     "mint": "AuVQxjSZt937unfV6ScNca1ZwwqZtjNSq3LfQtv4pump",
+     "name": "Kuro",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.8591293842483136e-05,
+     "qty": 174878.40975460218,
+     "cost_usd": 10.0,
+     "got_usd": 22.147870517804225,
+     "ts": 1795712363,
+     "half": true,
+     "peak": 3.6584563320662773,
+     "last": 6.976157715109296e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.976157715109296e-05,
+     "exit_ts": 1795715903,
+     "reason": "stop dinámico (30 % desde el máximo 3.7x)",
+     "ret": 1.2147870517804225
+    },
+    {
+     "pair": "BfxEohVMSHmLaW9he71rYjerWNf2smcJ9Qm5GVppfKz",
+     "mint": "EkqJzsLqtkQVYrWowVwmdwVFoATAARuTHLk4YdSg7St3",
+     "name": "STARMIND",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 8.7756e-05,
+     "qty": 113952.32234832946,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795625973,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795712423.876321,
+     "exit": 0.0,
+     "exit_ts": 1795716023,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "5dpwGvWTTK9iJEwuZy8rGWnTytzHQpeKAMEsM2gaF2jK",
+     "mint": "25B7JcjNup5UM7oYNsiCfeNBK9DaTwFz8Rbfu2LagpFh",
+     "name": "CI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.4450899999999999e-05,
+     "qty": 345999.21112179867,
+     "cost_usd": 10.0,
+     "got_usd": 35.14604626701451,
+     "ts": 1795629573,
+     "half": true,
+     "peak": 5.466787535724419,
+     "last": 7.497e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 7.497e-05,
+     "exit_ts": 1795716023,
+     "reason": "plazo de 24 h",
+     "ret": 2.514604626701451
+    },
+    {
+     "pair": "9gmJ2gpbyNjeVRYqr4e2gsN1DrJYdw2ekYL1dzEBE7Ym",
+     "mint": "9e11ER4UYyD85ZLahZBTnkLiTdJtXDUPNJWFFUnxidX8",
+     "name": "Datacat",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.61198545719429e-06,
+     "qty": 1781900.5548527378,
+     "cost_usd": 10.0,
+     "got_usd": 2.155369092144323,
+     "ts": 1795716083,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.247e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.247e-06,
+     "exit_ts": 1795716623,
+     "reason": "stop −30 %",
+     "ret": -0.7844630907855676
+    },
+    {
+     "pair": "H1GXhYbJFvCKLuJDQJKPztTs31Jevxr34dvT239DY4Ut",
+     "mint": "67AzADQ19vSefBKpjTBEd4dJFMavyRBAF7KAU8Nn8PQM",
+     "name": "Optimus",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.992865509841667e-05,
+     "qty": 166865.08288193177,
+     "cost_usd": 10.0,
+     "got_usd": 3.8716703990597336,
+     "ts": 1795713563,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.392e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.392e-05,
+     "exit_ts": 1795716983,
+     "reason": "stop −30 %",
+     "ret": -0.6128329600940267
+    },
+    {
+     "pair": "Hg5XnyCQ1Ydenag6Jb3a5wLQo5J9qMH2CFHNWep6X9Cy",
+     "mint": "4wgytKd3PEHUAqcSf7qQPEFANXYsx46eNdr4AyhmBAGS",
+     "name": "Aijudge",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.08894049999999999,
+     "qty": 112.4347175920981,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795627293,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795713623.8783658,
+     "exit": 0.0,
+     "exit_ts": 1795717223,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "9HDAdVo2PWYFFYPpPkafAFqGybnTvGqCzUfRscYuqWFd",
+     "mint": "WBraC2F1gv44NsexptVSVT3ATnV4YhSWUFPDgvuRyKz",
+     "name": "PAIR",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.9410399999999996e-05,
+     "qty": 84160.3490297995,
+     "cost_usd": 10.0,
+     "got_usd": 17.024275211074155,
+     "ts": 1795717043,
+     "half": true,
+     "peak": 2.1848026608135953,
+     "last": 7.874e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 7.874e-05,
+     "exit_ts": 1795717463,
+     "reason": "stop dinámico (30 % desde el máximo 2.2x)",
+     "ret": 0.7024275211074156
+    },
+    {
+     "pair": "7dbnzGHVxaEFhKsToC895tDgeJHt1AqbaPByuP2TiV1b",
+     "mint": "AzdGMaqnwsTPUTKVn8w5gh9BTX9AcNYio3LXiSM1pump",
+     "name": "DUE",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.073667573990956e-05,
+     "qty": 325344.2267022928,
+     "cost_usd": 10.0,
+     "got_usd": 5.694717369028632,
+     "ts": 1795717283,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.8045018680645773e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.8045018680645773e-05,
+     "exit_ts": 1795717943,
+     "reason": "stop −30 %",
+     "ret": -0.43052826309713677
+    },
+    {
+     "pair": "EJDMpWTMuNQKP6Wg254FFcHgS6XKnSDxHMLdNJxWZcK7",
+     "mint": "8Mnety17wKN4Z31iWeUzpNSg7oTFGPcgPzQUUCorBAGS",
+     "name": "MINVAULT",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0303644,
+     "qty": 329.3330347380485,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795629213,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795715543.8815022,
+     "exit": 0.0,
+     "exit_ts": 1795719143,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "4g5FUFiGNNoojxVymCzqb3PX3X474Rb14Y8yPvSSztQc",
+     "mint": "6tsRTYbwXiJfRQDtYhzky1DPrQqKE3FEgvq9KQVC5vu1",
+     "name": "CI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.44303e-05,
+     "qty": 346493.142900702,
+     "cost_usd": 10.0,
+     "got_usd": 9.840959647408578,
+     "ts": 1795625853,
+     "half": true,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795715903.8821197,
+     "exit": 0.0,
+     "exit_ts": 1795719503,
+     "reason": "desaparecido (posible rug)",
+     "ret": -0.01590403525914219
+    },
+    {
+     "pair": "5ciXM7hRGbRiZ4ucFM9yo5aHT51pDMQtq6T51NzLLJc8",
+     "mint": "EWNMLJ8MDZmFNNFfGL6RhrurCdkngxHVkiPUa2pSpump",
+     "name": "Herag",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0736965,
+     "qty": 135.6916542848032,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795633173,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795719563.8881667,
+     "exit": 0.0,
+     "exit_ts": 1795723207,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "6R5Vk8VcCaVTS6Gs9akexvNhktCm1oDFZBScSC3peHM7",
+     "mint": "FXP5ipgSpTXHQ9EcDsN6JjrDRsLQsmZtvGimvvhVgRm5",
+     "name": "SI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 9.82929e-05,
+     "qty": 101736.74802554406,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795633293,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": 1795719683.8883865,
+     "exit": 0.0,
+     "exit_ts": 1795723327,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "2CQwaojDB3cwvYKnYkqaeCRmjcjq3fsBVUUaZaqJ8AHv",
+     "mint": "7ss7PKt9kEm7p41YBCWE9pR9A3mtgXTr7qKRdLfGbyyE",
+     "name": "MAXIMUS",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.58955e-05,
+     "qty": 278586.45234082267,
+     "cost_usd": 10.0,
+     "got_usd": 14.562633199147525,
+     "ts": 1795638734,
+     "half": false,
+     "peak": 1.0,
+     "last": 5.389e-05,
+     "stop": 0.5,
+     "trail": 0.4,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 5.389e-05,
+     "exit_ts": 1795725187,
+     "reason": "plazo de 24 h",
+     "ret": 0.45626331991475255
+    },
+    {
+     "pair": "EnZRzLRAGC5rpV8BGYsTaspTEJnrXVaGmqiuTxGpLp3G",
+     "mint": "722EtFhtVjShjSqPsVEPQijjyp8PsGQPFr4UAAVmUY3V",
+     "name": "ZCOIN",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 4.92958e-05,
+     "qty": 202857.0385306659,
+     "cost_usd": 10.0,
+     "got_usd": 5.905107534516125,
+     "ts": 1795725307,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.001e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.001e-05,
+     "exit_ts": 1795725307,
+     "reason": "stop −30 %",
+     "ret": -0.4094892465483875
+    },
+    {
+     "pair": "DMydXZNa7AR3PTa2yMqiZNzspjZHB1AUc7WpiSRWxKq8",
+     "mint": "7LWMertsk9eQC2khdH6sPQZniMCuJpXav5aw1SpFBAGS",
+     "name": "GRAVCAT",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.06565005256866228,
+     "qty": 152.32280262900275,
+     "cost_usd": 10.0,
+     "got_usd": 6.3504290352847015,
+     "ts": 1795710323,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.04298,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.04298,
+     "exit_ts": 1795731633,
+     "reason": "stop −30 %",
+     "ret": -0.36495709647152985
+    },
+    {
+     "pair": "2NG7Ty232Rgo99Dg3tUGm5hbQzoHxSd5Jyv1VHjKWTu3",
+     "mint": "HP7hajgq9EB4djFEAD56mRXszJxFGgf4A9UXjd7Fmoon",
+     "name": "Ovrbot",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.04595538744204192,
+     "qty": 217.602343416467,
+     "cost_usd": 10.0,
+     "got_usd": 4.709067033172737,
+     "ts": 1795711643,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.02231,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.02231,
+     "exit_ts": 1795733313,
+     "reason": "stop −30 %",
+     "ret": -0.5290932966827263
+    },
+    {
+     "pair": "6Hr7vyVFGJ3CS28yxBdbeEFAK5xLcFJoNQA5ggrjEgzQ",
+     "mint": "8SCauo2Mn2eCVh7ZVjUn49qwDX5xSLUbRdrKzwbzmoon",
+     "name": "BETTA",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.06669303680731664,
+     "qty": 149.94069064347866,
+     "cost_usd": 10.0,
+     "got_usd": 4.0156665946064525,
+     "ts": 1795713923,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.02761,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.02761,
+     "exit_ts": 1795735233,
+     "reason": "stop −30 %",
+     "ret": -0.5984333405393547
+    },
+    {
+     "pair": "Fpdv3qYHxuu31JiG6ajgPTWJFkSnPzBoAVdc1QcmyuJB",
+     "mint": "5YLDE7jH2geaSzj4eBYhjiq5sjN6sQcTu263STYdpump",
+     "name": "N3ON",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.069250403974843e-05,
+     "qty": 162906.226012864,
+     "cost_usd": 10.0,
+     "got_usd": 20.875568318964824,
+     "ts": 1795735293,
+     "half": true,
+     "peak": 3.1550407793581194,
+     "last": 6.132e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.132e-05,
+     "exit_ts": 1795736133,
+     "reason": "stop dinámico (30 % desde el máximo 3.2x)",
+     "ret": 1.0875568318964826
+    },
+    {
+     "pair": "GdXQNE31u3gWvEMUddk7qakc9W3gXQF1TSGs6ZF4uBme",
+     "mint": "D35NCm4akthttzpftsLsTWhgEy7WJ8kgxNdEyuVHmoon",
+     "name": "KAHAN",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.01301181387167661,
+     "qty": 768.5323582569408,
+     "cost_usd": 10.0,
+     "got_usd": 5.706621746383176,
+     "ts": 1795736253,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.007655,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.007655,
+     "exit_ts": 1795769549,
+     "reason": "stop −30 %",
+     "ret": -0.4293378253616824
+    },
+    {
+     "pair": "HhhP7QHkes9iLHDY4dpNhLNqcZPvMQ4rzTx1fu3bzXxW",
+     "mint": "4SHVqbGtwgqb4nXJpUG1fzBGH3zJ7CiXN6A1dWymPK1H",
+     "name": "SPACEXLIFE",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.5058600000000002e-05,
+     "qty": 664072.357324054,
+     "cost_usd": 10.0,
+     "got_usd": 9.134049646049434,
+     "ts": 1795710803,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.418e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.418e-05,
+     "exit_ts": 1795797215,
+     "reason": "plazo de 24 h",
+     "ret": -0.08659503539505664
+    },
+    {
+     "pair": "4QAtzy5niDmzH6Yabe2ZMi3CN5XbjynTFCcMiZmwpMuc",
+     "mint": "3kAMdrakPuMH5YeMAjaVPVsnZ1bWhXSBgevVupEztjMT",
+     "name": "Anthropic",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.2849363774834482e-05,
+     "qty": 218824.4735946141,
+     "cost_usd": 10.0,
+     "got_usd": 65.64970239177615,
+     "ts": 1795710923,
+     "half": true,
+     "peak": 11.669557802107477,
+     "last": 0.0002607,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0002607,
+     "exit_ts": 1795797335,
+     "reason": "plazo de 24 h",
+     "ret": 5.564970239177614
+    },
+    {
+     "pair": "6YovEftMRDMsvfeVdHdByqxQF2Hz49wqgdxdU2Xyy68F",
+     "mint": "pDRy3SVLpkZBSPG2GwCJN5VPcW9qqJXdoCxUr7HHsix",
+     "name": "67",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 9.74895e-05,
+     "qty": 102575.14911862304,
+     "cost_usd": 10.0,
+     "got_usd": 2.987921776191282,
+     "ts": 1795797455,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.003e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.003e-05,
+     "exit_ts": 1795797515,
+     "reason": "stop −30 %",
+     "ret": -0.7012078223808718
+    },
+    {
+     "pair": "9FQV8FLM336dS2rBruHR2dprZ4HY2pUQ4ge7aUxcqnt1",
+     "mint": "67gUevLit8rLJaFLd9aqPtGoCUZ1amtSxL7scfS4LmJq",
+     "name": "TEXEL",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.414634364776271e-05,
+     "qty": 207070.68833849207,
+     "cost_usd": 10.0,
+     "got_usd": 35.29419330984823,
+     "ts": 1795711163,
+     "half": true,
+     "peak": 6.118900125372814,
+     "last": 0.0001135,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0001135,
+     "exit_ts": 1795797575,
+     "reason": "plazo de 24 h",
+     "ret": 2.5294193309848234
+    },
+    {
+     "pair": "3jk2QzPnwxK8jVWFbZAm5stjTL7eFNdHq29HUKjPG5kD",
+     "mint": "F39a5zLgy7DdiDA2YmWt6RgMnQ9mfukqxc4qLcippump",
+     "name": "MEMESTOCK",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.33948410826252e-06,
+     "qty": 7465560.762024465,
+     "cost_usd": 10.0,
+     "got_usd": 9.45864988888895,
+     "ts": 1795711643,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.3061557950294638e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.3061557950294638e-06,
+     "exit_ts": 1795798055,
+     "reason": "plazo de 24 h",
+     "ret": -0.05413501111110508
+    },
+    {
+     "pair": "CsGLBJNEbZz7G9iUfSyeDpQmdN3oovGZgbWrj7ezVyQb",
+     "mint": "3xgTWkgNaLJiqXHsLQcBif3m7XpkSgM3QwWhZxYCRZrS",
+     "name": "67",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 8.02089054718867e-05,
+     "qty": 124674.43535312935,
+     "cost_usd": 10.0,
+     "got_usd": 3.9150566497574726,
+     "ts": 1795798175,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.237344419974005e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.237344419974005e-05,
+     "exit_ts": 1795798295,
+     "reason": "stop −30 %",
+     "ret": -0.6084943350242528
+    },
+    {
+     "pair": "GCQLgB1eBWjPtqQdAuP296GJBK1phSaGGLDDp742sWB8",
+     "mint": "3GjkNEcusYNwQD8bLjR3BgC6VFmTkpE5sEWd8LoNawSb",
+     "name": "BASKET",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 6.88692643095258e-06,
+     "qty": 726013.2731385102,
+     "cost_usd": 10.0,
+     "got_usd": 19.54880037558035,
+     "ts": 1795798415,
+     "half": true,
+     "peak": 3.0623239860982356,
+     "last": 6.669e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.669e-06,
+     "exit_ts": 1795798475,
+     "reason": "stop dinámico (30 % desde el máximo 3.1x)",
+     "ret": 0.9548800375580349
+    },
+    {
+     "pair": "CsGLBJNEbZz7G9iUfSyeDpQmdN3oovGZgbWrj7ezVyQb",
+     "mint": "3xgTWkgNaLJiqXHsLQcBif3m7XpkSgM3QwWhZxYCRZrS",
+     "name": "67",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.00012878444607801028,
+     "qty": 77649.12848204176,
+     "cost_usd": 10.0,
+     "got_usd": 1.6063968076823696,
+     "ts": 1795798535,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.132772402668639e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.132772402668639e-05,
+     "exit_ts": 1795798595,
+     "reason": "stop −30 %",
+     "ret": -0.839360319231763
+    },
+    {
+     "pair": "9wpBHdmxgJNyA4eU4k3ikQf1aDnuknSvVU8ivYRab5zT",
+     "mint": "8L2uLXaampSTz6e6gHUqYBq5YDsVrtbPqmgs7uuFpump",
+     "name": "AAC",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.9082527190027168e-05,
+     "qty": 171924.53624575565,
+     "cost_usd": 10.0,
+     "got_usd": 10.637121521800069,
+     "ts": 1795798655,
+     "half": true,
+     "peak": 3.08207432831574,
+     "last": 1.557217267925367e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.557217267925367e-06,
+     "exit_ts": 1795799435,
+     "reason": "stop dinámico (30 % desde el máximo 3.1x)",
+     "ret": 0.06371215218000681
+    },
+    {
+     "pair": "irNwGYwkpiNzhur2u8SgstovCfqS7Aud8Va132A8EP3",
+     "mint": "2rQu8Ls61FRfa7ojq2uQTeEnSR13AaQnkRQ6mhDQBAGS",
+     "name": "DEVPARR",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0486057,
+     "qty": 205.737187202324,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795710563,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795796915.821292,
+     "exit": 0.0,
+     "exit_ts": 1795800515,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "Cink6BL2fzAwzudo5GdPEHcdXJBP5GeFK5SMrH9AEiio",
+     "mint": "5GWSraFLq7zvMMaYxnidSuB313mJnPY6x8NufhWowLwi",
+     "name": "USELESS",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.41677e-06,
+     "qty": 1846118.627890791,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795711043,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795797395.822121,
+     "exit": 0.0,
+     "exit_ts": 1795800995,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "AmsWBJ8RAGRu2MTy9rDKqpwkuW7S4et3Wir3cUnKJmYf",
+     "mint": "HY8Ao7LJHcR7ibUfQFDjLC78ooeBw5D3TqViWcR1A9sb",
+     "name": "rice",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 6.33759e-05,
+     "qty": 157788.68623561953,
+     "cost_usd": 10.0,
+     "got_usd": 0.979246054099429,
+     "ts": 1795801055,
+     "half": false,
+     "peak": 1.0,
+     "last": 6.398e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.398e-06,
+     "exit_ts": 1795801055,
+     "reason": "stop −30 %",
+     "ret": -0.9020753945900571
+    },
+    {
+     "pair": "5qC31yFZivkj9A6Ly1fYoE1NRKm4Rt2xki6tutGgtAxq",
+     "mint": "2vMHGASBXSbT6TkJ1XraJZbE2eVjbzoDphc997tKw777",
+     "name": "OPEN AI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.82336e-05,
+     "qty": 261550.05021760965,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795710803,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795797815.8227985,
+     "exit": 0.0,
+     "exit_ts": 1795801415,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "2mdmGaNft5vpbQ3EeskzuX81KGJs1zSRn9Xy49px25sD",
+     "mint": "EDWUVN9AhCHy4oL4w9CQ6VqgYtrF3ZiksfZYyYMFku96",
+     "name": "BYTE",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 4.116523770099391e-05,
+     "qty": 242923.41204575522,
+     "cost_usd": 10.0,
+     "got_usd": 16.876229527595477,
+     "ts": 1795715843,
+     "half": false,
+     "peak": 1.0,
+     "last": 7.162e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 7.162e-05,
+     "exit_ts": 1795802255,
+     "reason": "plazo de 24 h",
+     "ret": 0.6876229527595477
+    },
+    {
+     "pair": "HRdkca7CSdX7vvU3zi34KW1js9RFmLBDjjtQX9D4582y",
+     "mint": "81jh5gcS5iTJE6xmwWXBRv71vtkfdkKKzSpkgvAYdkmk",
+     "name": "TRUMP",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 4.95636e-05,
+     "qty": 201760.96974392497,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795713443,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795799855.8262494,
+     "exit": 0.0,
+     "exit_ts": 1795803455,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "7zSHGRCoe4aCTrjRod1bbLMLtrZCZgUxsTG93p883Lg3",
+     "mint": "2QvfxRGDSaFRn4wYk9XtYS5bL6Hp1dMV9xbwxXeDjLG3",
+     "name": "Kuro",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 7.687920000000001e-05,
+     "qty": 130074.19432044037,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795713683,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795800035.8265457,
+     "exit": 0.0,
+     "exit_ts": 1795803635,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "GC6MnyqnVAyRWNBLxWfdqhVCktsVuB5WaUGQWe9EwwtE",
+     "mint": "4CZVS8k8aDBQZjPoohEDbK1ycp2DPTmuB8DgcDCwpump",
+     "name": "TARDRAG",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.05584236893110041,
+     "qty": 179.075497537331,
+     "cost_usd": 10.0,
+     "got_usd": 12.998212896296922,
+     "ts": 1795717523,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.07483,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.07483,
+     "exit_ts": 1795803935,
+     "reason": "plazo de 24 h",
+     "ret": 0.2998212896296921
+    },
+    {
+     "pair": "6ehtMtVJorcL99pfhLXHAJVindtbnWwXD2Jn9n1XQSfZ",
+     "mint": "GhGZmYDvjxqD3i1B6C6G9A2iuz7v3TJACTLZsZt4G5ay",
+     "name": "CATE",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.251449923185316e-06,
+     "qty": 952118.000387825,
+     "cost_usd": 10.0,
+     "got_usd": 121.96856727776489,
+     "ts": 1795719203,
+     "half": true,
+     "peak": 23.159637544477196,
+     "last": 0.0001215,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.0001215,
+     "exit_ts": 1795805615,
+     "reason": "plazo de 24 h",
+     "ret": 11.196856727776488
+    },
+    {
+     "pair": "CMH15gAe32b3uPtkSGC1CBkvNVPSrV4pVG5wENJen2nQ",
+     "mint": "6CSRMD8J8UoLBuFegCPnc4Ckcwia8nTyCQrZRpXPBa2H",
+     "name": "Datacat",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.601116576149974e-06,
+     "qty": 892679.1528122126,
+     "cost_usd": 10.0,
+     "got_usd": 10.517883345595866,
+     "ts": 1795715363,
+     "half": true,
+     "peak": 2.3370340220623724,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795802435.8308706,
+     "exit": 0.0,
+     "exit_ts": 1795806035,
+     "reason": "desaparecido (posible rug)",
+     "ret": 0.051788334559586646
+    },
+    {
+     "pair": "5rNDXs4PibUXn5FvGiTQ4nJoj8SoB4ZwtWSqvzW58ZW7",
+     "mint": "Ch2ppii51ba7vqjmXfFRC5UkemSatwxswY6b6zAH9uAq",
+     "name": "SOUP",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.594888523531354e-05,
+     "qty": 627003.0696476705,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795715963,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795802615.831161,
+     "exit": 0.0,
+     "exit_ts": 1795806215,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "GGnEA83QpJDQ22YPot2hVktz66UTHQq9kcQtpnzDm9Sp",
+     "mint": "D3rFK86soe7751MF3G1TAbgvk7oVJH6WPHRF8jfVpump",
+     "name": "MAYA",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.00032167748639085243,
+     "qty": 31087.037244035026,
+     "cost_usd": 10.0,
+     "got_usd": 4.260520527598474,
+     "ts": 1795806095,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.00014129005505510368,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.00014129005505510368,
+     "exit_ts": 1795806275,
+     "reason": "stop −30 %",
+     "ret": -0.5739479472401526
+    },
+    {
+     "pair": "2PpZT9nutNeHPzcqGP4DhEp7N2e9EB9LoE2yf64Gx73z",
+     "mint": "D5ArU5yyp8iPLgnsBjRmpsFBDQdNSP37cCtpBaoe2a8r",
+     "name": "Pinky",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0010634468161997426,
+     "qty": 9403.385150688855,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795716683,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795803095.8319597,
+     "exit": 0.0,
+     "exit_ts": 1795806695,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "6By7whFq3cyaq1i5kzeYTy8x1wpTYUyvvbh24LKtKx7j",
+     "mint": "2dynAjPBnkqzjUwozgn8pDRkCf7k7CDJkLfcf4rupump",
+     "name": "FARM",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 2.8052593788500176e-05,
+     "qty": 178236.63785591512,
+     "cost_usd": 10.0,
+     "got_usd": 16.778152478704104,
+     "ts": 1795806335,
+     "half": true,
+     "peak": 2.127985197423346,
+     "last": 3.735e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.735e-05,
+     "exit_ts": 1795806695,
+     "reason": "stop dinámico (30 % desde el máximo 2.1x)",
+     "ret": 0.6778152478704105
+    },
+    {
+     "pair": "8zwsGxgK7hg18n9iaJPTv78NRA8huxti1QL4k8YWM4Yv",
+     "mint": "8nd3NLZwt3B1NuXkZKcWw3hnGo9pLv891XsW5CDWpump",
+     "name": "KETTLE",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 4.16137232805758e-05,
+     "qty": 120152.67094194067,
+     "cost_usd": 10.0,
+     "got_usd": 20.193966946978044,
+     "ts": 1795806335,
+     "half": true,
+     "peak": 3.2865999647364204,
+     "last": 8.013794387572623e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 8.013794387572623e-05,
+     "exit_ts": 1795806875,
+     "reason": "stop dinámico (30 % desde el máximo 3.3x)",
+     "ret": 1.0193966946978046
+    },
+    {
+     "pair": "BvCUHVWXaxjcwM5Nu7jyjGKBnBTq39ZKLSSYksHzgaU1",
+     "mint": "G8H6LbmCdLybxc2Br2wK9DiixN7xT2bvRduwvYApump",
+     "name": "BI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.0100842765545059e-05,
+     "qty": 990016.4008206283,
+     "cost_usd": 10.0,
+     "got_usd": 1.560680487402268,
+     "ts": 1795807055,
+     "half": false,
+     "peak": 1.0,
+     "last": 1.625174042320055e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 1.625174042320055e-06,
+     "exit_ts": 1795807295,
+     "reason": "stop −30 %",
+     "ret": -0.8439319512597732
+    }
+   ]
+  },
+  "study": {
+   "ts": 1795808917,
+   "launches": 165,
+   "cost_side_pct": 3.0,
+   "distribution": {
+    "n": 159,
+    "entry_min": 5,
+    "reach_2x": 15.7,
+    "reach_5x": 3.8,
+    "reach_10x": 0.6,
+    "reach_100x": 0.0,
+    "dead_24h": 12.6,
+    "below_entry_24h": 69.2
+   },
+   "distribution_30": {
+    "n": 165,
+    "entry_min": 30,
+    "reach_2x": 5.5,
+    "reach_5x": 0.6,
+    "reach_10x": 0.6,
+    "reach_100x": 0.0,
+    "dead_24h": 2.4,
+    "below_entry_24h": 37.0
+   },
+   "rule": {
+    "entry_min": 5,
+    "min_vol": 0,
+    "mom5": 0.0,
+    "runup_max": 3.0,
+    "stop": 0.3,
+    "trail": 0.3,
+    "hours": 24
+   },
+   "in_sample": {
+    "n": 58,
+    "mean_pct": 20.12,
+    "win_rate": 36.2,
+    "lcb_pct": 10.89,
+    "best_x": 3.84,
+    "median_pct": -5.68
+   },
+   "out_of_sample": {
+    "n": 21,
+    "mean_pct": 1.25,
+    "win_rate": 23.8,
+    "lcb_pct": -9.16,
+    "best_x": 2.56,
+    "median_pct": -6.34
+   },
+   "edge": false,
+   "note": "Ninguna regla demuestra ganar después de costes en datos no vistos: el cazador solo opera en simulado y en silencio, para seguir midiendo."
+  },
+  "copy": {
+   "ts": 1795808917,
+   "pools": 9,
+   "observations": 318,
+   "bots_excluded": 0,
+   "delay_s": 60,
+   "edge": false,
+   "qualified_in_sample": 2,
+   "copy_out_of_sample": {
+    "n": 0,
+    "mean_pct": null,
+    "win_rate": null,
+    "lcb_pct": null
+   },
+   "note": "Copiar con 60 s de retraso no demuestra ganar en datos no vistos: se copia solo en simulado y en silencio para seguir midiendo.",
+   "rpc": true
+  },
+  "traders": {
+   "tally": {
+    "bot": 58,
+    "pocos datos": 7,
+    "pierde": 2
+   },
+   "skilled": {}
+  }
+ },
+ "updates": {
+  "state": "al día",
+  "current": "86cb7ce942d46fe056fd56fd19bad4f5c56c2e5c",
+  "applied_at": 1795685447
+ }
+}
