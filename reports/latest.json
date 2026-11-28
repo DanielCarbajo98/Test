@@ -1,5 +1,5 @@
 {
- "generated_at": 1795850601,
+ "generated_at": 1795861418,
  "days": 30,
  "version": "0a8077c0df43",
  "crypto": {
@@ -7,26 +7,26 @@
    "mode": "paper",
    "strategy": "ml v1 (cerebro)",
    "paused": false,
-   "equity": 9259.534056669996,
-   "cash": 9259.534056669996,
+   "equity": 9241.31727899165,
+   "cash": 9241.31727899165,
    "start_equity": 10000.0,
-   "daily_pnl": 0.0,
+   "daily_pnl": -18.216777678347448,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795822444,
+    "ts": 1795861301,
     "discovered": 200,
-    "with_data": 199,
-    "prefilter": 10,
+    "with_data": 200,
+    "prefilter": 8,
     "analyzed": 8,
     "signals": 0,
     "rejected": {
-     "liquidez": 87,
-     "volumen": 154,
-     "dex": 23,
-     "pocas": 105,
-     "edad": 77,
-     "sin": 4,
-     "FDV": 4
+     "dex": 25,
+     "liquidez": 96,
+     "volumen": 165,
+     "pocas": 135,
+     "edad": 69,
+     "sin": 1,
+     "FDV": 2
     },
     "filters": {
      "min_liq": 40000,
@@ -35,16 +35,16 @@
      "max_age_h": 2160.0,
      "relaxed": true
     },
-    "queue": 2
+    "queue": 0
    },
    "interval": 20,
    "joint": {
-    "cash": 2841.369181669996,
-    "equity": 9171.149338460602,
+    "cash": 2823.15240399165,
+    "equity": 9152.932560782256,
     "stocks_invested_usd": 6300.576,
     "stocks_pnl_usd": -88.38471820939431,
-    "crypto_equity": 9259.534056669996,
-    "crypto_cash": 9259.534056669996,
+    "crypto_equity": 9241.31727899165,
+    "crypto_cash": 9241.31727899165,
     "usd_per_eur": 1.09385
    },
    "heat_pct": 0.0
@@ -702,12 +702,34 @@
      "take profit +102%",
      "candado de beneficio (+36.7%, máximo +102%)"
     ]
+   },
+   {
+    "symbol": "WLFI",
+    "opened": "2026-11-28T08:23:45+00:00",
+    "closed": "2026-11-28T09:29:46+00:00",
+    "ret": -0.29144872886510154,
+    "cost": 82.21,
+    "got": 58.25,
+    "reasons": [
+     "stop loss -28.7%"
+    ]
+   },
+   {
+    "symbol": "BITCOINU",
+    "opened": "2026-11-28T09:33:52+00:00",
+    "closed": "2026-11-28T10:07:15+00:00",
+    "ret": 0.07162465685051145,
+    "cost": 80.14,
+    "got": 85.88,
+    "reasons": [
+     "candado de beneficio (+9.3%, máximo +20%)"
+    ]
    }
   ],
   "closed_stats": {
-   "n": 59,
-   "win_rate": 37.3,
-   "avg_ret_pct": -7.69
+   "n": 61,
+   "win_rate": 37.7,
+   "avg_ret_pct": -7.8
   }
  },
  "crypto_brain": {
@@ -784,9 +806,9 @@
    "promoted_at": 1795727038
   },
   "reality": {
-   "n": 14,
-   "expectancy": -5.08,
-   "win_rate": 42.9,
+   "n": 16,
+   "expectancy": -5.82,
+   "win_rate": 43.8,
    "expected": 8.69,
    "by_exit": {
     "time": {
@@ -794,12 +816,12 @@
      "avg": -11.5
     },
     "candado": {
-     "n": 6,
-     "avg": 17.1
+     "n": 7,
+     "avg": 15.7
     },
     "stop": {
-     "n": 5,
-     "avg": -27.9
+     "n": 6,
+     "avg": -28.1
     }
    }
   },
@@ -808,212 +830,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795850561,
+  "updated_at": 1795861416,
   "history": [
-   {
-    "ts": 1795773171,
-    "decision": "defensivo",
-    "version": 1,
-    "best": "ml",
-    "best_score": -4.01,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "rápido",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -5.54,
-      "n": 17
-     },
-     {
-      "s": "dip",
-      "e": -14.33,
-      "n": 4
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     },
-     {
-      "s": "ml",
-      "e": 2.98,
-      "n": 27
-     }
-    ]
-   },
-   {
-    "ts": 1795774979,
-    "decision": "defensivo",
-    "version": 1,
-    "best": "ml",
-    "best_score": -4.01,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "rápido",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -5.54,
-      "n": 17
-     },
-     {
-      "s": "dip",
-      "e": -14.33,
-      "n": 4
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     },
-     {
-      "s": "ml",
-      "e": 2.98,
-      "n": 27
-     }
-    ]
-   },
-   {
-    "ts": 1795776787,
-    "decision": "defensivo",
-    "version": 1,
-    "best": "ml",
-    "best_score": -4.01,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "rápido",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -5.54,
-      "n": 17
-     },
-     {
-      "s": "dip",
-      "e": -14.33,
-      "n": 4
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     },
-     {
-      "s": "ml",
-      "e": 2.98,
-      "n": 27
-     }
-    ]
-   },
-   {
-    "ts": 1795778595,
-    "decision": "defensivo",
-    "version": 1,
-    "best": "ml",
-    "best_score": -4.01,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "rápido",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -5.54,
-      "n": 17
-     },
-     {
-      "s": "dip",
-      "e": -14.33,
-      "n": 4
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     },
-     {
-      "s": "ml",
-      "e": 2.98,
-      "n": 27
-     }
-    ]
-   },
-   {
-    "ts": 1795780408,
-    "decision": "defensivo",
-    "version": 1,
-    "best": "ml",
-    "best_score": -4.01,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "rápido",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -5.54,
-      "n": 17
-     },
-     {
-      "s": "dip",
-      "e": -14.33,
-      "n": 4
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     },
-     {
-      "s": "ml",
-      "e": 2.98,
-      "n": 27
-     }
-    ]
-   },
-   {
-    "ts": 1795782215,
-    "decision": "defensivo",
-    "version": 1,
-    "best": "ml",
-    "best_score": -4.01,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "rápido",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -5.54,
-      "n": 17
-     },
-     {
-      "s": "dip",
-      "e": -14.33,
-      "n": 4
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     },
-     {
-      "s": "ml",
-      "e": 2.98,
-      "n": 27
-     }
-    ]
-   },
    {
     "ts": 1795784023,
     "decision": "defensivo",
@@ -1814,6 +1632,210 @@
       "n": 27
      }
     ]
+   },
+   {
+    "ts": 1795852371,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795854179,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795855987,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795857801,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795859609,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795861417,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
    }
   ]
  },
@@ -1824,7 +1846,7 @@
    "broker": "XTB",
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
    "capital": 10000.0,
-   "cash": 2597.59,
+   "cash": 2580.93,
    "equity": 2697.02,
    "ret_pct": -73.03,
    "history": [
@@ -2459,6 +2481,54 @@
     [
      1795821964,
      2697.02
+    ],
+    [
+     1795850710,
+     2697.02
+    ],
+    [
+     1795851650,
+     2697.02
+    ],
+    [
+     1795852590,
+     2697.02
+    ],
+    [
+     1795853528,
+     2697.02
+    ],
+    [
+     1795854589,
+     2697.02
+    ],
+    [
+     1795855525,
+     2697.02
+    ],
+    [
+     1795856462,
+     2697.02
+    ],
+    [
+     1795857498,
+     2697.02
+    ],
+    [
+     1795858570,
+     2697.02
+    ],
+    [
+     1795859509,
+     2697.02
+    ],
+    [
+     1795860446,
+     2697.02
+    ],
+    [
+     1795861381,
+     2697.02
     ]
    ],
    "open": 29,
@@ -2475,9 +2545,9 @@
    "worst": -17.67,
    "joint": true
   },
-  "universe": 471,
-  "ts": 1795822116,
-  "live_ts": 1795822428,
+  "universe": 135,
+  "ts": 1795861381,
+  "live_ts": 1795861316,
   "committed_eur": 5760.0,
   "market_up": false,
   "closed": [
@@ -2906,9 +2976,9 @@
   ],
   "brain_meta": {
    "model": 4,
-   "stocks": 680,
-   "split_ts": 1750167000,
-   "ts": 1795769814,
+   "stocks": 720,
+   "split_ts": 1750253400,
+   "ts": 1795856557,
    "position_eur": 100.0,
    "broker": "xtb",
    "broker_name": "XTB",
@@ -2917,10 +2987,10 @@
   "setups": {
    "Retroceso en tendencia": {
     "params": {
-     "rsi_max": 35,
+     "rsi_max": 40,
      "stop_atr": 3.0,
      "tp_atr": 5.0,
-     "max_days": 10,
+     "max_days": 40,
      "regime": 0
     },
     "active": false,
@@ -2930,51 +3000,51 @@
      "US"
     ],
     "in_sample": {
-     "n": 1955,
-     "win_rate": 44.6,
-     "expectancy": 0.17,
+     "n": 3702,
+     "win_rate": 34.7,
+     "expectancy": 0.18,
      "lcb": -0.03
     },
     "out_of_sample": {
-     "n": 1103,
-     "win_rate": 42.2,
-     "expectancy": 0.39,
-     "lcb": 0.1
+     "n": 2244,
+     "win_rate": 38.2,
+     "expectancy": 1.37,
+     "lcb": 1.06
     },
     "out_of_sample_all": {
-     "n": 1103,
-     "win_rate": 42.2,
-     "expectancy": 0.39,
-     "lcb": 0.1
+     "n": 2244,
+     "win_rate": 38.2,
+     "expectancy": 1.37,
+     "lcb": 1.06
     },
     "by_region": {
      "EU": {
       "in_sample": {
-       "n": 276,
-       "win_rate": 52.2,
-       "expectancy": 1.09,
-       "lcb": 0.65
+       "n": 518,
+       "win_rate": 37.8,
+       "expectancy": 0.6,
+       "lcb": 0.24
       },
       "out_of_sample": {
-       "n": 142,
-       "win_rate": 50.0,
-       "expectancy": 0.28,
-       "lcb": -0.16
+       "n": 277,
+       "win_rate": 39.4,
+       "expectancy": 0.82,
+       "lcb": 0.33
       },
       "edge": true
      },
      "US": {
       "in_sample": {
-       "n": 1679,
-       "win_rate": 43.4,
-       "expectancy": 0.02,
-       "lcb": -0.2
+       "n": 3184,
+       "win_rate": 34.2,
+       "expectancy": 0.11,
+       "lcb": -0.13
       },
       "out_of_sample": {
-       "n": 961,
-       "win_rate": 41.0,
-       "expectancy": 0.41,
-       "lcb": 0.08
+       "n": 1967,
+       "win_rate": 38.0,
+       "expectancy": 1.45,
+       "lcb": 1.09
       },
       "edge": true
      }
@@ -2982,82 +3052,82 @@
     "by_broker": {
      "trade_republic": {
       "all": {
-       "n": 1108,
-       "win_rate": 37.8,
-       "expectancy": -0.72,
-       "lcb": -1.0
+       "n": 2290,
+       "win_rate": 35.2,
+       "expectancy": 0.23,
+       "lcb": -0.08
       },
       "EU": {
-       "n": 144,
-       "win_rate": 34.7,
-       "expectancy": -1.77,
-       "lcb": -2.19
+       "n": 292,
+       "win_rate": 31.5,
+       "expectancy": -1.12,
+       "lcb": -1.58
       },
       "US": {
-       "n": 964,
-       "win_rate": 38.3,
-       "expectancy": -0.56,
-       "lcb": -0.88
+       "n": 1998,
+       "win_rate": 35.7,
+       "expectancy": 0.42,
+       "lcb": 0.08
       }
      },
      "xtb": {
       "all": {
-       "n": 1103,
-       "win_rate": 42.2,
-       "expectancy": 0.39,
-       "lcb": 0.1
+       "n": 2244,
+       "win_rate": 38.2,
+       "expectancy": 1.37,
+       "lcb": 1.06
       },
       "EU": {
-       "n": 142,
-       "win_rate": 50.0,
-       "expectancy": 0.28,
-       "lcb": -0.16
+       "n": 277,
+       "win_rate": 39.4,
+       "expectancy": 0.82,
+       "lcb": 0.33
       },
       "US": {
-       "n": 961,
-       "win_rate": 41.0,
-       "expectancy": 0.41,
-       "lcb": 0.08
+       "n": 1967,
+       "win_rate": 38.0,
+       "expectancy": 1.45,
+       "lcb": 1.09
       }
      },
      "degiro": {
       "all": {
-       "n": 1135,
-       "win_rate": 27.7,
-       "expectancy": -3.11,
-       "lcb": -3.39
+       "n": 2404,
+       "win_rate": 30.5,
+       "expectancy": -2.25,
+       "lcb": -2.54
       },
       "EU": {
-       "n": 154,
-       "win_rate": 16.9,
-       "expectancy": -3.78,
-       "lcb": -4.16
+       "n": 330,
+       "win_rate": 25.5,
+       "expectancy": -3.35,
+       "lcb": -3.75
       },
       "US": {
-       "n": 981,
-       "win_rate": 29.4,
-       "expectancy": -3.01,
-       "lcb": -3.32
+       "n": 2074,
+       "win_rate": 31.3,
+       "expectancy": -2.07,
+       "lcb": -2.4
       }
      },
      "ibkr": {
       "all": {
-       "n": 1110,
-       "win_rate": 39.2,
-       "expectancy": 0.14,
-       "lcb": -0.15
+       "n": 2278,
+       "win_rate": 37.0,
+       "expectancy": 1.07,
+       "lcb": 0.76
       },
       "EU": {
-       "n": 150,
-       "win_rate": 20.7,
-       "expectancy": -3.26,
-       "lcb": -3.66
+       "n": 317,
+       "win_rate": 27.1,
+       "expectancy": -2.74,
+       "lcb": -3.17
       },
       "US": {
-       "n": 960,
-       "win_rate": 42.1,
-       "expectancy": 0.67,
-       "lcb": 0.34
+       "n": 1961,
+       "win_rate": 38.6,
+       "expectancy": 1.69,
+       "lcb": 1.34
       }
      }
     },
@@ -3068,12 +3138,12 @@
      "lcb": -4.99
     },
     "suspended": true,
-    "suspended_why": "en real rinde -3.85% por alerta frente a +0.39% esperado (10 alertas)",
+    "suspended_why": "en real rinde -3.85% por alerta frente a +1.37% esperado (10 alertas)",
     "exit_reasons_oos": {
-     "plazo": 658,
-     "tendencia rota": 334,
-     "stop": 73,
-     "objetivo": 38
+     "stop": 366,
+     "tendencia rota": 914,
+     "plazo": 444,
+     "objetivo": 520
     }
    },
    "Ruptura": {
@@ -3090,22 +3160,22 @@
      "EU"
     ],
     "in_sample": {
-     "n": 2918,
-     "win_rate": 45.9,
-     "expectancy": -0.28,
-     "lcb": -0.48
+     "n": 3112,
+     "win_rate": 45.4,
+     "expectancy": -0.34,
+     "lcb": -0.53
     },
     "out_of_sample": {
      "n": 199,
      "win_rate": 46.7,
-     "expectancy": 0.41,
-     "lcb": -0.08
+     "expectancy": 0.42,
+     "lcb": -0.07
     },
     "out_of_sample_all": {
-     "n": 1759,
-     "win_rate": 46.7,
-     "expectancy": 0.69,
-     "lcb": 0.24
+     "n": 1856,
+     "win_rate": 46.4,
+     "expectancy": 0.66,
+     "lcb": 0.22
     },
     "by_region": {
      "EU": {
@@ -3118,23 +3188,23 @@
       "out_of_sample": {
        "n": 199,
        "win_rate": 46.7,
-       "expectancy": 0.41,
-       "lcb": -0.08
+       "expectancy": 0.42,
+       "lcb": -0.07
       },
       "edge": true
      },
      "US": {
       "in_sample": {
-       "n": 2524,
-       "win_rate": 45.0,
-       "expectancy": -0.38,
-       "lcb": -0.61
+       "n": 2718,
+       "win_rate": 44.5,
+       "expectancy": -0.44,
+       "lcb": -0.65
       },
       "out_of_sample": {
-       "n": 1560,
-       "win_rate": 46.7,
-       "expectancy": 0.73,
-       "lcb": 0.22
+       "n": 1657,
+       "win_rate": 46.4,
+       "expectancy": 0.69,
+       "lcb": 0.2
       },
       "edge": false
      }
@@ -3143,15 +3213,15 @@
      "trade_republic": {
       "all": {
        "n": 198,
-       "win_rate": 35.4,
-       "expectancy": -1.64,
-       "lcb": -2.11
+       "win_rate": 35.9,
+       "expectancy": -1.62,
+       "lcb": -2.1
       },
       "EU": {
        "n": 198,
-       "win_rate": 35.4,
-       "expectancy": -1.64,
-       "lcb": -2.11
+       "win_rate": 35.9,
+       "expectancy": -1.62,
+       "lcb": -2.1
       },
       "US": {
        "n": 0,
@@ -3164,14 +3234,14 @@
       "all": {
        "n": 199,
        "win_rate": 46.7,
-       "expectancy": 0.41,
-       "lcb": -0.08
+       "expectancy": 0.42,
+       "lcb": -0.07
       },
       "EU": {
        "n": 199,
        "win_rate": 46.7,
-       "expectancy": 0.41,
-       "lcb": -0.08
+       "expectancy": 0.42,
+       "lcb": -0.07
       },
       "US": {
        "n": 0,
@@ -3184,14 +3254,14 @@
       "all": {
        "n": 201,
        "win_rate": 23.9,
-       "expectancy": -3.6,
-       "lcb": -4.06
+       "expectancy": -3.59,
+       "lcb": -4.05
       },
       "EU": {
        "n": 201,
        "win_rate": 23.9,
-       "expectancy": -3.6,
-       "lcb": -4.06
+       "expectancy": -3.59,
+       "lcb": -4.05
       },
       "US": {
        "n": 0,
@@ -3203,15 +3273,15 @@
      "ibkr": {
       "all": {
        "n": 198,
-       "win_rate": 26.8,
-       "expectancy": -3.12,
-       "lcb": -3.58
+       "win_rate": 27.3,
+       "expectancy": -3.11,
+       "lcb": -3.56
       },
       "EU": {
        "n": 198,
-       "win_rate": 26.8,
-       "expectancy": -3.12,
-       "lcb": -3.58
+       "win_rate": 27.3,
+       "expectancy": -3.11,
+       "lcb": -3.56
       },
       "US": {
        "n": 0,
@@ -3252,22 +3322,22 @@
      "US"
     ],
     "in_sample": {
-     "n": 1351,
-     "win_rate": 40.3,
-     "expectancy": 1.92,
-     "lcb": 1.19
+     "n": 1440,
+     "win_rate": 40.8,
+     "expectancy": 2.14,
+     "lcb": 1.44
     },
     "out_of_sample": {
-     "n": 1259,
-     "win_rate": 45.8,
-     "expectancy": 6.72,
-     "lcb": 5.85
+     "n": 1334,
+     "win_rate": 46.8,
+     "expectancy": 6.75,
+     "lcb": 5.9
     },
     "out_of_sample_all": {
-     "n": 1259,
-     "win_rate": 45.8,
-     "expectancy": 6.72,
-     "lcb": 5.85
+     "n": 1334,
+     "win_rate": 46.8,
+     "expectancy": 6.75,
+     "lcb": 5.9
     },
     "by_region": {
      "EU": {
@@ -3287,16 +3357,16 @@
      },
      "US": {
       "in_sample": {
-       "n": 1312,
-       "win_rate": 40.2,
-       "expectancy": 1.95,
-       "lcb": 1.21
+       "n": 1401,
+       "win_rate": 40.7,
+       "expectancy": 2.18,
+       "lcb": 1.46
       },
       "out_of_sample": {
-       "n": 1214,
-       "win_rate": 45.6,
-       "expectancy": 6.85,
-       "lcb": 5.94
+       "n": 1289,
+       "win_rate": 46.6,
+       "expectancy": 6.86,
+       "lcb": 5.99
       },
       "edge": true
      }
@@ -3304,10 +3374,10 @@
     "by_broker": {
      "trade_republic": {
       "all": {
-       "n": 1272,
-       "win_rate": 44.7,
-       "expectancy": 5.67,
-       "lcb": 4.8
+       "n": 1349,
+       "win_rate": 45.5,
+       "expectancy": 5.69,
+       "lcb": 4.86
       },
       "EU": {
        "n": 45,
@@ -3316,18 +3386,18 @@
        "lcb": -1.56
       },
       "US": {
-       "n": 1227,
-       "win_rate": 44.7,
-       "expectancy": 5.84,
-       "lcb": 4.94
+       "n": 1304,
+       "win_rate": 45.6,
+       "expectancy": 5.85,
+       "lcb": 4.99
       }
      },
      "xtb": {
       "all": {
-       "n": 1259,
-       "win_rate": 45.8,
-       "expectancy": 6.72,
-       "lcb": 5.85
+       "n": 1334,
+       "win_rate": 46.8,
+       "expectancy": 6.75,
+       "lcb": 5.9
       },
       "EU": {
        "n": 45,
@@ -3336,18 +3406,18 @@
        "lcb": 0.68
       },
       "US": {
-       "n": 1214,
-       "win_rate": 45.6,
-       "expectancy": 6.85,
-       "lcb": 5.94
+       "n": 1289,
+       "win_rate": 46.6,
+       "expectancy": 6.86,
+       "lcb": 5.99
       }
      },
      "degiro": {
       "all": {
-       "n": 1292,
-       "win_rate": 41.5,
-       "expectancy": 2.91,
-       "lcb": 2.07
+       "n": 1371,
+       "win_rate": 42.0,
+       "expectancy": 2.94,
+       "lcb": 2.14
       },
       "EU": {
        "n": 45,
@@ -3356,18 +3426,18 @@
        "lcb": -3.6
       },
       "US": {
-       "n": 1247,
-       "win_rate": 41.5,
-       "expectancy": 3.04,
-       "lcb": 2.19
+       "n": 1326,
+       "win_rate": 42.1,
+       "expectancy": 3.07,
+       "lcb": 2.25
       }
      },
      "ibkr": {
       "all": {
-       "n": 1255,
-       "win_rate": 45.7,
-       "expectancy": 6.83,
-       "lcb": 5.95
+       "n": 1330,
+       "win_rate": 46.6,
+       "expectancy": 6.86,
+       "lcb": 6.01
       },
       "EU": {
        "n": 45,
@@ -3376,10 +3446,10 @@
        "lcb": -3.22
       },
       "US": {
-       "n": 1210,
-       "win_rate": 45.9,
-       "expectancy": 7.11,
-       "lcb": 6.2
+       "n": 1285,
+       "win_rate": 46.8,
+       "expectancy": 7.12,
+       "lcb": 6.25
       }
      }
     },
@@ -3392,30 +3462,30 @@
     "suspended": false,
     "suspended_why": "",
     "exit_reasons_oos": {
-     "plazo": 472,
-     "stop": 345,
-     "tendencia rota": 207,
-     "objetivo": 235
+     "plazo": 506,
+     "stop": 364,
+     "tendencia rota": 217,
+     "objetivo": 247
     }
    }
   },
   "lessons": [
-   "«Retroceso en tendencia»: con stop a 3.0 ATR, objetivo a 5.0 ATR y plazo de 10 días, en datos recientes no vistos acierta el 42.2% con +0.39% de media por operación (1103 operaciones).",
-   "«Retroceso en tendencia»: la salida más frecuente es «plazo» (658 de 1103).",
-   "«Retroceso en tendencia»: solo se activa en Europa (euros), EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +0.39%).",
-   "«Retroceso en tendencia» por broker (media por operación con 100 €): XTB +0.39% · Interactive Brokers +0.14% · Trade Republic -0.72% · DEGIRO -3.11%.",
+   "«Retroceso en tendencia»: con stop a 3.0 ATR, objetivo a 5.0 ATR y plazo de 40 días, en datos recientes no vistos acierta el 38.2% con +1.37% de media por operación (2244 operaciones).",
+   "«Retroceso en tendencia»: la salida más frecuente es «tendencia rota» (914 de 2244).",
+   "«Retroceso en tendencia»: solo se activa en Europa (euros), EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +1.37%).",
+   "«Retroceso en tendencia» por broker (media por operación con 100 €): XTB +1.37% · Interactive Brokers +1.07% · Trade Republic +0.23% · DEGIRO -2.25%.",
    "«Retroceso en tendencia»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia).",
-   "«Retroceso en tendencia» en real: 10 alertas cerradas, acierto 0.0%, media -3.85%. SUSPENDIDA: en real rinde -3.85% por alerta frente a +0.39% esperado (10 alertas).",
-   "«Ruptura»: con stop a 3.0 ATR, objetivo a 6.0 ATR y plazo de 15 días, en datos recientes no vistos acierta el 46.7% con +0.41% de media por operación (199 operaciones).",
+   "«Retroceso en tendencia» en real: 10 alertas cerradas, acierto 0.0%, media -3.85%. SUSPENDIDA: en real rinde -3.85% por alerta frente a +1.37% esperado (10 alertas).",
+   "«Ruptura»: con stop a 3.0 ATR, objetivo a 6.0 ATR y plazo de 15 días, en datos recientes no vistos acierta el 46.7% con +0.42% de media por operación (199 operaciones).",
    "«Ruptura»: la salida más frecuente es «plazo» (112 de 199).",
-   "«Ruptura»: solo se activa en Europa (euros): en el resto no gana después de costes (contando todas las bolsas saldría +0.69%).",
-   "«Ruptura» por broker (media por operación con 100 €): XTB +0.41% · Trade Republic -1.64% · Interactive Brokers -3.12% · DEGIRO -3.60%.",
+   "«Ruptura»: solo se activa en Europa (euros): en el resto no gana después de costes (contando todas las bolsas saldría +0.66%).",
+   "«Ruptura» por broker (media por operación con 100 €): XTB +0.42% · Trade Republic -1.62% · Interactive Brokers -3.11% · DEGIRO -3.59%.",
    "«Ruptura»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia).",
    "«Ruptura» en real: 2 alertas cerradas, acierto 0.0%, media +0.00%.",
-   "«Momentum»: con stop a 4.0 ATR, objetivo a 10.0 ATR y plazo de 60 días, en datos recientes no vistos acierta el 45.8% con +6.72% de media por operación (1259 operaciones).",
-   "«Momentum»: la salida más frecuente es «plazo» (472 de 1259).",
-   "«Momentum»: solo se activa en Europa (euros), EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +6.72%).",
-   "«Momentum» por broker (media por operación con 100 €): Interactive Brokers +6.83% · XTB +6.72% · Trade Republic +5.67% · DEGIRO +2.91%.",
+   "«Momentum»: con stop a 4.0 ATR, objetivo a 10.0 ATR y plazo de 60 días, en datos recientes no vistos acierta el 46.8% con +6.75% de media por operación (1334 operaciones).",
+   "«Momentum»: la salida más frecuente es «plazo» (506 de 1334).",
+   "«Momentum»: solo se activa en Europa (euros), EE. UU.: en el resto no gana después de costes (contando todas las bolsas saldría +6.75%).",
+   "«Momentum» por broker (media por operación con 100 €): Interactive Brokers +6.86% · XTB +6.75% · Trade Republic +5.69% · DEGIRO +2.94%.",
    "«Momentum»: con tu broker, compensa a partir de ~100 € por operación (por debajo, la comisión se come la ganancia).",
    "«Momentum» en real: 5 alertas cerradas, acierto 0.0%, media -2.30%."
   ],
@@ -3475,30 +3545,45 @@
      "active": true,
      "oos_exp": 6.72
     }
+   },
+   {
+    "ts": 1795856557,
+    "Retroceso en tendencia": {
+     "active": false,
+     "oos_exp": 1.37
+    },
+    "Ruptura": {
+     "active": true,
+     "oos_exp": 0.42
+    },
+    "Momentum": {
+     "active": true,
+     "oos_exp": 6.75
+    }
    }
   ]
  },
  "hunter": {
   "summary": {
    "cazador": {
-    "equity": 867.02,
-    "pnl": -132.98,
-    "open": 25,
-    "closed": 68,
-    "win_rate": 2.9,
+    "equity": 864.98,
+    "pnl": -135.02,
+    "open": 18,
+    "closed": 75,
+    "win_rate": 2.7,
     "best_x": 3.01,
     "worst_pct": -100.0,
-    "mean_pct": -17.62
+    "mean_pct": -16.7
    },
    "copia": {
-    "equity": 1341.9,
-    "pnl": 341.9,
+    "equity": 1354.83,
+    "pnl": 354.83,
     "open": 25,
-    "closed": 126,
-    "win_rate": 33.3,
+    "closed": 136,
+    "win_rate": 33.1,
     "best_x": 19.94,
     "worst_pct": -100.0,
-    "mean_pct": 13.56
+    "mean_pct": 10.19
    }
   },
   "closed": {
@@ -4998,239 +5083,163 @@
      "exit_ts": 1795805435,
      "reason": "plazo de 24 h",
      "ret": -0.058252427184465994
+    },
+    {
+     "pair": "2CCyZfdQajVs8VtKzR6WthFaxq5gdRWnebwMdFPDBb5r",
+     "mint": "BzV2CoboSEPFbDQZieLX9YW2s81Dsub5ZVY1oe3Wpump",
+     "name": "SALECOIN / SOL",
+     "source": "cazador",
+     "entry": 2.4102434983614555e-06,
+     "qty": 4148958.3964434518,
+     "cost_usd": 10.0,
+     "got_usd": 8.262277240261454,
+     "ts": 1795770375,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.053e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.053e-06,
+     "exit_ts": 1795856797,
+     "reason": "plazo de 24 h",
+     "ret": -0.17377227597385458
+    },
+    {
+     "pair": "82W5if39Nn6aZjcKBGt8ZK2mk9FjQMxANNC1UA23S9BJ",
+     "mint": "JBLvLkYrrUok65yqxdzLvght4tRvTBX4gutVk4BZpump",
+     "name": "MUFO / SOL",
+     "source": "cazador",
+     "entry": 2.1147517526706214e-06,
+     "qty": 4728687.415613424,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795770375,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0531570414277876e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0531570414277876e-06,
+     "exit_ts": 1795856857,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "3dMCHtDcTZShqkx8EtpCgGXvAEeVfqxinr922LYeS58i",
+     "mint": "JdwABZyw4j6fUtcCpKyYwL6cFfAdga6SaPjxrNxpump",
+     "name": "LEGO / SOL",
+     "source": "cazador",
+     "entry": 2.1114509495951193e-06,
+     "qty": 4736079.709508548,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795770375,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0499523782476886e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0499523782476886e-06,
+     "exit_ts": 1795856857,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "21WLK7wWapqED6TEw9U5YisHgezbiaAfHutSXsG2SviV",
+     "mint": "7U3MnVGJZuVzRZXTkh38Pc1Q9VhRKbSRiw7EuPa4pump",
+     "name": "Fox / SOL",
+     "source": "cazador",
+     "entry": 2.4758337097923157e-06,
+     "qty": 4039043.478747547,
+     "cost_usd": 10.0,
+     "got_usd": 9.41747572815534,
+     "ts": 1795770375,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.4037220483420542e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.4037220483420542e-06,
+     "exit_ts": 1795856857,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184465994
+    },
+    {
+     "pair": "2RqHbFWNtterCu5h9zWFDwiE61jSgw8jSsWHPPQxdmdJ",
+     "mint": "CaNTbJov75t3xiXJCBASCqJhQwvgkJ2P1ti5bTJopump",
+     "name": "Kai / SOL",
+     "source": "cazador",
+     "entry": 3.563700383028624e-06,
+     "qty": 2806072.0389466253,
+     "cost_usd": 10.0,
+     "got_usd": 9.417475728155338,
+     "ts": 1795770615,
+     "half": false,
+     "peak": 1.0,
+     "last": 3.4599032844938094e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 3.4599032844938094e-06,
+     "exit_ts": 1795857038,
+     "reason": "plazo de 24 h",
+     "ret": -0.058252427184466216
+    },
+    {
+     "pair": "EtGiYQd3RnX4hPh17Xj8q1VeexC4bzqZVisibdC67j1",
+     "mint": "3QMpPRY22woXeRJquXZ5RiCEeify8JPq2UZE7pb5f98J",
+     "name": "nothing / SOL",
+     "source": "cazador",
+     "entry": 2.1723592207263554e-06,
+     "qty": 4603290.240670406,
+     "cost_usd": 10.0,
+     "got_usd": 9.21316780291088,
+     "ts": 1795771655,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.06333093079924e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.06333093079924e-06,
+     "exit_ts": 1795858058,
+     "reason": "plazo de 24 h",
+     "ret": -0.07868321970891201
+    },
+    {
+     "pair": "GLzaxsrJ7HToM36DEMJhZ4Y3CyUrmNELT6cv3vTqmFuB",
+     "mint": "3d4yjNPjN6X12NtYLP95Pk6YdvEDQ3hztnh51Nbipump",
+     "name": "NVR / SOL",
+     "source": "cazador",
+     "entry": 2.1158945764057713e-06,
+     "qty": 4726133.386563524,
+     "cost_usd": 10.0,
+     "got_usd": 9.410870368290837,
+     "ts": 1795773265,
+     "half": false,
+     "peak": 1.0,
+     "last": 2.0528257290231305e-06,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.0528257290231305e-06,
+     "exit_ts": 1795859678,
+     "reason": "plazo de 24 h",
+     "ret": -0.05891296317091632
     }
    ],
    "copia": [
-    {
-     "pair": "DagCL3uJVQvwAvrjSvLjH2DUhHyahCE9qbwjy3THrvyx",
-     "mint": "3mBXtVYz3qC4Y459W8Fh9BX1CDsMMTgAcosDgtELEnAw",
-     "name": "LONG",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 4.22609e-05,
-     "qty": 118312.67199704691,
-     "cost_usd": 10.0,
-     "got_usd": 15.551422304068296,
-     "ts": 1795624173,
-     "half": true,
-     "peak": 3.206273411119971,
-     "last": 8.681e-09,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 8.681e-09,
-     "exit_ts": 1795625313,
-     "reason": "stop dinámico (40 % desde el máximo 3.2x)",
-     "ret": 0.5551422304068296
-    },
-    {
-     "pair": "Die3v1rfWk6GX4T9W84LcFZTWU28gPxkT1mp78Ec7a8t",
-     "mint": "5N1WuXR8cVYoXHP2vNyBsFrtXVu9omVu3Zst5v614X5Y",
-     "name": "ANSEM",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 5.97606e-06,
-     "qty": 836671.65322972,
-     "cost_usd": 10.0,
-     "got_usd": 10.072729632901947,
-     "ts": 1795624173,
-     "half": true,
-     "peak": 2.076619043316165,
-     "last": 1.389e-09,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 1.389e-09,
-     "exit_ts": 1795625493,
-     "reason": "stop dinámico (40 % desde el máximo 2.1x)",
-     "ret": 0.007272963290194667
-    },
-    {
-     "pair": "FwaCXXc5n1AFFE26Ait1J6bdwez3hPHYeVQ2VvytarBR",
-     "mint": "dwFaiV9aNRjcdYAEFAnUqQitKZAxKBB9mu922iut1CH",
-     "name": "英伟达",
-     "source": "copia",
-     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
-     "entry": 1.50689e-05,
-     "qty": 663618.4459383233,
-     "cost_usd": 10.0,
-     "got_usd": 0.15185116365494494,
-     "ts": 1795624533,
-     "half": false,
-     "peak": 1.0,
-     "last": 2.359e-07,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 2.359e-07,
-     "exit_ts": 1795625493,
-     "reason": "stop −50 %",
-     "ret": -0.9848148836345055
-    },
-    {
-     "pair": "EqTfFosQ7WeQhVGYJXASREXf1tjYrC6mxqWdTmq14sES",
-     "mint": "GfnLJBQm57f9xoC8x3z5SZiphtbCtYGzhABFPDBDPRQW",
-     "name": "英伟达",
-     "source": "copia",
-     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
-     "entry": 1.32561e-05,
-     "qty": 754369.6864085214,
-     "cost_usd": 10.0,
-     "got_usd": 0.0005392913451165879,
-     "ts": 1795624173,
-     "half": false,
-     "peak": 1.0,
-     "last": 7.37e-10,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 7.37e-10,
-     "exit_ts": 1795625553,
-     "reason": "stop −50 %",
-     "ret": -0.9999460708654884
-    },
-    {
-     "pair": "AB5bjb89JU9e3Nr3TPTKqhyh8MKAg6KMF99NAEM3A5mi",
-     "mint": "AjnSKkuiuJyoU2HLAP5oj1agugb3YviXaGSgTamk39Dn",
-     "name": "STARMIND",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 6.63011e-05,
-     "qty": 150827.06018452183,
-     "cost_usd": 10.0,
-     "got_usd": 1.1341350294339008,
-     "ts": 1795625493,
-     "half": false,
-     "peak": 1.0,
-     "last": 7.752e-06,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 7.752e-06,
-     "exit_ts": 1795625553,
-     "reason": "stop −50 %",
-     "ret": -0.88658649705661
-    },
-    {
-     "pair": "7MN4v84jZKoynBM5CzP4UiscWgjyfCUssjKu54QH4dMf",
-     "mint": "5NB797ob12RFM8ACtkmUtPTeJER82g3eX3PwCCeeFxgE",
-     "name": "4CHAN",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 1.2257e-05,
-     "qty": 815860.3247124093,
-     "cost_usd": 10.0,
-     "got_usd": 7.681178102308885e-05,
-     "ts": 1795625733,
-     "half": false,
-     "peak": 1.0,
-     "last": 9.706e-11,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 9.706e-11,
-     "exit_ts": 1795625793,
-     "reason": "stop −50 %",
-     "ret": -0.9999923188218977
-    },
-    {
-     "pair": "FnQDf6tDRHnqh6YAQEbzfSWqbCz4y8vrvuoS13GrPEBA",
-     "mint": "3xn6JUwUBQLopybMVwEdaWeLskQuTTq7vEmTBNajpump",
-     "name": "SPACECENTER",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 3.0374700000000002e-05,
-     "qty": 329221.3585648582,
-     "cost_usd": 10.0,
-     "got_usd": 0.5502309487830331,
-     "ts": 1795625013,
-     "half": false,
-     "peak": 1.0,
-     "last": 1.723e-06,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 1.723e-06,
-     "exit_ts": 1795625913,
-     "reason": "stop −50 %",
-     "ret": -0.9449769051216967
-    },
-    {
-     "pair": "HQhnwzN2fQjXw7SrduPxHVJdBr71GXjAJuZRXZvwTmW5",
-     "mint": "BgEFUnTvQ5Q6uWKPoT5e1hUxKYmc8KjRbixZVA2Xu956",
-     "name": "QUINLAN",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 3.64414e-05,
-     "qty": 137206.58372071324,
-     "cost_usd": 10.0,
-     "got_usd": 14.727782137898103,
-     "ts": 1795625733,
-     "half": true,
-     "peak": 2.199970363377916,
-     "last": 3.049e-05,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 3.049e-05,
-     "exit_ts": 1795625913,
-     "reason": "stop dinámico (40 % desde el máximo 2.2x)",
-     "ret": 0.4727782137898102
-    },
-    {
-     "pair": "4nZQWc8fp46MEpsSAfnLYFm3qFULhsChrPtZqVC7BeZ3",
-     "mint": "EER2rAJ3AEe4SkCWh7AuDuGQBAhCYpgRBcHPvdBdpump",
-     "name": "BARRON",
-     "source": "copia",
-     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
-     "entry": 3.86456e-05,
-     "qty": 258761.6701513238,
-     "cost_usd": 10.0,
-     "got_usd": 0.3270514625209597,
-     "ts": 1795625733,
-     "half": false,
-     "peak": 1.0,
-     "last": 1.303e-06,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 1.303e-06,
-     "exit_ts": 1795626153,
-     "reason": "stop −50 %",
-     "ret": -0.967294853747904
-    },
-    {
-     "pair": "J4FfYHJWBmodsbMT6FD8eQHkbeCXvgHonhsFCtFeDvys",
-     "mint": "9riZsGiEhmg5cGGh8fyfcf4tq1xxsxax2EPzPy49bk65",
-     "name": "蚁巢",
-     "source": "copia",
-     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
-     "entry": 1.4368500000000001e-05,
-     "qty": 347983.43598844693,
-     "cost_usd": 10.0,
-     "got_usd": 9.904079061836656,
-     "ts": 1795623933,
-     "half": true,
-     "peak": 2.025959564324738,
-     "last": 2.316e-07,
-     "stop": 0.5,
-     "trail": 0.4,
-     "hours": 24,
-     "missing_since": null,
-     "exit": 2.316e-07,
-     "exit_ts": 1795626873,
-     "reason": "stop dinámico (40 % desde el máximo 2.0x)",
-     "ret": -0.009592093816334413
-    },
     {
      "pair": "FpE2ZZfK3SECB4pLFi9xmxh6HbUfKu8KKACv8yjF7S8D",
      "mint": "6R91CFCxVUSnZJ1zRRDVCDxhhf1jS45A8QSm4wtcvnF4",
@@ -7300,11 +7309,241 @@
      "exit_ts": 1795815736,
      "reason": "desaparecido (posible rug)",
      "ret": -1.0
+    },
+    {
+     "pair": "CrX9MrMUQ5vFgQCbWxndd5FssqMVzUfLeAW1du3hAUtn",
+     "mint": "9KcxYD7XHgMNGewAMZvjAPKXtKqWzd91r9dcFPbNpump",
+     "name": "Stormx",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.03115278615794574,
+     "qty": 320.998576156227,
+     "cost_usd": 10.0,
+     "got_usd": 4.947647353868774,
+     "ts": 1795801175,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.01589,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.01589,
+     "exit_ts": 1795822090,
+     "reason": "stop −30 %",
+     "ret": -0.5052352646131226
+    },
+    {
+     "pair": "9u4HJD6xAVYcDqeeEHgSYXQLNqfPbJjQF8d6FVZeVknU",
+     "mint": "4j8vvBQocbQSVSQvAVSzu5uWDBbcYBxtoUde8SURbonk",
+     "name": "DELCOMP",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.017205831958295194,
+     "qty": 581.1982834796225,
+     "cost_usd": 10.0,
+     "got_usd": 4.839899645762383,
+     "ts": 1795801535,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.008585,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.008585,
+     "exit_ts": 1795822090,
+     "reason": "stop −30 %",
+     "ret": -0.5160100354237617
+    },
+    {
+     "pair": "321fN1AQHrnpYErCYUGgzwPzVC5gtLHMnphm7xrdGX5v",
+     "mint": "7QE1hiJK1atd5JsV1XtY2wPeyEMJjBDfBPcqykVrmoon",
+     "name": "FEIVIN",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0343814,
+     "qty": 290.8549390077193,
+     "cost_usd": 10.0,
+     "got_usd": 2.283836609329463,
+     "ts": 1795811476,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.008095,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.008095,
+     "exit_ts": 1795822090,
+     "reason": "stop −30 %",
+     "ret": -0.7716163390670537
+    },
+    {
+     "pair": "3HNwRDxaUM3NrVM1sh9EMxVXCtjdhBs7sX2DTrW4dMNT",
+     "mint": "6Aw2KTHGfyMUmYMhhS6xCTceANUj8XSg75URaRanpump",
+     "name": "Cassio",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.0681281536551711,
+     "qty": 146.7821959569717,
+     "cost_usd": 10.0,
+     "got_usd": 3.1109752522100367,
+     "ts": 1795815916,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.02185,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 0.02185,
+     "exit_ts": 1795822090,
+     "reason": "stop −30 %",
+     "ret": -0.6889024747789964
+    },
+    {
+     "pair": "Fkw2jbFP1PAbgVJBSiVvkdHx4d3pn9McpJQbVffZ8o4v",
+     "mint": "TJKfbFPso8YMs2d24pLiR9mrot3LZ3SLFNTyAXPRp8d",
+     "name": "H3LIX",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 1.607095149581072e-05,
+     "qty": 622240.6932537094,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795731813,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795818496.8482127,
+     "exit": 0.0,
+     "exit_ts": 1795850950,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "GwQocLLBTDwQqVR6BcgcZbWMQAsNEBTVtqz4dzVAxFVw",
+     "mint": "2fW8NWRt7jBk53KAEnPij1uubot9kQNZA436XATzhB6c",
+     "name": "MeiMeiCat",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 3.26922e-05,
+     "qty": 305883.3605569524,
+     "cost_usd": 10.0,
+     "got_usd": 0.0,
+     "ts": 1795733373,
+     "half": false,
+     "peak": 1.0,
+     "last": 0.0,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": 1795819816.8504856,
+     "exit": 0.0,
+     "exit_ts": 1795850950,
+     "reason": "desaparecido (posible rug)",
+     "ret": -1.0
+    },
+    {
+     "pair": "C5r31yNkrst1fRxXsSSfs7DaTwiWVGNVjwpUSqNvwhRw",
+     "mint": "3WvhpAsqNwtcm6f9t1rN4AL9XBWmsEw84ypjA8CT7777",
+     "name": "SNIBBU",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 0.00012699330129279656,
+     "qty": 78744.31090616297,
+     "cost_usd": 10.0,
+     "got_usd": 3.1140933889749363,
+     "ts": 1795850950,
+     "half": false,
+     "peak": 1.0,
+     "last": 4.077e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 4.077e-05,
+     "exit_ts": 1795850950,
+     "reason": "stop −30 %",
+     "ret": -0.6885906611025063
+    },
+    {
+     "pair": "6zQgYF8ZizkuHqZhGKUXvzoWPyrJ5DarRRtQpF7FgmU9",
+     "mint": "3hieF1KCZXUZxpjG83Dtmzta5y4DnfWFFyJhURC3PXwp",
+     "name": "Snowball",
+     "source": "copia",
+     "wallet": "H9SaZazTkfFYgqXoEYDzfQNVLnDLph7C65BB4vX9c9Sw",
+     "entry": 1.8866486310238368e-05,
+     "qty": 265020.20131255843,
+     "cost_usd": 10.0,
+     "got_usd": 25.624957800477247,
+     "ts": 1795770615,
+     "half": true,
+     "peak": 3.352929310172995,
+     "last": 6.17e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 6.17e-05,
+     "exit_ts": 1795857038,
+     "reason": "plazo de 24 h",
+     "ret": 1.5624957800477248
+    },
+    {
+     "pair": "C2SL3vMHurMsyvgCWGJk9GfNmVYnrgpjrzqmuy2C92fn",
+     "mint": "9H9yEtVcGt3cG2NWA94W3C28KXM3mZpsz4D7wR7Bzin7",
+     "name": "Optimus",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 5.939409277806691e-05,
+     "qty": 84183.45606663435,
+     "cost_usd": 10.0,
+     "got_usd": 11.859484168417886,
+     "ts": 1795851997,
+     "half": true,
+     "peak": 2.3910929191358523,
+     "last": 2.611e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.611e-05,
+     "exit_ts": 1795858118,
+     "reason": "stop dinámico (30 % desde el máximo 2.4x)",
+     "ret": 0.18594841684178864
+    },
+    {
+     "pair": "CbAj6XvdCdN92x3qPnHrtxuXvx6G8UrUK3o5X2HTgGy9",
+     "mint": "AbCdnrykKCfAFEDAbjj4zrJN1e9zhKWAXKYXy21cu85a",
+     "name": "GTAVI",
+     "source": "copia",
+     "wallet": "Fn9n3ftUzjhcmoLwXbTqJdATzamCp3xPEu4LmLSS8ELr",
+     "entry": 6.464419162479673e-05,
+     "qty": 77346.46956405067,
+     "cost_usd": 10.0,
+     "got_usd": 11.895152827637183,
+     "ts": 1795850950,
+     "half": true,
+     "peak": 2.429714319183826,
+     "last": 2.875e-05,
+     "stop": 0.3,
+     "trail": 0.3,
+     "hours": 24,
+     "missing_since": null,
+     "exit": 2.875e-05,
+     "exit_ts": 1795860098,
+     "reason": "stop dinámico (30 % desde el máximo 2.4x)",
+     "ret": 0.18951528276371832
     }
    ]
   },
   "study": {
-   "ts": 1795822095,
+   "ts": 1795850952,
    "launches": 165,
    "cost_side_pct": 3.0,
    "distribution": {
@@ -7356,7 +7595,7 @@
    "note": "Ninguna regla demuestra ganar después de costes en datos no vistos: el cazador solo opera en simulado y en silencio, para seguir midiendo."
   },
   "copy": {
-   "ts": 1795822096,
+   "ts": 1795850952,
    "pools": 9,
    "observations": 318,
    "bots_excluded": 0,
@@ -7374,9 +7613,9 @@
   },
   "traders": {
    "tally": {
-    "bot": 66,
-    "pocos datos": 8,
-    "pierde": 2
+    "bot": 72,
+    "pocos datos": 9,
+    "pierde": 1
    },
    "skilled": {}
   }
