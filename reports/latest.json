@@ -1,32 +1,32 @@
 {
- "generated_at": 1795820465,
+ "generated_at": 1795850601,
  "days": 30,
- "version": "86cb7ce942d4",
+ "version": "0a8077c0df43",
  "crypto": {
   "status": {
    "mode": "paper",
    "strategy": "ml v1 (cerebro)",
    "paused": false,
    "equity": 9259.534056669996,
+   "cash": 9259.534056669996,
    "start_equity": 10000.0,
-   "daily_pnl": -241.1643810500001,
+   "daily_pnl": 0.0,
    "risk_off": "",
    "last_scan": {
-    "ts": 1795820368,
+    "ts": 1795822444,
     "discovered": 200,
-    "with_data": 200,
-    "prefilter": 8,
+    "with_data": 199,
+    "prefilter": 10,
     "analyzed": 8,
     "signals": 0,
     "rejected": {
-     "liquidez": 96,
-     "volumen": 156,
-     "dex": 26,
-     "pocas": 116,
-     "edad": 84,
-     "sin": 3,
-     "FDV": 3,
-     "parece": 1
+     "liquidez": 87,
+     "volumen": 154,
+     "dex": 23,
+     "pocas": 105,
+     "edad": 77,
+     "sin": 4,
+     "FDV": 4
     },
     "filters": {
      "min_liq": 40000,
@@ -35,9 +35,19 @@
      "max_age_h": 2160.0,
      "relaxed": true
     },
-    "queue": 0
+    "queue": 2
    },
-   "interval": 20
+   "interval": 20,
+   "joint": {
+    "cash": 2841.369181669996,
+    "equity": 9171.149338460602,
+    "stocks_invested_usd": 6300.576,
+    "stocks_pnl_usd": -88.38471820939431,
+    "crypto_equity": 9259.534056669996,
+    "crypto_cash": 9259.534056669996,
+    "usd_per_eur": 1.09385
+   },
+   "heat_pct": 0.0
   },
   "open_positions": 0,
   "closed_last_days": [
@@ -774,9 +784,9 @@
    "promoted_at": 1795727038
   },
   "reality": {
-   "n": 13,
-   "expectancy": -9.97,
-   "win_rate": 38.5,
+   "n": 14,
+   "expectancy": -5.08,
+   "win_rate": 42.9,
    "expected": 8.69,
    "by_exit": {
     "time": {
@@ -784,8 +794,8 @@
      "avg": -11.5
     },
     "candado": {
-     "n": 5,
-     "avg": 8.9
+     "n": 6,
+     "avg": 17.1
     },
     "stop": {
      "n": 5,
@@ -798,105 +808,8 @@
    "samples": 3000,
    "pools": 60
   },
-  "updated_at": 1795819830,
+  "updated_at": 1795850561,
   "history": [
-   {
-    "ts": 1795736085,
-    "decision": "defensivo",
-    "version": 1,
-    "best": "ml",
-    "best_score": -4.01,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "rápido",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -20.97,
-      "n": 9
-     },
-     {
-      "s": "dip",
-      "e": 4.37,
-      "n": 6
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     },
-     {
-      "s": "ml",
-      "e": 2.98,
-      "n": 27
-     }
-    ]
-   },
-   {
-    "ts": 1795769585,
-    "decision": "defensivo",
-    "version": 1,
-    "best": null,
-    "best_score": null,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "completo",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -5.54,
-      "n": 17
-     },
-     {
-      "s": "dip",
-      "e": -14.33,
-      "n": 4
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     }
-    ]
-   },
-   {
-    "ts": 1795771363,
-    "decision": "defensivo",
-    "version": 1,
-    "best": "ml",
-    "best_score": -4.01,
-    "samples": 15227,
-    "pools": 283,
-    "mode": "rápido",
-    "champion": "ml",
-    "champion_exp": 11.08,
-    "candidates": [
-     {
-      "s": "momentum",
-      "e": -5.54,
-      "n": 17
-     },
-     {
-      "s": "dip",
-      "e": -14.33,
-      "n": 4
-     },
-     {
-      "s": "breakout",
-      "e": -16.33,
-      "n": 3
-     },
-     {
-      "s": "ml",
-      "e": 2.98,
-      "n": 27
-     }
-    ]
-   },
    {
     "ts": 1795773171,
     "decision": "defensivo",
@@ -1804,6 +1717,103 @@
       "n": 27
      }
     ]
+   },
+   {
+    "ts": 1795821639,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
+   },
+   {
+    "ts": 1795822123,
+    "decision": "defensivo",
+    "version": 1,
+    "best": null,
+    "best_score": null,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "completo",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     }
+    ]
+   },
+   {
+    "ts": 1795850562,
+    "decision": "defensivo",
+    "version": 1,
+    "best": "ml",
+    "best_score": -4.01,
+    "samples": 15227,
+    "pools": 283,
+    "mode": "rápido",
+    "champion": "ml",
+    "champion_exp": 11.08,
+    "candidates": [
+     {
+      "s": "momentum",
+      "e": -5.54,
+      "n": 17
+     },
+     {
+      "s": "dip",
+      "e": -14.33,
+      "n": 4
+     },
+     {
+      "s": "breakout",
+      "e": -16.33,
+      "n": 3
+     },
+     {
+      "s": "ml",
+      "e": 2.98,
+      "n": 27
+     }
+    ]
    }
   ]
  },
@@ -1814,7 +1824,7 @@
    "broker": "XTB",
    "broker_note": "0 € hasta 100.000 €/mes; 0,5 % de cambio de divisa fuera del euro; 10 €/mes tras 1 año sin operar",
    "capital": 10000.0,
-   "cash": -3089.68,
+   "cash": 2597.59,
    "equity": 2697.02,
    "ret_pct": -73.03,
    "history": [
@@ -2441,6 +2451,14 @@
     [
      1795819836,
      2697.02
+    ],
+    [
+     1795820915,
+     2697.02
+    ],
+    [
+     1795821964,
+     2697.02
     ]
    ],
    "open": 29,
@@ -2457,7 +2475,10 @@
    "worst": -17.67,
    "joint": true
   },
-  "universe": 472,
+  "universe": 471,
+  "ts": 1795822116,
+  "live_ts": 1795822428,
+  "committed_eur": 5760.0,
   "market_up": false,
   "closed": [
    {
@@ -3470,8 +3491,8 @@
     "mean_pct": -17.62
    },
    "copia": {
-    "equity": 1341.78,
-    "pnl": 341.78,
+    "equity": 1341.9,
+    "pnl": 341.9,
     "open": 25,
     "closed": 126,
     "win_rate": 33.3,
@@ -7283,7 +7304,7 @@
    ]
   },
   "study": {
-   "ts": 1795808917,
+   "ts": 1795822095,
    "launches": 165,
    "cost_side_pct": 3.0,
    "distribution": {
@@ -7335,7 +7356,7 @@
    "note": "Ninguna regla demuestra ganar después de costes en datos no vistos: el cazador solo opera en simulado y en silencio, para seguir midiendo."
   },
   "copy": {
-   "ts": 1795808917,
+   "ts": 1795822096,
    "pools": 9,
    "observations": 318,
    "bots_excluded": 0,
@@ -7362,7 +7383,7 @@
  },
  "updates": {
   "state": "al día",
-  "current": "86cb7ce942d46fe056fd56fd19bad4f5c56c2e5c",
-  "applied_at": 1795685447
+  "current": "0a8077c0df43434a5986eb5051da0c0e622fe03a",
+  "applied_at": 1795822075
  }
 }
